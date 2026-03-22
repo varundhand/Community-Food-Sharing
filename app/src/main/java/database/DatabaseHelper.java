@@ -154,6 +154,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // users related methods (delimiter for avoiding conflicts)
+
     // Basic Registration Method [cite: 28]
     public boolean registerUser(String name, String email, String password, String phone, String address, String post, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -178,4 +180,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    // add food categories related methods below (delimiter for avoiding conflicts)
+
+    // add food items related methods below (delimiter for avoiding conflicts)
+
+    // add requests related methods below (delimiter for avoiding conflicts)
+
+    // add reminders related methods below (delimiter for avoiding conflicts)
+
+    // add methods that involves multiple tables below
+
 }
