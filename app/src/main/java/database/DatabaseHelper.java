@@ -13,6 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     public static final String TABLE_USERS = "users";
+    public static final String TABLE_FOOD_CATEGORIES = "food_categories";
     public static final String TABLE_FOOD_ITEMS = "food_items";
 
     // Common Columns
@@ -28,6 +29,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_USER_IMG_KEY = "image_key";
     public static final String COL_USER_TYPE = "user_type";
 
+    // food_categories (donation_categories in the ERD
+    public static final String COL_FOOD_CATEGORY_NAME = "name";
+
+    // food_items (donation_items in the ERD)
+    public static final String COL_FOOD_ITEM_NAME = "name";
+    public static final String COL_FOOD_ITEM_DONOR_ID = "donor_id";
+    public static final String COL_FOOD_ITEM_CATEGORY_ID = "category_id";
+    public static final String COL_FOOD_ITEM_QUANTITY = "quantity";
+    public static final String COL_FOOD_ITEM_EXPIRY_DATE = "expiry_date";
+    public static final String COL_FOOD_ITEM_AVAILABLE_FROM = "available_from";
+    public static final String COL_FOOD_ITEM_AVAILABLE_TO = "available_to";
+    public static final String COL_FOOD_ITEM_IS_FREE = "is_free";
+    public static final String COL_FOOD_ITEM_PRICE_CENTS = "price_cents";
+    public static final String COL_FOOD_ITEM_IS_PICKUP_AVAILABLE = "is_pickup_available";
+    public static final String COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE = "is_delivery_available";
+    public static final String COL_FOOD_ITEM_IMG_KEY = "image_key";
+    public static final String COL_FOOD_ITEM_ADDED_AT = "added_at";
+    public static final String COL_FOOD_ITEM_COMPLETED_AT = "completed_at";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +61,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_USER_EMAIL + " TEXT UNIQUE,"
                 + COL_USER_PASSWORD + " TEXT,"
                 + COL_USER_PHONE + " TEXT,"
-                + COL_USER_ADDRESS + " TEXT" + ")";
                 + COL_USER_ADDRESS + " TEXT,"
                 + COL_USER_POSTAL_CODE + " TEXT,"
                 + COL_USER_IMG_KEY + " TEXT,"
@@ -50,7 +68,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
+        String CREATE_FOOD_CATEGORIES_TABLE ="CREATE TABLE " + TABLE_FOOD_CATEGORIES + "("
+                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COL_FOOD_CATEGORY_NAME + " TEXT"
+                + ")";
+        db.execSQL(CREATE_FOOD_CATEGORIES_TABLE);
+
         // Note: You will add the FoodItems table here next [cite: 34]
+        String CREATE_FOOD_ITEMS_TABLE = "CREATE TABLE " + TABLE_FOOD_ITEMS + "("
+                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COL_FOOD_ITEM_NAME + " TEXT,"
+                + COL_FOOD_ITEM_DONOR_ID + " INTEGER,"
+                + COL_FOOD_ITEM_CATEGORY_ID + " INTEGER,"
+                + COL_FOOD_ITEM_QUANTITY + " TEXT,"
+                + COL_FOOD_ITEM_EXPIRY_DATE + " TEXT," // 'YYYY-MM-DD'
+                + COL_FOOD_ITEM_AVAILABLE_FROM + " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_AVAILABLE_TO +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_IS_FREE + " INTEGER," // 1: TRUE
+                + COL_FOOD_ITEM_PRICE_CENTS + " INTEGER," // cents
+                + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " INTEGER," // 1: TRUE
+                + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " INTEGER," // 1: TRUE
+                + COL_FOOD_ITEM_IMG_KEY + " TEXT,"
+                + COL_FOOD_ITEM_ADDED_AT +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_COMPLETED_AT + " INTEGER," // epoch seconds
+                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_FOOD_ITEM_CATEGORY_ID + ") REFERENCES " + TABLE_FOOD_CATEGORIES + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")";
+        db.execSQL(CREATE_FOOD_ITEMS_TABLE);
     }
 
     @Override
@@ -60,7 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Basic Registration Method [cite: 28]
-    public boolean registerUser(String name, String email, String password, String phone, String address) {
+    public boolean registerUser(String name, String email, String password, String phone, String address, String post, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
