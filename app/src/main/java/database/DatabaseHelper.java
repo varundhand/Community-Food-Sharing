@@ -24,6 +24,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_USER_PASSWORD = "password";
     public static final String COL_USER_PHONE = "phone";
     public static final String COL_USER_ADDRESS = "address";
+    public static final String COL_USER_POSTAL_CODE = "postal_code";
+    public static final String COL_USER_IMG_KEY = "image_key";
+    public static final String COL_USER_TYPE = "user_type";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,6 +43,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_USER_PASSWORD + " TEXT,"
                 + COL_USER_PHONE + " TEXT,"
                 + COL_USER_ADDRESS + " TEXT" + ")";
+                + COL_USER_ADDRESS + " TEXT,"
+                + COL_USER_POSTAL_CODE + " TEXT,"
+                + COL_USER_IMG_KEY + " TEXT,"
+                + COL_USER_TYPE + " CHAR(10)"
+                + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
         // Note: You will add the FoodItems table here next [cite: 34]
@@ -59,6 +68,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_PASSWORD, password);
         values.put(COL_USER_PHONE, phone);
         values.put(COL_USER_ADDRESS, address);
+        values.put(COL_USER_POSTAL_CODE, post);
+        values.put(COL_USER_TYPE, type);
 
         long result = db.insert(TABLE_USERS, null, values);
         return result != -1;
