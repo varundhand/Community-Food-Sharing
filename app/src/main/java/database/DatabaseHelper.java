@@ -83,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_USER_ADDRESS + " TEXT,"
                 + COL_USER_POSTAL_CODE + " TEXT,"
                 + COL_USER_IMG_KEY + " TEXT,"
-                + COL_USER_TYPE + " CHAR(10)"
+                + COL_USER_TYPE + " TEXT"
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
