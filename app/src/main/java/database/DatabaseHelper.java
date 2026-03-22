@@ -16,6 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_FOOD_CATEGORIES = "food_categories";
     public static final String TABLE_FOOD_ITEMS = "food_items";
     public static final String TABLE_REQUESTS = "requests";
+    public static final String TABLE_REMINDERS = "reminders";
 
     // Common Columns
     public static final String COL_ID = "id";
@@ -55,6 +56,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_REQUESTS_DUE = "due";
     public static final String COL_REQUESTS_STATUS = "status";
     public static final String COL_REQUESTS_REQUESTED_AT = "requested_at";
+
+    // reminders
+    public static final String COL_REMINDERS_USER_ID = "user_id";
+    public static final String COL_REMINDERS_REQUEST_ID = "request_id";
+    public static final String COL_REMINDERS_DISPLAY_FROM = "display_from";
+    public static final String COL_REMINDERS_READ_AT = "read_at";
+    public static final String COL_REMINDERS_TITLE = "title";
+    public static final String COL_REMINDERS_CONTENT = "content"; // "text" in the ERD
+    public static final String COL_REMINDERS_DEEPLINK_TEXT = "deeplink_text";
+    public static final String COL_REMINDERS_DEEPLINK = "deeplink";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -115,6 +126,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_REQUESTS_TABLE);
+
+        // reminders
+        String CREATE_REMINDERS_TABLE = "CREATE TABLE " + TABLE_REMINDERS + "("
+                + COL_REMINDERS_USER_ID + " INTEGER,"
+                + COL_REMINDERS_REQUEST_ID + " INTEGER,"
+                + COL_REMINDERS_DISPLAY_FROM + " INTEGER," // UNIX EPOCH
+                + COL_REMINDERS_READ_AT + " INTEGER," // UNIX EPOCH
+                + COL_REMINDERS_TITLE + " TEXT,"
+                + COL_REMINDERS_CONTENT + " TEXT,"
+                + COL_REMINDERS_DEEPLINK_TEXT + " TEXT,"
+                + COL_REMINDERS_DEEPLINK + " TEXT,"
+                + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")";
+        db.execSQL(CREATE_REMINDERS_TABLE);
     }
 
     @Override
