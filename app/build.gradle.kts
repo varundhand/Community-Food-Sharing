@@ -46,5 +46,5 @@ dependencies {
     // CircleImageView for the "optional profile photo" requirement
     implementation("de.hdodenhof:circleimageview:3.1.0")
     // Glide for image loading
-    implementation("github.com/bumptech/glide:glide:4.16.0")
+    implementation("com.github.bumptech.glide:glide:5.0.5")
 }
