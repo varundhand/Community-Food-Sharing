@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_USERS = "users";
     public static final String TABLE_FOOD_CATEGORIES = "food_categories";
     public static final String TABLE_FOOD_ITEMS = "food_items";
+    public static final String TABLE_REQUESTS = "requests";
 
     // Common Columns
     public static final String COL_ID = "id";
@@ -47,6 +48,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_FOOD_ITEM_IMG_KEY = "image_key";
     public static final String COL_FOOD_ITEM_ADDED_AT = "added_at";
     public static final String COL_FOOD_ITEM_COMPLETED_AT = "completed_at";
+
+    // requests
+    public static final String COL_REQUESTS_FOOD_ITEM_ID = "food_item_id";
+    public static final String COL_REQUESTS_RECIPIENT_ID = "recipient_id";
+    public static final String COL_REQUESTS_DUE = "due";
+    public static final String COL_REQUESTS_STATUS = "status";
+    public static final String COL_REQUESTS_REQUESTED_AT = "requested_at";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -95,6 +103,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + COL_FOOD_ITEM_CATEGORY_ID + ") REFERENCES " + TABLE_FOOD_CATEGORIES + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_FOOD_ITEMS_TABLE);
+
+        // requests table
+        String CREATE_REQUESTS_TABLE = "CREATE TABLE " + TABLE_REQUESTS + "("
+                + COL_REQUESTS_FOOD_ITEM_ID + " INTEGER,"
+                + COL_REQUESTS_RECIPIENT_ID + " INTEGER,"
+                + COL_REQUESTS_DUE + " INTEGER," // epoch seconds
+                + COL_REQUESTS_STATUS + " TEXT,"
+                + COL_REQUESTS_REQUESTED_AT + " INTEGER," // epoch seconds
+                + "FOREIGN KEY(" + COL_REQUESTS_FOOD_ITEM_ID + ") REFERENCES " + TABLE_FOOD_ITEMS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + ")";
+        db.execSQL(CREATE_REQUESTS_TABLE);
     }
 
     @Override
