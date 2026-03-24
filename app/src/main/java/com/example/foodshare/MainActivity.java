@@ -1,8 +1,6 @@
 package com.example.foodshare;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -12,7 +10,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import activities.WelcomeActivity;
-import database.UserSessionHelper;
+import database.AuthHelper;
 import models.UserSession;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        UserSession session = UserSessionHelper.getCurrent(this);
+        UserSession session = AuthHelper.getCurrentSession(this);
         if (session == null) {
             // Go welcome screen if the user is not logged in
             Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);

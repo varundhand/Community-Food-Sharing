@@ -19,5 +19,7 @@
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
+    <string name="register_toast_rd_not_selected">Please select Donor or Recipient</string>
+    <string name="register_toast_register_failed">Registration Failed</string>
 
 </resources>
