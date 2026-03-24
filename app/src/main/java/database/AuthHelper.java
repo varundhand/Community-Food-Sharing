@@ -7,14 +7,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import models.User;
+import models.UserRegistrationForm;
 import models.UserSession;
 
-public class UserSessionHelper {
+public class AuthHelper {
     final static String SHARED_PREF_KEY = "shared_pref_user_session";
     final static String SHARED_PREF_USER_ID = "user_id";
     final static String SHARED_PREF_LOGGED_IN_AT = "logged_in_at";
 
-    public static UserSession getCurrent(Context context) {
+    public static UserSession getCurrentSession(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt(SHARED_PREF_USER_ID, -1);
         long loggedInAt = sharedPreferences.getLong(SHARED_PREF_LOGGED_IN_AT, -1);
@@ -26,6 +28,10 @@ public class UserSessionHelper {
         Instant i = Instant.ofEpochSecond(loggedInAt);
         ZonedDateTime loggedInAtDateTime = ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
         return new UserSession(loggedInAtDateTime, userId);
+    }
+
+    public static User registerUserAndLogin(Context context, UserRegistrationForm form) {
+        return null;
     }
 
     public static UserSession login(Context context, int userId) {
