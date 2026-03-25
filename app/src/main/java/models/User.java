@@ -1,6 +1,7 @@
 package models;
 
 public class User {
+    private int id;
     private String name;
     private String email;
     private String phone;
@@ -8,7 +9,8 @@ public class User {
     private String postalCode;
     private UserType userType; // Donor/Recipient
 
-    public User(String name, String email, String phone, String address, String postalCode, UserType userType) {
+    public User(int id, String name, String email, String phone, String address, String postalCode, UserType userType) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -18,6 +20,8 @@ public class User {
     }
 
     // Right-click -> Generate -> Constructor / Getters / Setters
+
+    public int getId() { return id; }
 
     public String getName() {
         return name;

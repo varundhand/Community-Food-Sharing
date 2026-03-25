@@ -184,6 +184,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
         cursor.moveToFirst();
+        int id = cursor.getInt(cursor.getColumnIndex(COL_ID));
         String name = cursor.getString(cursor.getColumnIndex(COL_USER_NAME));
         email = cursor.getString(cursor.getColumnIndex(COL_USER_EMAIL));
         String phone = cursor.getString(cursor.getColumnIndex(COL_USER_PHONE));
@@ -193,7 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
         UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
-        return new User(name, email, phone, address, postalCode, userType);
+        return new User(id, name, email, phone, address, postalCode, userType);
     }
 
     // Basic Login Method [cite: 29]

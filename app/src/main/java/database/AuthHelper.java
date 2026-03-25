@@ -54,7 +54,12 @@ public class AuthHelper {
 
     public User login(String email, String password) {
         try (DatabaseHelper helper = new DatabaseHelper(context)) {
-            return helper.getUser(email, password);
+            User user =  helper.getUser(email, password);
+            if (login(user.getId()) != null) {
+                return user;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             return null;
         }
