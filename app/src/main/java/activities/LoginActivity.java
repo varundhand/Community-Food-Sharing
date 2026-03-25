@@ -43,13 +43,17 @@ public class LoginActivity extends AppCompatActivity {
         AuthHelper authHelper = new AuthHelper(this);
         User user = authHelper.login(email, password);
 
+        if (user == null) {
+            Toast.makeText(this, R.string.login_toast_login_failed, Toast.LENGTH_LONG).show();
+        }
+
         if (user.getUserType() == UserType.DONOR) {
             // TODO: Navigate to DONOR HOME
-            Toast.makeText(this, "registered as a donor", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "logged in as a donor", Toast.LENGTH_LONG).show();
         }
         else if (user.getUserType() == UserType.RECIPIENT) {
             // TODO: Navigate to RECIPIENT HOME
-            Toast.makeText(this, "registered as a recipient", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "logged in as a recipient", Toast.LENGTH_LONG).show();
         }
         else {}
     }

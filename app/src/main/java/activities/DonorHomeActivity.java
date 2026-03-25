@@ -1,7 +1,8 @@
-package com.example.foodshare;
+package activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,35 +10,28 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import activities.DonorHomeActivity;
-import activities.WelcomeActivity;
-import database.AuthHelper;
-import models.UserSession;
+import com.example.foodshare.R;
 
-public class MainActivity extends AppCompatActivity {
+import database.AuthHelper;
+
+public class DonorHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_donor_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        AuthHelper authHelper = new AuthHelper(this);
-        UserSession session = authHelper.getCurrentSession();
-        if (session == null) {
-            // Go welcome screen if the user is not logged in
-            Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
-            startActivity(intent);
-        } else {
-            // TODO: Recipient should go recipient home
-            Intent intent = new Intent(MainActivity.this, DonorHomeActivity.class);
-            startActivity(intent);
-        }
-
+    public void handleLogout(View view) {
+        AuthHelper helper = new AuthHelper(this);
+        helper.logout();
+        Intent intent = new Intent(DonorHomeActivity.this, WelcomeActivity.class);
+        startActivity(intent);
     }
 }
