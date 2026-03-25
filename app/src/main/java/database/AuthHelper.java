@@ -7,20 +7,28 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import models.User;
+import models.UserRegistrationForm;
 import models.UserSession;
 
-public class UserSessionHelper {
+public class AuthHelper {
     final static String SHARED_PREF_KEY = "shared_pref_user_session";
     final static String SHARED_PREF_USER_ID = "user_id";
     final static String SHARED_PREF_LOGGED_IN_AT = "logged_in_at";
 
-    public static UserSession getCurrent(Context context) {
+    Context context;
+
+    public AuthHelper(Context context) {
+        this.context = context;
+    }
+
+    public UserSession getCurrentSession() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt(SHARED_PREF_USER_ID, -1);
         long loggedInAt = sharedPreferences.getLong(SHARED_PREF_LOGGED_IN_AT, -1);
         if (userId == -1 || loggedInAt == -1) {
             // invalid record, log out and return null
-            logout(context);
+            logout();
             return null;
         }
         Instant i = Instant.ofEpochSecond(loggedInAt);
@@ -28,7 +36,36 @@ public class UserSessionHelper {
         return new UserSession(loggedInAtDateTime, userId);
     }
 
-    public static UserSession login(Context context, int userId) {
+    public boolean registerUser(UserRegistrationForm form) {
+        try (DatabaseHelper dbHelper = new DatabaseHelper(context)){
+            return dbHelper.registerUser(
+                    form.getName(),
+                    form.getEmail(),
+                    form.getPassword(),
+                    form.getPhone(),
+                    form.getPostalAddress(),
+                    form.getPostalCode(),
+                    form.getUserType()
+            );
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public User login(String email, String password) {
+        try (DatabaseHelper helper = new DatabaseHelper(context)) {
+            User user =  helper.getUser(email, password);
+            if (login(user.getId()) != null) {
+                return user;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public UserSession login(int userId) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Instant now = Instant.now();
@@ -40,7 +77,7 @@ public class UserSessionHelper {
         return new UserSession(ZonedDateTime.ofInstant(now, ZoneId.systemDefault()), userId);
     }
 
-    public static void logout(Context context) {
+    public void logout() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
