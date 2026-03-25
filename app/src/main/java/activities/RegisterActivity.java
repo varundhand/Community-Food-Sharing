@@ -70,12 +70,14 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        User user = AuthHelper.registerUserAndLogin(this, form);
-
-        if (user == null) {
+        AuthHelper authHelper = new AuthHelper(this);
+        boolean registered = authHelper.registerUser(form);
+        if (!registered) {
             Toast.makeText(this, R.string.register_toast_register_failed, Toast.LENGTH_LONG).show();
             return;
         }
+
+        User user = new User(); // TODO: login properly
 
         if (user.getUserType() == UserType.DONOR) {
             // TODO: Navigate to DONOR HOME

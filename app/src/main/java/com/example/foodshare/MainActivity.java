@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        UserSession session = AuthHelper.getCurrentSession(this);
+        AuthHelper authHelper = new AuthHelper(this);
+        UserSession session = authHelper.getCurrentSession();
         if (session == null) {
             // Go welcome screen if the user is not logged in
             Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
