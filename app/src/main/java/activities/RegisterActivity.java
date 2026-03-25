@@ -65,6 +65,11 @@ public class RegisterActivity extends AppCompatActivity {
         String postalAddress = inputPostalAddress.getText().toString();
 
         UserRegistrationForm form = new UserRegistrationForm(name, userType, email, password, phone, postalCode, postalAddress);
+        if (!form.isValid()) {
+            Toast.makeText(this, R.string.register_toast_invalid_form, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         User user = AuthHelper.registerUserAndLogin(this, form);
 
         if (user == null) {
