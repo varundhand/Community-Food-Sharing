@@ -22,6 +22,17 @@ public class AuthHelper {
         this.context = context;
     }
 
+    public User getCurrentUser() {
+        UserSession session = getCurrentSession();
+        int userId = session.getUserId();
+        try (DatabaseHelper dbHelper = new DatabaseHelper(context)) {
+            return dbHelper.getUser(userId);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
     public UserSession getCurrentSession() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt(SHARED_PREF_USER_ID, -1);
