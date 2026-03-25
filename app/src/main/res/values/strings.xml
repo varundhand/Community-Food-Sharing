@@ -11,6 +11,7 @@
     <string name="common_postal_code">Postal Code</string>
     <string name="common_postal_address">Postal Address</string>
     <string name="common_register">Register</string>
+    <string name="common_login">Login</string>
 
     <!-- Welcome Screen -->
     <string name="welcome_txt_welcome">Welcome!</string>

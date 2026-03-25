@@ -26,6 +26,11 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
+    public void handleClickLogin(View view) {
+        Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
     public void handleClickRegister(View view) {
         Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
         startActivity(intent);
