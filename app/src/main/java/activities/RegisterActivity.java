@@ -78,6 +78,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         User user = authHelper.login(email, password);
+        if (user == null) {
+            // Something unexpected
+            authHelper.logout(); // make sure the user is logged out
+            Toast.makeText(this, R.string.login_toast_login_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
 
         if (user.getUserType() == UserType.DONOR) {
             // TODO: Navigate to DONOR HOME

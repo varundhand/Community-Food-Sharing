@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (user == null) {
             Toast.makeText(this, R.string.login_toast_login_failed, Toast.LENGTH_LONG).show();
+            return;
         }
 
         if (user.getUserType() == UserType.DONOR) {
