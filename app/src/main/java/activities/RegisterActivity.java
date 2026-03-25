@@ -86,12 +86,16 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (user.getUserType() == UserType.DONOR) {
-            // TODO: Navigate to DONOR HOME
+            // Navigate to DONOR HOME
             Toast.makeText(this, "registered as a donor", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(RegisterActivity.this, DonorHomeActivity.class);
+            startActivity(intent);
         }
         else if (user.getUserType() == UserType.RECIPIENT) {
-            // TODO: Navigate to RECIPIENT HOME
+            // Navigate to RECIPIENT HOME
             Toast.makeText(this, "registered as a recipient", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(RegisterActivity.this, RecipientHomeActivity.class);
+            startActivity(intent);
         }
         else {}
 

@@ -1,5 +1,6 @@
 package activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -49,12 +50,16 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (user.getUserType() == UserType.DONOR) {
-            // TODO: Navigate to DONOR HOME
+            // Navigate to DONOR HOME
             Toast.makeText(this, "logged in as a donor", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(LoginActivity.this, DonorHomeActivity.class);
+            startActivity(intent);
         }
         else if (user.getUserType() == UserType.RECIPIENT) {
-            // TODO: Navigate to RECIPIENT HOME
+            // Navigate to RECIPIENT HOME
             Toast.makeText(this, "logged in as a recipient", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(LoginActivity.this, RecipientHomeActivity.class);
+            startActivity(intent);
         }
         else {}
     }
