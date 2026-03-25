@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import models.User;
+import models.UserType;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "FoodSharing.db";
@@ -157,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // users related methods (delimiter for avoiding conflicts)
 
     // Basic Registration Method [cite: 28]
-    public boolean registerUser(String name, String email, String password, String phone, String address, String post, String type) {
+    public boolean registerUser(String name, String email, String password, String phone, String address, String post, UserType type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
@@ -166,10 +169,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_PHONE, phone);
         values.put(COL_USER_ADDRESS, address);
         values.put(COL_USER_POSTAL_CODE, post);
-        values.put(COL_USER_TYPE, type);
+        values.put(COL_USER_TYPE, type.name());
 
         long result = db.insert(TABLE_USERS, null, values);
         return result != -1;
+    }
+
+    // getUser
+    public User getUser(String email, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});
+
+        if (cursor.getCount() != 1) {
+            return null;
+        }
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex(COL_USER_NAME));
+        email = cursor.getString(cursor.getColumnIndex(COL_USER_EMAIL));
+        String phone = cursor.getString(cursor.getColumnIndex(COL_USER_PHONE));
+        String postalCode = cursor.getString(cursor.getColumnIndex(COL_USER_POSTAL_CODE));
+        String address = cursor.getString(cursor.getColumnIndex(COL_USER_ADDRESS));
+        String imgKey = cursor.getString(cursor.getColumnIndex(COL_USER_IMG_KEY));
+        String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
+        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
+
+        return new User(name, email, phone, address, postalCode, userType);
     }
 
     // Basic Login Method [cite: 29]

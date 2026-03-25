@@ -77,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        User user = new User(); // TODO: login properly
+        User user = authHelper.login(email, password); // TODO: login properly
 
         if (user.getUserType() == UserType.DONOR) {
             // TODO: Navigate to DONOR HOME

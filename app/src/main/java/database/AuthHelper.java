@@ -53,7 +53,11 @@ public class AuthHelper {
     }
 
     public User login(String email, String password) {
-        return null;
+        try (DatabaseHelper helper = new DatabaseHelper(context)) {
+            return helper.getUser(email, password);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public UserSession login(int userId) {
