@@ -110,8 +110,16 @@
             android:id="@+id/btnUploadProfileImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="@string/register_btn_upload_img" />
+            android:layout_marginTop="20dp"
+            android:text="@string/register_btn_upload_img"
+            android:onClick="pickPhoto"/>
+
+        <TextView
+            android:id="@+id/txtSelectedPhotoUri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="" />
 
         <Button
             android:id="@+id/btnRegister"

@@ -1,14 +1,20 @@
 package activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,6 +31,9 @@ import models.UserType;
 public class RegisterActivity extends AppCompatActivity {
     RadioButton rdDonor, rdRecipient;
     EditText inputName, inputEmail, inputPassword, inputPhone, inputPostalCode, inputPostalAddress;
+    TextView txtSelectedPhotoUri;
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
+    Uri photoUri;
 //    Button btnUploadProfile;
 
     @Override
@@ -46,6 +55,23 @@ public class RegisterActivity extends AppCompatActivity {
         inputPhone = findViewById(R.id.inputPhone);
         inputPostalCode = findViewById(R.id.inputPostalCode);
         inputPostalAddress = findViewById(R.id.inputPostalAddress);
+        txtSelectedPhotoUri = findViewById(R.id.txtSelectedPhotoUri);
+
+        pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    if (uri != null) {
+                        photoUri = uri;
+                        txtSelectedPhotoUri.setText("Selected URI: " + uri);
+                    } else {
+                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
+    }
+
+    public void pickPhoto(View view) {
+        pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
     }
 
     public void handleRegister(View view) {
