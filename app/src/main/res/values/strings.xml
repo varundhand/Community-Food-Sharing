@@ -11,6 +11,8 @@
     <string name="common_postal_code">Postal Code</string>
     <string name="common_postal_address">Postal Address</string>
     <string name="common_register">Register</string>
+    <string name="common_login">Login</string>
+    <string name="common_logout">Logout</string>
 
     <!-- Welcome Screen -->
     <string name="welcome_txt_welcome">Welcome!</string>
@@ -23,4 +25,6 @@
     <string name="register_toast_register_failed">Registration Failed</string>
     <string name="register_toast_invalid_form">Please input valid values</string>
 
+    <!-- Login -->
+    <string name="login_toast_login_failed">Login Failed</string>
 </resources>
