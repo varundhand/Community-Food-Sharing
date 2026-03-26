@@ -175,7 +175,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // getUser
+    // getUser by userId
+    public User getUser(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + "=?", new String[]{String.format("%d", userId)});
+
+        if (cursor.getCount() != 1) {
+            return null;
+        }
+        cursor.moveToFirst();
+        int id = cursor.getInt(cursor.getColumnIndex(COL_ID));
+        String name = cursor.getString(cursor.getColumnIndex(COL_USER_NAME));
+        String email = cursor.getString(cursor.getColumnIndex(COL_USER_EMAIL));
+        String phone = cursor.getString(cursor.getColumnIndex(COL_USER_PHONE));
+        String postalCode = cursor.getString(cursor.getColumnIndex(COL_USER_POSTAL_CODE));
+        String address = cursor.getString(cursor.getColumnIndex(COL_USER_ADDRESS));
+        String imgKey = cursor.getString(cursor.getColumnIndex(COL_USER_IMG_KEY));
+        String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
+        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
+
+        return new User(id, name, email, phone, address, postalCode, userType);
+    }
+
+    // getUser by email and pass
     public User getUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});

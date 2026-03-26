@@ -12,13 +12,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
-public class WelcomeActivity extends AppCompatActivity {
+import database.AuthHelper;
+
+public class RecipientHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.activity_recipient_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -26,13 +28,10 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
-    public void handleClickLogin(View view) {
-        Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void handleClickRegister(View view) {
-        Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
+    public void handleLogout(View view) {
+        AuthHelper helper = new AuthHelper(this);
+        helper.logout();
+        Intent intent = new Intent(RecipientHomeActivity.this, WelcomeActivity.class);
         startActivity(intent);
     }
 }

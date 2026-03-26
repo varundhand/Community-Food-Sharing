@@ -22,6 +22,19 @@ public class AuthHelper {
         this.context = context;
     }
 
+    public User getCurrentUser() {
+        UserSession session = getCurrentSession();
+        if (session == null) {
+            return null;
+        }
+        int userId = session.getUserId();
+        try (DatabaseHelper dbHelper = new DatabaseHelper(context)) {
+            return dbHelper.getUser(userId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public UserSession getCurrentSession() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt(SHARED_PREF_USER_ID, -1);
@@ -37,7 +50,7 @@ public class AuthHelper {
     }
 
     public boolean registerUser(UserRegistrationForm form) {
-        try (DatabaseHelper dbHelper = new DatabaseHelper(context)){
+        try (DatabaseHelper dbHelper = new DatabaseHelper(context)) {
             return dbHelper.registerUser(
                     form.getName(),
                     form.getEmail(),
@@ -45,8 +58,7 @@ public class AuthHelper {
                     form.getPhone(),
                     form.getPostalAddress(),
                     form.getPostalCode(),
-                    form.getUserType()
-            );
+                    form.getUserType());
         } catch (Exception e) {
             return false;
         }
@@ -54,7 +66,7 @@ public class AuthHelper {
 
     public User login(String email, String password) {
         try (DatabaseHelper helper = new DatabaseHelper(context)) {
-            User user =  helper.getUser(email, password);
+            User user = helper.getUser(email, password);
             if (login(user.getId()) != null) {
                 return user;
             } else {
