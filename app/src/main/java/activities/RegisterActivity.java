@@ -27,6 +27,7 @@ import models.User;
 import models.UserRegistrationForm;
 import models.UserSession;
 import models.UserType;
+import utils.ImageServer;
 
 public class RegisterActivity extends AppCompatActivity {
     RadioButton rdDonor, rdRecipient;
@@ -83,6 +84,13 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        // Save image to local storage if uri is not empty
+        String imageKey = null;
+        if (photoUri != null) {
+            ImageServer imageServer = new ImageServer(this);
+            imageKey = imageServer.saveImage(photoUri);
+        }
+
         String name = inputName.getText().toString();
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
@@ -90,7 +98,8 @@ public class RegisterActivity extends AppCompatActivity {
         String postalCode = inputPostalCode.getText().toString();
         String postalAddress = inputPostalAddress.getText().toString();
 
-        UserRegistrationForm form = new UserRegistrationForm(name, userType, email, password, phone, postalCode, postalAddress);
+        UserRegistrationForm form = new UserRegistrationForm(name, userType,
+                email, password, phone, postalCode, postalAddress, imageKey);
         if (!form.isValid()) {
             Toast.makeText(this, R.string.register_toast_invalid_form, Toast.LENGTH_LONG).show();
             return;

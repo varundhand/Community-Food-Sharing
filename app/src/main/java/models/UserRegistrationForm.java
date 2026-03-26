@@ -6,9 +6,12 @@ import java.util.regex.Pattern;
 public class UserRegistrationForm {
     // Class for containing values and doing validations as necessary
     private final UserType userType;
-    private final String name, email, password, phone, postalCode, postalAddress;
+    private final String name, email, password, phone, postalCode, postalAddress, imageKey;
 
-    public UserRegistrationForm(String name, UserType usertype, String email, String password, String phone, String postalCode, String postalAddress) {
+    public UserRegistrationForm(String name, UserType usertype,
+                                String email, String password,
+                                String phone, String postalCode,
+                                String postalAddress, String imageKey) {
         this.name = name;
         this.userType = usertype;
         this.email = email;
@@ -16,6 +19,7 @@ public class UserRegistrationForm {
         this.phone = phone;
         this.postalCode = postalCode;
         this.postalAddress = postalAddress;
+        this.imageKey = imageKey;
     }
 
     public boolean isValid() {
