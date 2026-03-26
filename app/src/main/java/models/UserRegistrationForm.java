@@ -63,4 +63,6 @@ public class UserRegistrationForm {
     public String getPostalAddress() {
         return postalAddress;
     }
+
+    public String getImageKey() { return imageKey; }
 }

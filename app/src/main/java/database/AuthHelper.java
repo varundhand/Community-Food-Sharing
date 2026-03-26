@@ -58,7 +58,8 @@ public class AuthHelper {
                     form.getPhone(),
                     form.getPostalAddress(),
                     form.getPostalCode(),
-                    form.getUserType());
+                    form.getUserType(),
+                    form.getImageKey());
         } catch (Exception e) {
             return false;
         }

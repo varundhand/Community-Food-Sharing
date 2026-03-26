@@ -1,8 +1,11 @@
 package activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.foodshare.R;
 
 import database.AuthHelper;
+import models.User;
+import utils.ImageServer;
 
 public class DonorHomeActivity extends AppCompatActivity {
 
@@ -26,6 +31,25 @@ public class DonorHomeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        TextView donorName = findViewById(R.id.txtDonorName);
+        ImageView debugImage = findViewById(R.id.imgDebug);
+
+        AuthHelper authHelper = new AuthHelper(this);
+        User user = authHelper.getCurrentUser();
+        if (user != null) {
+            donorName.setText(user.getName());
+
+
+            // TODO: remove debug image
+            String imageKey = user.getImageKey();
+            if (imageKey != null) {
+                ImageServer imageServer = new ImageServer(this);
+                Bitmap bitmap = imageServer.loadImage(imageKey);
+                debugImage.setImageBitmap(bitmap);
+            }
+        }
+
     }
 
     public void handleLogout(View view) {

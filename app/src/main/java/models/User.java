@@ -8,8 +8,9 @@ public class User {
     private String address;
     private String postalCode;
     private UserType userType; // Donor/Recipient
+    private String imageKey;
 
-    public User(int id, String name, String email, String phone, String address, String postalCode, UserType userType) {
+    public User(int id, String name, String email, String phone, String address, String postalCode, UserType userType, String imageKey) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -17,6 +18,7 @@ public class User {
         this.address = address;
         this.postalCode = postalCode;
         this.userType = userType;
+        this.imageKey = imageKey;
     }
 
     // Right-click -> Generate -> Constructor / Getters / Setters
@@ -28,6 +30,8 @@ public class User {
     }
 
     public UserType getUserType() { return userType; }
+
+    public String getImageKey() { return imageKey; }
 
     public void setName(String name) {
         this.name = name;
