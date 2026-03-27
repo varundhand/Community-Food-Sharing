@@ -24,9 +24,15 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_marginTop="30dp"
             android:textSize="34sp"
-            android:text="@string/common_donor" />
+            android:text="@string/common_hello_comma" />
+        <TextView
+            android:id="@+id/txtDonorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:textSize="34sp" />
 
         <Button
             android:id="@+id/btnRegister"
@@ -35,6 +41,12 @@
             android:layout_margin="20dp"
             android:text="@string/common_logout"
             android:onClick="handleLogout"/>
+
+        <!-- TODO: remove the debug image below -->
+        <ImageView
+            android:id="@+id/imgDebug"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
