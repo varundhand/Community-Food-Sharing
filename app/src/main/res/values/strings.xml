@@ -28,4 +28,8 @@
 
     <!-- Login -->
     <string name="login_toast_login_failed">Login Failed</string>
+
+    <!-- Donor Home -->
+    <string name="donor_home_btn_new_food">Create a new donation</string>
+    <string name="donor_home_btn_list_food">View donation items</string>
 </resources>
