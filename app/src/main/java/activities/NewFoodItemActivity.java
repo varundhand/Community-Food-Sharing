@@ -1,5 +1,6 @@
 package activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,9 +25,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
 
+import database.AuthHelper;
+import database.DatabaseHelper;
 import models.FoodCategory;
+import models.User;
 import utils.ImageServer;
 
 public class NewFoodItemActivity extends AppCompatActivity {
@@ -119,8 +125,21 @@ public class NewFoodItemActivity extends AppCompatActivity {
             return;
         }
 
-        // Let's assume Expiry, availability can be null (N/A, or anytime)
+        // allow empty for expiry, availability
+        String expiry = inputExpiry.getText().toString();
+        long availableFrom;
+        try {
+            availableFrom = Instant.parse(inputAvailableFrom.getText().toString()).getEpochSecond();
+        } catch (Exception e) {
+            availableFrom = Long.MIN_VALUE;
+        }
 
+        long availableTo;
+        try {
+            availableTo = Instant.parse(inputAvailableTo.getText().toString()).getEpochSecond();
+        } catch (Exception e) {
+            availableTo = Long.MAX_VALUE;
+        }
         boolean isFree = rdFree.isChecked();
         boolean isDiscounted = rdDiscounted.isChecked();
         if (isFree == isDiscounted) {
@@ -138,14 +157,42 @@ public class NewFoodItemActivity extends AppCompatActivity {
                     return;
                 }
             } catch (Exception e) {
-                Toast.makeText(this, "Please enter valid price" + cents, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
+                return;
             }
         }
 
         boolean allowPickup = chkPickUp.isChecked();
         boolean allowDelivery = chkDelivery.isChecked();
 
-        Toast.makeText(this, "reached end", Toast.LENGTH_SHORT).show();
+        if (!allowPickup && !allowDelivery) {
+            Toast.makeText(this, "Please select Pick-Up and/or Delivery", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        String imageKey = null;
+        if (photoUri != null) {
+            ImageServer imageServer = new ImageServer(this);
+            imageKey = imageServer.saveImage(photoUri);
+        }
+
+        int currentUserId = new AuthHelper(this).getCurrentUser().getId();
+
+        try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
+            boolean success = dbHelper.saveFoodItem(currentUserId, foodName, categoryName, quantity,
+                    expiry, availableFrom, availableTo, isFree, cents, allowPickup,
+                    allowDelivery, imageKey);
+            if (success) {
+                Toast.makeText(this, "Food Item Created", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(NewFoodItemActivity.this, DonorHomeActivity.class);
+                startActivity(intent);
+            } else {
+                throw new IOException("DB save failed");
+            }
+        }
+        catch (Exception e) {
+            Log.d("NewFoodItemActivity.handleCreate", e.toString());
+            Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
+        }
     }
 }

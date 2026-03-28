@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.time.Instant;
+
 import models.User;
 import models.UserType;
 
@@ -217,9 +219,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    // add food categories related methods below (delimiter for avoiding conflicts)
-
     // add food items related methods below (delimiter for avoiding conflicts)
+
+    public boolean saveFoodItem(int donorId, String name, String category, String quantity,
+                                String expiry, long availableFrom, long availableTo, boolean isFree,
+                                int priceCents, boolean isPickupAvailable, boolean isDeliveryAvailable,
+                                String imageKey) {
+        // datetime is stored as epoch seconds
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_FOOD_ITEM_NAME, name);
+        values.put(COL_FOOD_ITEM_DONOR_ID, donorId);
+        values.put(COL_FOOD_ITEM_CATEGORY_NAME, category);
+        values.put(COL_FOOD_ITEM_QUANTITY, quantity);
+        values.put(COL_FOOD_ITEM_EXPIRY_DATE, expiry);
+        values.put(COL_FOOD_ITEM_AVAILABLE_FROM, availableFrom);
+        values.put(COL_FOOD_ITEM_AVAILABLE_TO, availableTo);
+        values.put(COL_FOOD_ITEM_IS_FREE, isFree);
+        values.put(COL_FOOD_ITEM_PRICE_CENTS, priceCents);
+        values.put(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE, isPickupAvailable);
+        values.put(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE, isDeliveryAvailable);
+        values.put(COL_FOOD_ITEM_IMG_KEY, imageKey);
+
+        Instant now = Instant.now();
+        long epochSecs = now.getEpochSecond(); // 4bits (sqlite integer can handle it)
+        values.put(COL_FOOD_ITEM_ADDED_AT, epochSecs);
+
+        long result = db.insert(TABLE_FOOD_ITEMS, null, values);
+        return result != -1;
+    }
 
     // add requests related methods below (delimiter for avoiding conflicts)
 
