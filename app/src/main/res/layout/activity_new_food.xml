@@ -89,14 +89,27 @@
             android:inputType="text"
             android:minHeight="48dp" />
 
-        <Button
-            android:id="@+id/btnUploadFoodImage"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/new_food_btn_upload_img"
-            android:onClick="pickPhoto"/>
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/imgUploadPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="50dp"
+                android:maxWidth="50dp"/>
+            <Button
+                android:id="@+id/btnUploadFoodImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/new_food_btn_upload_img"
+                android:onClick="pickPhoto"/>
 
+        </LinearLayout>
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
