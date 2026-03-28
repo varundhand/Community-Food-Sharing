@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -21,10 +24,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import java.math.BigDecimal;
+
 import models.FoodCategory;
 import utils.ImageServer;
 
 public class NewFoodItemActivity extends AppCompatActivity {
+    EditText inputName, inputQuantity, inputExpiry, inputAvailableFrom, inputAvailableTo, inputPrice;
+    RadioButton rdFree, rdDiscounted;
+    CheckBox chkPickUp, chkDelivery;
     Spinner spinnerCategory;
     ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
@@ -40,6 +48,19 @@ public class NewFoodItemActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        inputName = findViewById(R.id.inputFoodName);
+        inputQuantity = findViewById(R.id.inputFoodQuantity);
+        inputExpiry = findViewById(R.id.inputFoodExpiry);
+        inputAvailableFrom = findViewById(R.id.inputAvailableFrom);
+        inputAvailableTo = findViewById(R.id.inputAvailableTo);
+        inputPrice = findViewById(R.id.inputPrice);
+
+        rdFree = findViewById(R.id.rdFree);
+        rdDiscounted = findViewById(R.id.rdDiscounted);
+
+        chkPickUp = findViewById(R.id.chkPickup);
+        chkDelivery = findViewById(R.id.chkDelivery);
 
         spinnerCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
@@ -79,8 +100,52 @@ public class NewFoodItemActivity extends AppCompatActivity {
     }
 
     public void handleCreate(View view) {
-        // for debug for now
+        String foodName = inputName.getText().toString();
+        if (foodName.isEmpty()) {
+            Toast.makeText(this, "Please enter food name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         FoodCategory category = (FoodCategory) spinnerCategory.getSelectedItem();
-        Toast.makeText(this, "Selected Category: " + category.name(), Toast.LENGTH_SHORT).show();
+        if (category == FoodCategory.NOT_SELECTED) {
+            Toast.makeText(this, "Please Select a Category", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String categoryName = category.name();
+
+        String quantity = inputQuantity.getText().toString();
+        if (quantity.isEmpty()) {
+            Toast.makeText(this, "Please enter quantity", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Let's assume Expiry, availability can be null (N/A, or anytime)
+
+        boolean isFree = rdFree.isChecked();
+        boolean isDiscounted = rdDiscounted.isChecked();
+        if (isFree == isDiscounted) {
+            Toast.makeText(this, "Please check free/discounted", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int cents = 0;
+        if (isDiscounted) {
+            try {
+                BigDecimal decimal = new BigDecimal(inputPrice.getText().toString());
+                cents = decimal.multiply(new BigDecimal(100)).intValue();
+                if (cents == 0) {
+                    Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Please enter valid price" + cents, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        boolean allowPickup = chkPickUp.isChecked();
+        boolean allowDelivery = chkDelivery.isChecked();
+
+        Toast.makeText(this, "reached end", Toast.LENGTH_SHORT).show();
+
     }
 }
