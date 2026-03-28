@@ -160,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // users related methods (delimiter for avoiding conflicts)
 
     // Basic Registration Method [cite: 28]
-    public boolean registerUser(String name, String email, String password, String phone, String address, String post, UserType type) {
+    public boolean registerUser(String name, String email, String password, String phone, String address, String post, UserType type, String imageKey) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
@@ -170,6 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_ADDRESS, address);
         values.put(COL_USER_POSTAL_CODE, post);
         values.put(COL_USER_TYPE, type.name());
+        values.put(COL_USER_IMG_KEY, imageKey);
 
         long result = db.insert(TABLE_USERS, null, values);
         return result != -1;
@@ -194,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
         UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
-        return new User(id, name, email, phone, address, postalCode, userType);
+        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
     }
 
     // getUser by email and pass
@@ -216,7 +217,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
         UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
-        return new User(id, name, email, phone, address, postalCode, userType);
+        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
     }
 
     // Basic Login Method [cite: 29]

@@ -1,14 +1,20 @@
 package activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,10 +27,14 @@ import models.User;
 import models.UserRegistrationForm;
 import models.UserSession;
 import models.UserType;
+import utils.ImageServer;
 
 public class RegisterActivity extends AppCompatActivity {
     RadioButton rdDonor, rdRecipient;
     EditText inputName, inputEmail, inputPassword, inputPhone, inputPostalCode, inputPostalAddress;
+    TextView txtSelectedPhotoUri;
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
+    Uri photoUri;
 //    Button btnUploadProfile;
 
     @Override
@@ -46,6 +56,23 @@ public class RegisterActivity extends AppCompatActivity {
         inputPhone = findViewById(R.id.inputPhone);
         inputPostalCode = findViewById(R.id.inputPostalCode);
         inputPostalAddress = findViewById(R.id.inputPostalAddress);
+        txtSelectedPhotoUri = findViewById(R.id.txtSelectedPhotoUri);
+
+        pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    if (uri != null) {
+                        photoUri = uri;
+                        txtSelectedPhotoUri.setText("Selected URI: " + uri);
+                    } else {
+                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
+    }
+
+    public void pickPhoto(View view) {
+        pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
     }
 
     public void handleRegister(View view) {
@@ -57,6 +84,13 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        // Save image to local storage if uri is not empty
+        String imageKey = null;
+        if (photoUri != null) {
+            ImageServer imageServer = new ImageServer(this);
+            imageKey = imageServer.saveImage(photoUri);
+        }
+
         String name = inputName.getText().toString();
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
@@ -64,7 +98,8 @@ public class RegisterActivity extends AppCompatActivity {
         String postalCode = inputPostalCode.getText().toString();
         String postalAddress = inputPostalAddress.getText().toString();
 
-        UserRegistrationForm form = new UserRegistrationForm(name, userType, email, password, phone, postalCode, postalAddress);
+        UserRegistrationForm form = new UserRegistrationForm(name, userType,
+                email, password, phone, postalCode, postalAddress, imageKey);
         if (!form.isValid()) {
             Toast.makeText(this, R.string.register_toast_invalid_form, Toast.LENGTH_LONG).show();
             return;
