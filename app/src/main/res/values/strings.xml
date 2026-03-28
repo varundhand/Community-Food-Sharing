@@ -45,7 +45,7 @@
 
     <!-- Donor Home -->
     <string name="donor_home_btn_new_food">Create a new donation</string>
-    <string name="donor_home_btn_list_food">View donation items</string>
+    <string name="donor_home_btn_list_food_items">View donation items</string>
 
     <!-- New Food -->
     <string name="new_food_txt_title">New Donation</string>
