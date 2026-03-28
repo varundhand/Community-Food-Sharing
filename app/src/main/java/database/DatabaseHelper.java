@@ -7,7 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
+import models.FoodItem;
 import models.User;
 import models.UserType;
 
@@ -27,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Users Table Columns
     public static final String COL_USER_NAME = "name";
-    public static final String COL_USER_EMAIL = "email"; // Unique ID 
+    public static final String COL_USER_EMAIL = "email"; // Unique ID
     public static final String COL_USER_PASSWORD = "password";
     public static final String COL_USER_PHONE = "phone";
     public static final String COL_USER_ADDRESS = "address";
@@ -97,15 +101,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_FOOD_ITEM_QUANTITY + " TEXT,"
                 + COL_FOOD_ITEM_EXPIRY_DATE + " TEXT," // 'YYYY-MM-DD'
                 + COL_FOOD_ITEM_AVAILABLE_FROM + " INTEGER," // epoch seconds
-                + COL_FOOD_ITEM_AVAILABLE_TO +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_AVAILABLE_TO + " INTEGER," // epoch seconds
                 + COL_FOOD_ITEM_IS_FREE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_PRICE_CENTS + " INTEGER," // cents
                 + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_IMG_KEY + " TEXT,"
-                + COL_FOOD_ITEM_ADDED_AT +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_ADDED_AT + " INTEGER," // epoch seconds
                 + COL_FOOD_ITEM_COMPLETED_AT + " INTEGER," // epoch seconds
-                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_FOOD_ITEMS_TABLE);
 
@@ -116,8 +121,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_REQUESTS_DUE + " INTEGER," // epoch seconds
                 + COL_REQUESTS_STATUS + " TEXT,"
                 + COL_REQUESTS_REQUESTED_AT + " INTEGER," // epoch seconds
-                + "FOREIGN KEY(" + COL_REQUESTS_FOOD_ITEM_ID + ") REFERENCES " + TABLE_FOOD_ITEMS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_REQUESTS_FOOD_ITEM_ID + ") REFERENCES " + TABLE_FOOD_ITEMS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_REQUESTS_TABLE);
 
@@ -131,8 +138,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_REMINDERS_CONTENT + " TEXT,"
                 + COL_REMINDERS_DEEPLINK_TEXT + " TEXT,"
                 + COL_REMINDERS_DEEPLINK + " TEXT,"
-                + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_REMINDERS_TABLE);
     }
@@ -150,7 +159,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // users related methods (delimiter for avoiding conflicts)
 
     // Basic Registration Method [cite: 28]
-    public boolean registerUser(String name, String email, String password, String phone, String address, String post, UserType type, String imageKey) {
+    public boolean registerUser(String name, String email, String password, String phone, String address, String post,
+            UserType type, String imageKey) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
@@ -169,7 +179,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // getUser by userId
     public User getUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + "=?", new String[]{String.format("%d", userId)});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + "=?",
+                new String[] { String.format("%d", userId) });
 
         if (cursor.getCount() != 1) {
             return null;
@@ -191,7 +202,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // getUser by email and pass
     public User getUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?",
+                new String[] { email, password });
 
         if (cursor.getCount() != 1) {
             return null;
@@ -213,7 +226,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Basic Login Method [cite: 29]
     public boolean checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?",
+                new String[] { email, password });
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         return exists;
@@ -222,9 +237,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // add food items related methods below (delimiter for avoiding conflicts)
 
     public boolean saveFoodItem(int donorId, String name, String category, String quantity,
-                                String expiry, long availableFrom, long availableTo, boolean isFree,
-                                int priceCents, boolean isPickupAvailable, boolean isDeliveryAvailable,
-                                String imageKey) {
+            String expiry, Instant availableFrom, Instant availableTo, boolean isFree,
+            int priceCents, boolean isPickupAvailable, boolean isDeliveryAvailable,
+            String imageKey) {
         // datetime is stored as epoch seconds
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -233,8 +248,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_FOOD_ITEM_CATEGORY_NAME, category);
         values.put(COL_FOOD_ITEM_QUANTITY, quantity);
         values.put(COL_FOOD_ITEM_EXPIRY_DATE, expiry);
-        values.put(COL_FOOD_ITEM_AVAILABLE_FROM, availableFrom);
-        values.put(COL_FOOD_ITEM_AVAILABLE_TO, availableTo);
+        if (availableFrom != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_FROM, availableFrom.getEpochSecond());
+        }
+        if (availableFrom != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_TO, availableTo.getEpochSecond());
+        }
         values.put(COL_FOOD_ITEM_IS_FREE, isFree);
         values.put(COL_FOOD_ITEM_PRICE_CENTS, priceCents);
         values.put(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE, isPickupAvailable);
@@ -247,6 +266,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         long result = db.insert(TABLE_FOOD_ITEMS, null, values);
         return result != -1;
+    }
+
+    public ArrayList<FoodItem> listFoodItem(int donorId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_FOOD_ITEM_DONOR_ID + "=?",
+                new String[] { String.format("%d", donorId) });
+
+        ArrayList<FoodItem> results = new ArrayList<>();
+
+        if (cursor.getCount() == 0) {
+            return results;
+        }
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
+        int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
+        int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
+        int idAvailableFrom = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_FROM);
+        int idAvailableTo = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_TO);
+        int idIsFree = cursor.getColumnIndex(COL_FOOD_ITEM_IS_FREE);
+        int idPriceCents = cursor.getColumnIndex(COL_FOOD_ITEM_PRICE_CENTS);
+        int idPickUpAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE);
+        int idDeliveryAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE);
+        int idImageKey = cursor.getColumnIndex(COL_FOOD_ITEM_IMG_KEY);
+        int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
+        int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(idIndex);
+            String name = cursor.getString(idName);
+            String category = cursor.getString(idCategory);
+            String quantity = cursor.getString(idQuantity);
+            String expiry = cursor.getString(idExpiry);
+            long availableFromEpochSecs = cursor.getLong(idAvailableFrom);
+            long availableToEpochSecs = cursor.getLong(idAvailableTo);
+            boolean isFree = cursor.getInt(idIsFree) == 1;
+            int priceCents = cursor.getInt(idPriceCents);
+            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+            String imageKey = cursor.getString(idImageKey);
+            long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+            ZonedDateTime availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableFromEpochSecs),
+                    ZoneId.systemDefault());
+            ZonedDateTime availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableToEpochSecs),
+                    ZoneId.systemDefault());
+            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                    ZoneId.systemDefault());
+
+            ZonedDateTime completedAt;
+
+            try {
+                long completedAtEpochSecs = cursor.getLong(idCompletedAt); // it throws if the column is null, so we
+                                                                           // catch it and set completedAt to null
+                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(completedAtEpochSecs),
+                        ZoneId.systemDefault());
+            } catch (Exception e) {
+                completedAt = null;
+            }
+
+            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
+                    expiry, imageKey, availableFrom,
+                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+            results.add(foodItem);
+        }
+
+        return results;
+
     }
 
     // add requests related methods below (delimiter for avoiding conflicts)

@@ -127,18 +127,18 @@ public class NewFoodItemActivity extends AppCompatActivity {
 
         // allow empty for expiry, availability
         String expiry = inputExpiry.getText().toString();
-        long availableFrom;
+        Instant availableFrom;
         try {
-            availableFrom = Instant.parse(inputAvailableFrom.getText().toString()).getEpochSecond();
+            availableFrom = Instant.parse(inputAvailableFrom.getText().toString());
         } catch (Exception e) {
-            availableFrom = Long.MIN_VALUE;
+            availableFrom = null;
         }
 
-        long availableTo;
+        Instant availableTo;
         try {
-            availableTo = Instant.parse(inputAvailableTo.getText().toString()).getEpochSecond();
+            availableTo = Instant.parse(inputAvailableTo.getText().toString());
         } catch (Exception e) {
-            availableTo = Long.MAX_VALUE;
+            availableTo = null;
         }
         boolean isFree = rdFree.isChecked();
         boolean isDiscounted = rdDiscounted.isChecked();
