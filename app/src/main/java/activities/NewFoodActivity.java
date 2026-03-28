@@ -5,7 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,10 +21,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import models.FoodCategory;
 import utils.ImageServer;
 
 public class NewFoodActivity extends AppCompatActivity {
-    ImageView imgUploadCandidate;
+    Spinner spinnerCategory;
+    ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     Uri photoUri;
 
@@ -35,7 +40,13 @@ public class NewFoodActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        imgUploadCandidate = findViewById(R.id.imgUploadPreview);
+
+        spinnerCategory = findViewById(R.id.spinnerFoodCategory);
+        imgUploadPreview = findViewById(R.id.imgUploadPreview);
+
+        // spinner from enum
+        // reference: https://stackoverflow.com/a/8619228
+        spinnerCategory.setAdapter(new ArrayAdapter<FoodCategory>(this, android.R.layout.simple_spinner_item, FoodCategory.values()));
 
         pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -49,12 +60,12 @@ public class NewFoodActivity extends AppCompatActivity {
 
                             // clear image view
                             // reference: https://stackoverflow.com/a/8243184
-                            imgUploadCandidate.setImageResource(0);
+                            imgUploadPreview.setImageResource(0);
                             return;
                         }
 
                         // valid image
-                        imgUploadCandidate.setImageBitmap(bitmap);
+                        imgUploadPreview.setImageBitmap(bitmap);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
                     }
@@ -65,5 +76,11 @@ public class NewFoodActivity extends AppCompatActivity {
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                 .build());
+    }
+
+    public void handleCreate(View view) {
+        // for debug for now
+        FoodCategory category = (FoodCategory) spinnerCategory.getSelectedItem();
+        Toast.makeText(this, "Selected Category: " + category.name(), Toast.LENGTH_SHORT).show();
     }
 }

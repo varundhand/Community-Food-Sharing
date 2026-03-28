@@ -16,7 +16,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     public static final String TABLE_USERS = "users";
-    public static final String TABLE_FOOD_CATEGORIES = "food_categories";
     public static final String TABLE_FOOD_ITEMS = "food_items";
     public static final String TABLE_REQUESTS = "requests";
     public static final String TABLE_REMINDERS = "reminders";
@@ -34,13 +33,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_USER_IMG_KEY = "image_key";
     public static final String COL_USER_TYPE = "user_type";
 
-    // food_categories (donation_categories in the ERD
-    public static final String COL_FOOD_CATEGORY_NAME = "name";
-
     // food_items (donation_items in the ERD)
     public static final String COL_FOOD_ITEM_NAME = "name";
     public static final String COL_FOOD_ITEM_DONOR_ID = "donor_id";
-    public static final String COL_FOOD_ITEM_CATEGORY_ID = "category_id";
+    public static final String COL_FOOD_ITEM_CATEGORY_NAME = "category_name"; // enum name
     public static final String COL_FOOD_ITEM_QUANTITY = "quantity";
     public static final String COL_FOOD_ITEM_EXPIRY_DATE = "expiry_date";
     public static final String COL_FOOD_ITEM_AVAILABLE_FROM = "available_from";
@@ -90,18 +86,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
-        String CREATE_FOOD_CATEGORIES_TABLE ="CREATE TABLE " + TABLE_FOOD_CATEGORIES + "("
-                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COL_FOOD_CATEGORY_NAME + " TEXT"
-                + ")";
-        db.execSQL(CREATE_FOOD_CATEGORIES_TABLE);
-
         // Note: You will add the FoodItems table here next [cite: 34]
         String CREATE_FOOD_ITEMS_TABLE = "CREATE TABLE " + TABLE_FOOD_ITEMS + "("
                 + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COL_FOOD_ITEM_NAME + " TEXT,"
                 + COL_FOOD_ITEM_DONOR_ID + " INTEGER,"
-                + COL_FOOD_ITEM_CATEGORY_ID + " INTEGER,"
+                + COL_FOOD_ITEM_CATEGORY_NAME + " TEXT,"
                 + COL_FOOD_ITEM_QUANTITY + " TEXT,"
                 + COL_FOOD_ITEM_EXPIRY_DATE + " TEXT," // 'YYYY-MM-DD'
                 + COL_FOOD_ITEM_AVAILABLE_FROM + " INTEGER," // epoch seconds
@@ -113,8 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_FOOD_ITEM_IMG_KEY + " TEXT,"
                 + COL_FOOD_ITEM_ADDED_AT +  " INTEGER," // epoch seconds
                 + COL_FOOD_ITEM_COMPLETED_AT + " INTEGER," // epoch seconds
-                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_FOOD_ITEM_CATEGORY_ID + ") REFERENCES " + TABLE_FOOD_CATEGORIES + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_FOOD_ITEMS_TABLE);
 
@@ -149,7 +138,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOOD_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOOD_ITEMS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REQUESTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REMINDERS);
