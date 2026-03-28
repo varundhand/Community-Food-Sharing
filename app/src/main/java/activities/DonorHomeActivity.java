@@ -53,7 +53,7 @@ public class DonorHomeActivity extends AppCompatActivity {
     }
 
     public void handleNewFood(View view) {
-        Intent intent = new Intent(DonorHomeActivity.this, NewFoodActivity.class);
+        Intent intent = new Intent(DonorHomeActivity.this, NewFoodItemActivity.class);
         startActivity(intent);
     }
 
