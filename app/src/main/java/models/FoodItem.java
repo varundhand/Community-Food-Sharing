@@ -60,4 +60,16 @@ public class FoodItem {
     public boolean isDeliveryAvailable() { return isDeliveryAvailable; }
 
     public int getPriceCents() { return priceCents; }
+
+    private boolean isAvailable() {
+        ZonedDateTime now = ZonedDateTime.now();
+        boolean isAfter = availableFrom == null || now.isAfter(availableFrom);
+        boolean isBefore = availableTo == null || now.isBefore(availableTo);
+
+        return isAfter && isBefore;
+    }
+
+    public boolean isActive() {
+        return completedAt == null && isAvailable();
+    }
 }
