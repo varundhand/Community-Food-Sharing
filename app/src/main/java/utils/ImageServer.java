@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,5 +75,15 @@ public class ImageServer {
             }
         }
         return null;
+    }
+
+    // reference
+    // https://stackoverflow.com/a/4717740
+    public Bitmap loadImage(Uri uri) {
+        try {
+            return MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

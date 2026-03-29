@@ -6,6 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+
+import models.FoodItem;
 import models.User;
 import models.UserType;
 
@@ -16,7 +22,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Table Names
     public static final String TABLE_USERS = "users";
-    public static final String TABLE_FOOD_CATEGORIES = "food_categories";
     public static final String TABLE_FOOD_ITEMS = "food_items";
     public static final String TABLE_REQUESTS = "requests";
     public static final String TABLE_REMINDERS = "reminders";
@@ -26,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Users Table Columns
     public static final String COL_USER_NAME = "name";
-    public static final String COL_USER_EMAIL = "email"; // Unique ID 
+    public static final String COL_USER_EMAIL = "email"; // Unique ID
     public static final String COL_USER_PASSWORD = "password";
     public static final String COL_USER_PHONE = "phone";
     public static final String COL_USER_ADDRESS = "address";
@@ -34,13 +39,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_USER_IMG_KEY = "image_key";
     public static final String COL_USER_TYPE = "user_type";
 
-    // food_categories (donation_categories in the ERD
-    public static final String COL_FOOD_CATEGORY_NAME = "name";
-
     // food_items (donation_items in the ERD)
     public static final String COL_FOOD_ITEM_NAME = "name";
     public static final String COL_FOOD_ITEM_DONOR_ID = "donor_id";
-    public static final String COL_FOOD_ITEM_CATEGORY_ID = "category_id";
+    public static final String COL_FOOD_ITEM_CATEGORY_NAME = "category_name"; // enum name
     public static final String COL_FOOD_ITEM_QUANTITY = "quantity";
     public static final String COL_FOOD_ITEM_EXPIRY_DATE = "expiry_date";
     public static final String COL_FOOD_ITEM_AVAILABLE_FROM = "available_from";
@@ -90,31 +92,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
-        String CREATE_FOOD_CATEGORIES_TABLE ="CREATE TABLE " + TABLE_FOOD_CATEGORIES + "("
-                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COL_FOOD_CATEGORY_NAME + " TEXT"
-                + ")";
-        db.execSQL(CREATE_FOOD_CATEGORIES_TABLE);
-
         // Note: You will add the FoodItems table here next [cite: 34]
         String CREATE_FOOD_ITEMS_TABLE = "CREATE TABLE " + TABLE_FOOD_ITEMS + "("
                 + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COL_FOOD_ITEM_NAME + " TEXT,"
                 + COL_FOOD_ITEM_DONOR_ID + " INTEGER,"
-                + COL_FOOD_ITEM_CATEGORY_ID + " INTEGER,"
+                + COL_FOOD_ITEM_CATEGORY_NAME + " TEXT,"
                 + COL_FOOD_ITEM_QUANTITY + " TEXT,"
                 + COL_FOOD_ITEM_EXPIRY_DATE + " TEXT," // 'YYYY-MM-DD'
                 + COL_FOOD_ITEM_AVAILABLE_FROM + " INTEGER," // epoch seconds
-                + COL_FOOD_ITEM_AVAILABLE_TO +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_AVAILABLE_TO + " INTEGER," // epoch seconds
                 + COL_FOOD_ITEM_IS_FREE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_PRICE_CENTS + " INTEGER," // cents
                 + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " INTEGER," // 1: TRUE
                 + COL_FOOD_ITEM_IMG_KEY + " TEXT,"
-                + COL_FOOD_ITEM_ADDED_AT +  " INTEGER," // epoch seconds
+                + COL_FOOD_ITEM_ADDED_AT + " INTEGER," // epoch seconds
                 + COL_FOOD_ITEM_COMPLETED_AT + " INTEGER," // epoch seconds
-                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_FOOD_ITEM_CATEGORY_ID + ") REFERENCES " + TABLE_FOOD_CATEGORIES + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_FOOD_ITEM_DONOR_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_FOOD_ITEMS_TABLE);
 
@@ -125,8 +121,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_REQUESTS_DUE + " INTEGER," // epoch seconds
                 + COL_REQUESTS_STATUS + " TEXT,"
                 + COL_REQUESTS_REQUESTED_AT + " INTEGER," // epoch seconds
-                + "FOREIGN KEY(" + COL_REQUESTS_FOOD_ITEM_ID + ") REFERENCES " + TABLE_FOOD_ITEMS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_REQUESTS_FOOD_ITEM_ID + ") REFERENCES " + TABLE_FOOD_ITEMS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REQUESTS_RECIPIENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_REQUESTS_TABLE);
 
@@ -140,8 +138,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_REMINDERS_CONTENT + " TEXT,"
                 + COL_REMINDERS_DEEPLINK_TEXT + " TEXT,"
                 + COL_REMINDERS_DEEPLINK + " TEXT,"
-                + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-                + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
+                + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE,"
+                + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID
+                + ") ON DELETE CASCADE ON UPDATE CASCADE"
                 + ")";
         db.execSQL(CREATE_REMINDERS_TABLE);
     }
@@ -149,7 +149,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOOD_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOOD_ITEMS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REQUESTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REMINDERS);
@@ -160,7 +159,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // users related methods (delimiter for avoiding conflicts)
 
     // Basic Registration Method [cite: 28]
-    public boolean registerUser(String name, String email, String password, String phone, String address, String post, UserType type, String imageKey) {
+    public boolean registerUser(String name, String email, String password, String phone, String address, String post,
+            UserType type, String imageKey) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
@@ -179,7 +179,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // getUser by userId
     public User getUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + "=?", new String[]{String.format("%d", userId)});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + "=?",
+                new String[] { String.format("%d", userId) });
 
         if (cursor.getCount() != 1) {
             return null;
@@ -201,7 +202,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // getUser by email and pass
     public User getUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?",
+                new String[] { email, password });
 
         if (cursor.getCount() != 1) {
             return null;
@@ -223,15 +226,116 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Basic Login Method [cite: 29]
     public boolean checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?", new String[]{email, password});
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USERS + " WHERE " + COL_USER_EMAIL + "=? AND " + COL_USER_PASSWORD + "=?",
+                new String[] { email, password });
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         return exists;
     }
 
-    // add food categories related methods below (delimiter for avoiding conflicts)
-
     // add food items related methods below (delimiter for avoiding conflicts)
+
+    public boolean saveFoodItem(int donorId, String name, String category, String quantity,
+            String expiry, Instant availableFrom, Instant availableTo, boolean isFree,
+            int priceCents, boolean isPickupAvailable, boolean isDeliveryAvailable,
+            String imageKey) {
+        // datetime is stored as epoch seconds
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_FOOD_ITEM_NAME, name);
+        values.put(COL_FOOD_ITEM_DONOR_ID, donorId);
+        values.put(COL_FOOD_ITEM_CATEGORY_NAME, category);
+        values.put(COL_FOOD_ITEM_QUANTITY, quantity);
+        values.put(COL_FOOD_ITEM_EXPIRY_DATE, expiry);
+        if (availableFrom != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_FROM, availableFrom.getEpochSecond());
+        }
+        if (availableFrom != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_TO, availableTo.getEpochSecond());
+        }
+        values.put(COL_FOOD_ITEM_IS_FREE, isFree);
+        values.put(COL_FOOD_ITEM_PRICE_CENTS, priceCents);
+        values.put(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE, isPickupAvailable);
+        values.put(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE, isDeliveryAvailable);
+        values.put(COL_FOOD_ITEM_IMG_KEY, imageKey);
+
+        Instant now = Instant.now();
+        long epochSecs = now.getEpochSecond(); // 4bits (sqlite integer can handle it)
+        values.put(COL_FOOD_ITEM_ADDED_AT, epochSecs);
+
+        long result = db.insert(TABLE_FOOD_ITEMS, null, values);
+        return result != -1;
+    }
+
+    public ArrayList<FoodItem> listFoodItem(int donorId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_FOOD_ITEM_DONOR_ID + "=?",
+                new String[] { String.format("%d", donorId) });
+
+        ArrayList<FoodItem> results = new ArrayList<>();
+
+        if (cursor.getCount() == 0) {
+            return results;
+        }
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
+        int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
+        int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
+        int idAvailableFrom = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_FROM);
+        int idAvailableTo = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_TO);
+        int idIsFree = cursor.getColumnIndex(COL_FOOD_ITEM_IS_FREE);
+        int idPriceCents = cursor.getColumnIndex(COL_FOOD_ITEM_PRICE_CENTS);
+        int idPickUpAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE);
+        int idDeliveryAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE);
+        int idImageKey = cursor.getColumnIndex(COL_FOOD_ITEM_IMG_KEY);
+        int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
+        int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(idIndex);
+            String name = cursor.getString(idName);
+            String category = cursor.getString(idCategory);
+            String quantity = cursor.getString(idQuantity);
+            String expiry = cursor.getString(idExpiry);
+            long availableFromEpochSecs = cursor.getLong(idAvailableFrom);
+            long availableToEpochSecs = cursor.getLong(idAvailableTo);
+            boolean isFree = cursor.getInt(idIsFree) == 1;
+            int priceCents = cursor.getInt(idPriceCents);
+            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+            String imageKey = cursor.getString(idImageKey);
+            long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+            ZonedDateTime availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableFromEpochSecs),
+                    ZoneId.systemDefault());
+            ZonedDateTime availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableToEpochSecs),
+                    ZoneId.systemDefault());
+            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                    ZoneId.systemDefault());
+
+            ZonedDateTime completedAt;
+
+            try {
+                long completedAtEpochSecs = cursor.getLong(idCompletedAt); // it throws if the column is null, so we
+                                                                           // catch it and set completedAt to null
+                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(completedAtEpochSecs),
+                        ZoneId.systemDefault());
+            } catch (Exception e) {
+                completedAt = null;
+            }
+
+            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
+                    expiry, imageKey, availableFrom,
+                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+            results.add(foodItem);
+        }
+
+        return results;
+
+    }
 
     // add requests related methods below (delimiter for avoiding conflicts)
 

@@ -33,9 +33,22 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:textSize="34sp" />
-
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnViewFoodItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/donor_home_btn_list_food_items"
+            android:onClick="handleViewFoodItems"/>
+        <Button
+            android:id="@+id/btnNewFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/donor_home_btn_new_food"
+            android:onClick="handleNewFood"/>
+        <Button
+            android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
