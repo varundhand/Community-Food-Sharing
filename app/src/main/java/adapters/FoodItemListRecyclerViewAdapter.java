@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodshare.R;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import models.FoodItem;
@@ -45,6 +46,11 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
         boolean isActive = item.isActive();
         holder.txtActive.setText(isActive ? "Active" : "Completed");
         holder.txtFoodName.setText(item.getName());
+
+        // format ZonedDateTime
+        // reference: https://www.baeldung.com/java-format-zoned-datetime-string#date_to_string-1
+        // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         holder.txtAddedAt.setText("Added at: " + item.getAddedAt());
     }
 
