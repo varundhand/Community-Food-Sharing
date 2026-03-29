@@ -1,5 +1,6 @@
 package adapters;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.example.foodshare.R;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import activities.EditFoodItemActivity;
 import models.FoodItem;
 import utils.ImageServer;
 
@@ -52,6 +54,15 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
         // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         holder.txtAddedAt.setText("Added at: " + item.getAddedAt());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(holder.itemView.getContext(), EditFoodItemActivity.class);
+                intent.putExtra("FoodItemId", item.getId());
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

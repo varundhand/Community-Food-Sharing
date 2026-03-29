@@ -45,6 +45,8 @@ public class DonorFoodItemListActivity extends AppCompatActivity {
             FoodItemListRecyclerViewAdapter adapter = new FoodItemListRecyclerViewAdapter(foodItems);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
         };
     }
 }
