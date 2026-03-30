@@ -1,5 +1,6 @@
 package activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -64,9 +66,6 @@ public class EditFoodItemActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             int foodItemId = extras.getInt("FoodItemId");
-            // Debug
-            Toast.makeText(this, "food id: " + foodItemId, Toast.LENGTH_SHORT).show();
-
             DatabaseHelper dbHelper = new DatabaseHelper(this);
             item = dbHelper.getFoodItem(foodItemId);
         }
@@ -266,5 +265,28 @@ public class EditFoodItemActivity extends AppCompatActivity {
             Log.d("NewFoodItemActivity.handleSave", e.toString());
             Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
             }
+    }
+
+    public void handleDelete(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                try (DatabaseHelper dbHelper = new DatabaseHelper(EditFoodItemActivity.this)) {
+                    boolean result = dbHelper.deleteFoodItem(item.getId());
+                    if (result) {
+                        Toast.makeText(EditFoodItemActivity.this, "Item deleted", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(EditFoodItemActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        builder.setMessage("Delete?");
+        builder.show();
     }
 }

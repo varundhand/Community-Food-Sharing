@@ -304,6 +304,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean deleteFoodItem(int foodItemId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_FOOD_ITEMS, COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
+        return result == 1;
+    }
+
     public FoodItem getFoodItem(int foodItemId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
