@@ -309,19 +309,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String imageKey = cursor.getString(idImageKey);
             long addedAtEpochSecs = cursor.getLong(idAddedAt);
 
-            ZonedDateTime availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableFromEpochSecs),
-                    ZoneId.systemDefault());
-            ZonedDateTime availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(availableToEpochSecs),
-                    ZoneId.systemDefault());
+            ZonedDateTime availableFrom;
+            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+            else
+                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
+                        ZoneId.systemDefault());
+
+            ZonedDateTime availableTo;
+            if (cursor.isNull(idAvailableTo)) availableTo = null;
+            else
+                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
+                        ZoneId.systemDefault());
+
+            // Not null
             ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
                     ZoneId.systemDefault());
 
             ZonedDateTime completedAt;
-
-            try {
-                long completedAtEpochSecs = cursor.getLong(idCompletedAt); // it throws if the column is null, so we
-                                                                           // catch it and set completedAt to null
-                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(completedAtEpochSecs),
+            if (cursor.isNull(idCompletedAt)) completedAt = null;
+            else
+                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
                         ZoneId.systemDefault());
             } catch (Exception e) {
                 completedAt = null;
