@@ -22,6 +22,7 @@
     <string name="common_available_to">Available To</string>
     <string name="common_free">Free</string>
     <string name="common_discounted_price">Discounted Price</string>
+    <string name="common_dollar_prefix">$</string>
     <string name="common_price">Price</string>
     <string name="common_pick_up">Pick Up</string>
     <string name="common_delivery">Delivery</string>
