@@ -268,6 +268,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public FoodItem getFoodItem(int foodItemId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
+
+        if (cursor.getCount() != 1) {
+            return null;
+        }
+        cursor.moveToFirst();
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idDonorId = cursor.getColumnIndex(COL_FOOD_ITEM_DONOR_ID);
+        int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
+        int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
+        int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
+        int idAvailableFrom = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_FROM);
+        int idAvailableTo = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_TO);
+        int idIsFree = cursor.getColumnIndex(COL_FOOD_ITEM_IS_FREE);
+        int idPriceCents = cursor.getColumnIndex(COL_FOOD_ITEM_PRICE_CENTS);
+        int idPickUpAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE);
+        int idDeliveryAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE);
+        int idImageKey = cursor.getColumnIndex(COL_FOOD_ITEM_IMG_KEY);
+        int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
+        int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
+
+        int id = cursor.getInt(idIndex);
+        String name = cursor.getString(idName);
+        int donorId = cursor.getInt(idDonorId);
+        String category = cursor.getString(idCategory);
+        String quantity = cursor.getString(idQuantity);
+        String expiry = cursor.getString(idExpiry);
+
+        boolean isFree = cursor.getInt(idIsFree) == 1;
+        int priceCents = cursor.getInt(idPriceCents);
+        boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+        boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+        String imageKey = cursor.getString(idImageKey);
+        long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+        ZonedDateTime availableFrom;
+        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+        else
+            availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
+                    ZoneId.systemDefault());
+
+        ZonedDateTime availableTo;
+        if (cursor.isNull(idAvailableTo)) availableTo = null;
+        else
+            availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
+                    ZoneId.systemDefault());
+
+        // Not null
+        ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                ZoneId.systemDefault());
+
+        ZonedDateTime completedAt;
+        if (cursor.isNull(idCompletedAt)) completedAt = null;
+        else
+            completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
+                    ZoneId.systemDefault());
+
+        return new FoodItem(id, donorId, name, category, quantity,
+                expiry, imageKey, availableFrom,
+                availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+    }
+
     public ArrayList<FoodItem> listFoodItem(int donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_FOOD_ITEM_DONOR_ID + "=?",
@@ -330,9 +397,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             else
                 completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
                         ZoneId.systemDefault());
-            } catch (Exception e) {
-                completedAt = null;
-            }
 
             FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
                     expiry, imageKey, availableFrom,

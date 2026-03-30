@@ -53,6 +53,6 @@
     <string name="new_food_btn_upload_img">Upload Food Image</string>
 
     <!-- Edit Food -->
-    <string name="edit_food_txt_title">Edit Donation</string>
+    <string name="edit_food_txt_title">View/Edit Donation</string>
     <string name="edit_food_btn_upload_img">Change Food Image</string>
 </resources>

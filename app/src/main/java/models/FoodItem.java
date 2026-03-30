@@ -1,5 +1,6 @@
 package models;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 public class FoodItem {
@@ -39,6 +40,8 @@ public class FoodItem {
 
     public String getCategory() { return category; }
 
+    public FoodCategory getFoodCategory() { return FoodCategory.valueOf(category); }
+
     public String getQuantity() { return quantity; }
 
     public String getExpiry() { return expiry; }
@@ -60,6 +63,10 @@ public class FoodItem {
     public boolean isDeliveryAvailable() { return isDeliveryAvailable; }
 
     public int getPriceCents() { return priceCents; }
+
+    public BigDecimal getPriceDollar() {
+        return BigDecimal.valueOf(getPriceCents()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_EVEN);
+    }
 
     private boolean isAvailable() {
         ZonedDateTime now = ZonedDateTime.now();

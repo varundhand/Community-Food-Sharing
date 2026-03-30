@@ -134,16 +134,27 @@
                     android:layout_height="wrap_content"
                     android:text="@string/common_discounted_price" />
             </RadioGroup>
-            <EditText
-                android:id="@+id/inputPrice"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
+                android:orientation="horizontal"
                 android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_price"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp" />
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/common_dollar_prefix"
+                    android:textSize="18sp"/>
+                <EditText
+                    android:id="@+id/inputPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/common_price"
+                    android:inputType="numberDecimal"
+                    android:minHeight="48dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
