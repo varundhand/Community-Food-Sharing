@@ -25,8 +25,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
+import database.AuthHelper;
 import database.DatabaseHelper;
 import models.FoodCategory;
 import models.FoodItem;
@@ -167,5 +172,99 @@ public class EditFoodItemActivity extends AppCompatActivity {
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                 .build());
+    }
+
+    public void handleSave(View view) {
+        String foodName = inputName.getText().toString();
+        if (foodName.isEmpty()) {
+            Toast.makeText(this, "Please enter food name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        FoodCategory category = (FoodCategory) spinnerCategory.getSelectedItem();
+        if (category == FoodCategory.NOT_SELECTED) {
+            Toast.makeText(this, "Please Select a Category", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String categoryName = category.name();
+
+        String quantity = inputQuantity.getText().toString();
+        if (quantity.isEmpty()) {
+            Toast.makeText(this, "Please enter quantity", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // allow empty for expiry, availability
+        String expiry = inputExpiry.getText().toString();
+        ZonedDateTime availableFrom;
+        try {
+            Instant instant = Instant.parse(inputAvailableFrom.getText().toString());
+            availableFrom = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        } catch (Exception e) {
+            availableFrom = null;
+        }
+
+        ZonedDateTime availableTo;
+        try {
+            Instant instant = Instant.parse(inputAvailableFrom.getText().toString());
+            availableTo = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        } catch (Exception e) {
+            availableTo = null;
+        }
+        boolean isFree = rdFree.isChecked();
+        boolean isDiscounted = rdDiscounted.isChecked();
+        if (isFree == isDiscounted) {
+            Toast.makeText(this, "Please check free/discounted", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int cents = 0;
+        if (isDiscounted) {
+            try {
+                BigDecimal decimal = new BigDecimal(inputPrice.getText().toString());
+                cents = decimal.multiply(new BigDecimal(100)).intValue();
+                if (cents == 0) {
+                    Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        boolean isPickUpAvailable = chkPickUp.isChecked();
+        boolean isDeliveryAvailable = chkDelivery.isChecked();
+
+        if (!isPickUpAvailable && !isDeliveryAvailable) {
+            Toast.makeText(this, "Please select Pick-Up and/or Delivery", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String imageKey = item.getImageKey();
+        if (photoUri != null) {
+            ImageServer imageServer = new ImageServer(this);
+            imageKey = imageServer.saveImage(photoUri);
+        }
+
+        FoodItem updatedItem = new FoodItem(item.getId(), item.getDonorId(), foodName,
+                categoryName, quantity, expiry, imageKey, availableFrom, availableTo,
+                item.getAddedAt(), item.getCompletedAt(), isFree, isPickUpAvailable,
+                isDeliveryAvailable, cents);
+
+        try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
+            boolean success = dbHelper.saveFoodItem(updatedItem);
+            if (success) {
+                Toast.makeText(this, "Food Item Updated", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
+                startActivity(intent);
+            } else {
+                throw new IOException("DB save failed");
+            }
+        }
+        catch (Exception e) {
+            Log.d("NewFoodItemActivity.handleSave", e.toString());
+            Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
+            }
     }
 }

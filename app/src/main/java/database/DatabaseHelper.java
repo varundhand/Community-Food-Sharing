@@ -268,6 +268,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean saveFoodItem(FoodItem item) {
+        if (item == null) return false;
+        if (item.getId() <= 0) return false;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // update all fields for simplicity
+        values.put(COL_FOOD_ITEM_NAME, item.getName());
+        values.put(COL_FOOD_ITEM_DONOR_ID, item.getDonorId());
+        values.put(COL_FOOD_ITEM_CATEGORY_NAME, item.getCategory());
+        values.put(COL_FOOD_ITEM_QUANTITY, item.getQuantity());
+        values.put(COL_FOOD_ITEM_EXPIRY_DATE, item.getExpiry());
+        if (item.getAvailableFrom() != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_FROM, item.getAvailableFrom().toInstant().getEpochSecond());
+        } else {
+            // nullify if the value is not provided
+            values.putNull(COL_FOOD_ITEM_AVAILABLE_FROM);
+        }
+        if (item.getAvailableTo() != null) {
+            values.put(COL_FOOD_ITEM_AVAILABLE_TO, item.getAvailableTo().toInstant().getEpochSecond());
+        }
+        values.put(COL_FOOD_ITEM_IS_FREE, item.isFree() ? 1 : 0);
+        values.put(COL_FOOD_ITEM_PRICE_CENTS, item.getPriceCents());
+        values.put(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE, item.isPickupAvailable() ? 1 : 0);
+        values.put(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE, item.isDeliveryAvailable() ? 1 : 0);
+        values.put(COL_FOOD_ITEM_IMG_KEY, item.getImageKey());
+
+        Instant now = Instant.now();
+        long epochSecs = now.getEpochSecond(); // 4bits (sqlite integer can handle it)
+        values.put(COL_FOOD_ITEM_ADDED_AT, epochSecs);
+
+        long result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?", new String[]{ String.valueOf(item.getId()) });
+        return result != -1;
+    }
+
     public FoodItem getFoodItem(int foodItemId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
