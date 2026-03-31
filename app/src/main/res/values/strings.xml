@@ -55,4 +55,10 @@
     <!-- Edit Food -->
     <string name="edit_food_txt_title">View/Edit Donation</string>
     <string name="edit_food_btn_upload_img">Change Food Image</string>
+
+    <!-- Recipient Home -->
+    <string name="recipient_home_btn_nearby">Nearby Donations</string>
+
+    <!-- Nearby Food Items -->
+    <string name="nearby_food_txt_nearby">Nearby Donations based on your Postal Code</string>
 </resources>
