@@ -2,6 +2,7 @@ package models;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FoodItem {
     int id, donorId;
@@ -78,5 +79,28 @@ public class FoodItem {
 
     public boolean isActive() {
         return completedAt == null && isAvailable();
+    }
+
+    private String formatZonedDateTime(ZonedDateTime date) {
+        if (date == null) return "Not specified";
+        // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
+    }
+
+    public String getFormattedAvailableFrom() {
+        return formatZonedDateTime(availableFrom);
+    }
+
+    public String getFormattedAvailableTo() {
+        return formatZonedDateTime(availableTo);
+    }
+
+    public String getFormattedAddedAt() {
+        return formatZonedDateTime(addedAt);
+    }
+
+    public String getFormattedCompletedAt() {
+        return formatZonedDateTime(completedAt);
     }
 }

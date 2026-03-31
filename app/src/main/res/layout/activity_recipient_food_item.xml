@@ -59,20 +59,139 @@
                     android:textSize="24sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodCategory"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_category"/>
+                <TextView
+                    android:id="@+id/txtFoodCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodQuantity"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_quantity"/>
+                <TextView
+                    android:id="@+id/txtFoodQuantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodExpiry"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_expiry_date"/>
+                <TextView
+                    android:id="@+id/txtFoodExpiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodAvailableFrom"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_available_from"/>
+                <TextView
+                    android:id="@+id/txtFoodAvailableFrom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodAvailableTo"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_available_to"/>
+                <TextView
+                    android:id="@+id/txtFoodAvailableTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtFoodAvailableType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="20sp" />
+
             <Button
                 android:id="@+id/btnRequest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/recipient_food_detail_request_item"
-                android:onClick="handleSave"/>
+                android:text="@string/recipient_food_detail_request_item" />
 
             <TextView
-                android:id="@+id/txtFoodName"
+                android:id="@+id/txtDonorSection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
                 android:text="@string/common_donor"/>
+            <TextView
+                android:id="@+id/txtDonorName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
 
         </LinearLayout>
     </ScrollView>
