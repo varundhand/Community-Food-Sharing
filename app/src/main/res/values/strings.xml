@@ -31,18 +31,22 @@
     <string name="common_delete">Delete</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_txt_welcome">Welcome!</string>
+    <string name="welcome_txt_title">Welcome to\nFoodShare!</string>
     <string name="welcome_btn_login">Login</string>
     <string name="welcome_btn_register">Register</string>
+    <string name="welcome_txt_welcome_message">Share Food. Eliminate Waste.\nConnect with the Community!</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
     <string name="register_toast_rd_not_selected">Please select Donor or Recipient</string>
     <string name="register_toast_register_failed">Registration Failed</string>
     <string name="register_toast_invalid_form">Please input valid values</string>
+    <string name="register_txt_title">Create Account</string>
 
     <!-- Login -->
     <string name="login_toast_login_failed">Login Failed</string>
+    <string name="login_txt_welcome">Welcome Back!</string>
+    <string name="login_txt_message">Sign into FoodShare</string>
 
     <!-- Donor Home -->
     <string name="donor_home_btn_new_food">Create a new donation</string>

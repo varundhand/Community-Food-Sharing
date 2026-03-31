@@ -20,6 +20,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/registerTxtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:text="@string/register_txt_title" />
+
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
