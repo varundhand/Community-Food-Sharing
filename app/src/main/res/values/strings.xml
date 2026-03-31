@@ -29,6 +29,7 @@
     <string name="common_create">Create</string>
     <string name="common_update">Update</string>
     <string name="common_delete">Delete</string>
+    <string name="common_request">Request</string>
 
     <!-- Welcome Screen -->
     <string name="welcome_txt_welcome">Welcome!</string>
@@ -61,4 +62,8 @@
 
     <!-- Nearby Food Items -->
     <string name="nearby_food_txt_nearby">Nearby Donations based on your Postal Code</string>
+
+    <!-- Recipient Food Detail -->
+    <string name="recipient_food_detail_title">Donation Detail</string>
+    <string name="recipient_food_detail_request_item">Request This Item</string>
 </resources>

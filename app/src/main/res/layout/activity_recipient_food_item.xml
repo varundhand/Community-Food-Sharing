@@ -6,5 +6,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="activities.RecipientFoodItemActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="34sp"
+                android:text="@string/recipient_food_detail_title"/>
+
+            <ImageView
+                android:id="@+id/imgFoodItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="200dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="5dp"
+                android:gravity="start">
+                <TextView
+                    android:id="@+id/lblFoodName"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textSize="20sp"
+                    android:text="@string/common_food_name"/>
+                <TextView
+                    android:id="@+id/txtFoodName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="left"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/recipient_food_detail_request_item"
+                android:onClick="handleSave"/>
+
+            <TextView
+                android:id="@+id/txtFoodName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:text="@string/common_donor"/>
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
