@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodShare">
         <activity
+            android:name="activities.RecipientFoodItemActivity"
+            android:exported="false" />
+        <activity
+            android:name="activities.RecipientNearbyFoodItemActivity"
+            android:exported="false" />
+        <activity
             android:name="activities.EditFoodItemActivity"
             android:exported="false" />
         <activity

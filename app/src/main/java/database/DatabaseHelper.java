@@ -450,6 +450,84 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<FoodItem> listNearbyFoodItems(String postalCode) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Search Food that are posted by donors who has the same first 3 digits of postalCode
+        Cursor cursor = db.rawQuery("SELECT " + TABLE_FOOD_ITEMS + ".* FROM " + TABLE_FOOD_ITEMS +
+                        " JOIN " + TABLE_USERS +
+                        " ON " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = " + TABLE_USERS + "." + COL_ID +
+                        " WHERE " + TABLE_USERS + "." +COL_USER_TYPE + "=? AND " + TABLE_USERS + "." +COL_USER_POSTAL_CODE + " LIKE ?",
+                new String[] { UserType.DONOR.name(), postalCode.substring(0, 3) + "%" });
+
+        ArrayList<FoodItem> results = new ArrayList<>();
+
+        if (cursor.getCount() == 0) {
+            return results;
+        }
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idDonorId = cursor.getColumnIndex(COL_FOOD_ITEM_DONOR_ID);
+        int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
+        int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
+        int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
+        int idAvailableFrom = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_FROM);
+        int idAvailableTo = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_TO);
+        int idIsFree = cursor.getColumnIndex(COL_FOOD_ITEM_IS_FREE);
+        int idPriceCents = cursor.getColumnIndex(COL_FOOD_ITEM_PRICE_CENTS);
+        int idPickUpAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE);
+        int idDeliveryAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE);
+        int idImageKey = cursor.getColumnIndex(COL_FOOD_ITEM_IMG_KEY);
+        int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
+        int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(idIndex);
+            int donorId = cursor.getInt(idDonorId);
+            String name = cursor.getString(idName);
+            String category = cursor.getString(idCategory);
+            String quantity = cursor.getString(idQuantity);
+            String expiry = cursor.getString(idExpiry);
+            boolean isFree = cursor.getInt(idIsFree) == 1;
+            int priceCents = cursor.getInt(idPriceCents);
+            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+            String imageKey = cursor.getString(idImageKey);
+            long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+            ZonedDateTime availableFrom;
+            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+            else
+                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
+                        ZoneId.systemDefault());
+
+            ZonedDateTime availableTo;
+            if (cursor.isNull(idAvailableTo)) availableTo = null;
+            else
+                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
+                        ZoneId.systemDefault());
+
+            // Not null
+            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                    ZoneId.systemDefault());
+
+            ZonedDateTime completedAt;
+            if (cursor.isNull(idCompletedAt)) completedAt = null;
+            else
+                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
+                        ZoneId.systemDefault());
+
+            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
+                    expiry, imageKey, availableFrom,
+                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+            results.add(foodItem);
+        }
+
+        return results;
+
+    }
+
     // add requests related methods below (delimiter for avoiding conflicts)
 
     // add reminders related methods below (delimiter for avoiding conflicts)
