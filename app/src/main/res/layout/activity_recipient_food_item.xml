@@ -179,7 +179,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/recipient_food_detail_request_item" />
+                android:text="@string/recipient_food_detail_request_item"
+                android:onClick="handleRequest"/>
 
         <LinearLayout
             android:layout_width="match_parent"

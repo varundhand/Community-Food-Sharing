@@ -1,14 +1,18 @@
 package activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -16,19 +20,34 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import java.time.Instant;
+import java.util.ArrayList;
+
+import database.AuthHelper;
 import database.DatabaseHelper;
 import models.FoodItem;
+import models.Request;
+import models.RequestStatus;
 import models.User;
 import utils.ImageServer;
 
 public class RecipientFoodItemActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
+    AuthHelper authHelper;
+
+    User currentUser;
+
     FoodItem item;
     User donor;
+    ArrayList<Request> requests;
+
     // Food
     ImageView imgFoodItem;
     TextView txtFoodName, txtFoodCategory, txtFoodQuantity, txtFoodExpiry, txtFoodAvailableFrom,
             txtFoodAvailableTo, txtFoodAvailableType;
+
+    // Requests
+    Button btnRequest;
     // Donor
     ImageView imgDonor;
     TextView txtDonorName, txtDonorPhone, txtDonorPostalAddress, txtDonorPostalCode;
@@ -59,6 +78,10 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
             return;
         }
 
+        authHelper = new AuthHelper(this);
+        currentUser = authHelper.getCurrentUser();
+
+        fetchPendingRequests();
         donor = dbHelper.getUser(item.getDonorId());
 
         // FoodItem
@@ -89,6 +112,13 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         // Issue #35. pick up and delivery options are exclusive each other
         txtFoodAvailableType.setText(item.isPickupAvailable() ? "Available by Pick-Up" : "Available by delivery");
 
+        // Requests
+        btnRequest = findViewById(R.id.btnRequest);
+        if (requests != null && !requests.isEmpty()) {
+            // disable button
+            disableRequest();
+        }
+
         // donor
         imgDonor = findViewById(R.id.imgDonor);
         txtDonorName = findViewById(R.id.txtDonorName);
@@ -115,5 +145,47 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         } else {
             Log.d("PhotoPicker", "No media selected");
         }
+    }
+
+    private void fetchPendingRequests() {
+        Log.d("RecipientFoodItemActivity.fetchPendingReqs", "item id: " + item.getId() + ", recipient id: " + currentUser.getId());
+        requests = dbHelper.getRequests(item.getId(), currentUser.getId(), Instant.now(), RequestStatus.PENDING);
+    }
+
+    private void disableRequest() {
+        btnRequest.setText("Request Pending");
+        btnRequest.setEnabled(false);
+    }
+
+    public void handleRequest(View view) {
+        fetchPendingRequests();
+        if (requests != null && !requests.isEmpty()) {
+            Toast.makeText(RecipientFoodItemActivity.this, "You have already requested this item", Toast.LENGTH_SHORT);
+            disableRequest();
+            return;
+        }
+        Log.d("RecipientFoodItemActivity.handleRequest", requests.toString());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Instant due = item.getAvailableTo() == null
+                        ? Instant.now().plusSeconds(60 * 60 * 24 * 3) // three days
+                        : item.getAvailableTo().toInstant();
+                boolean success = dbHelper.createRequest(item.getId(), currentUser.getId(), due, RequestStatus.PENDING, null);
+                if (success) {
+                    Toast.makeText(RecipientFoodItemActivity.this, "Request Created", Toast.LENGTH_SHORT);
+                    Intent intent = new Intent(RecipientFoodItemActivity.this, RecipientHomeActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(RecipientFoodItemActivity.this, "Failed to create a request", Toast.LENGTH_SHORT);
+                }
+            }
+        });
+        builder.setCancelable(true);
+        builder.setNegativeButton("Cancel", null);
+        builder.setMessage("You are going to request this item.");
+        builder.show();
     }
 }
