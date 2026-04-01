@@ -31,12 +31,6 @@
     <string name="common_delete">Delete</string>
     <string name="common_request">Request</string>
 
-    <!-- Welcome Screen -->
-    <string name="welcome_txt_title">Welcome to\nFoodShare!</string>
-    <string name="welcome_btn_login">Login</string>
-    <string name="welcome_btn_register">Register</string>
-    <string name="welcome_txt_welcome_message">Share Food. Eliminate Waste.\nConnect with the Community!</string>
-
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
     <string name="register_toast_rd_not_selected">Please select Donor or Recipient</string>

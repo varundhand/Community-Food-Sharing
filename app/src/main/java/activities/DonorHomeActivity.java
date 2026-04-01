@@ -65,7 +65,7 @@ public class DonorHomeActivity extends AppCompatActivity {
     public void handleLogout(View view) {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();
-        Intent intent = new Intent(DonorHomeActivity.this, WelcomeActivity.class);
+        Intent intent = new Intent(DonorHomeActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 }
