@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="20dp"
-            android:text="@string/welcome_btn_register"
+            android:text="@string/common_register"
             android:onClick="handleClickRegister"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
