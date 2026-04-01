@@ -12,6 +12,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import models.FoodItem;
+import models.Request;
+import models.RequestStatus;
 import models.User;
 import models.UserType;
 
@@ -116,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // requests table
         String CREATE_REQUESTS_TABLE = "CREATE TABLE " + TABLE_REQUESTS + "("
+                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COL_REQUESTS_FOOD_ITEM_ID + " INTEGER,"
                 + COL_REQUESTS_RECIPIENT_ID + " INTEGER,"
                 + COL_REQUESTS_DUE + " INTEGER," // epoch seconds
@@ -529,6 +532,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // add requests related methods below (delimiter for avoiding conflicts)
+    public boolean createRequest(int foodItemId, int recipientId, Instant due, RequestStatus status, Instant requestedAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_REQUESTS_FOOD_ITEM_ID, foodItemId);
+        values.put(COL_REQUESTS_RECIPIENT_ID, recipientId);
+        if (due != null) {
+            values.put(COL_REQUESTS_DUE, due.getEpochSecond());
+        }
+        values.put(COL_REQUESTS_STATUS, status.name());
+
+        if (requestedAt != null) {
+            values.put(COL_REQUESTS_REQUESTED_AT, requestedAt.getEpochSecond());
+        } else {
+            Instant now = Instant.now();
+            values.put(COL_REQUESTS_REQUESTED_AT, now.getEpochSecond());
+        }
+
+        long result = db.insert(TABLE_REQUESTS, null, values);
+        return result == 1;
+    }
+
+    public ArrayList<Request> getRequests(int foodItemId, int recipientId, Instant dueAfter, RequestStatus status) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_REQUESTS +
+                        " WHERE " + COL_REQUESTS_FOOD_ITEM_ID + " = ?" +
+                        " AND " + COL_REQUESTS_RECIPIENT_ID + " = ?" +
+                        " AND " + COL_REQUESTS_DUE + " > ?" +
+                        " AND " + COL_REQUESTS_STATUS + " = ?",
+                new String[]{
+                        String.valueOf(foodItemId),
+                        String.valueOf(recipientId),
+                        String.valueOf(dueAfter.getEpochSecond()),
+                        status.name()
+                });
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idFoodItemId = cursor.getColumnIndex(COL_REQUESTS_FOOD_ITEM_ID);
+        int idRecipientId = cursor.getColumnIndex(COL_REQUESTS_RECIPIENT_ID);
+        int idDue = cursor.getColumnIndex(COL_REQUESTS_DUE);
+        int idStatus = cursor.getColumnIndex(COL_REQUESTS_STATUS);
+        int idRequestedAt = cursor.getColumnIndex(COL_REQUESTS_REQUESTED_AT);
+
+        ArrayList<Request> ret = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(idIndex);
+            int retFoodItemId = cursor.getInt(idFoodItemId);
+            int retRecipientId = cursor.getInt(idRecipientId);
+            ZonedDateTime due = null;
+            if (!cursor.isNull(idDue)) {
+                Instant dueInstant = Instant.ofEpochSecond(cursor.getLong(idDue));
+                due = ZonedDateTime.ofInstant(dueInstant, ZoneId.systemDefault());
+            }
+            String statusStr = cursor.getString(idStatus);
+            RequestStatus retStatus = RequestStatus.valueOf(statusStr);
+            ZonedDateTime requestedAt = null;
+            if (!cursor.isNull(idRequestedAt)) {
+                Instant requestedAtInstant = Instant.ofEpochSecond(cursor.getLong(idRequestedAt));
+                requestedAt = ZonedDateTime.ofInstant(requestedAtInstant, ZoneId.systemDefault());
+            }
+
+            ret.add(new Request(id, retFoodItemId, retRecipientId, due, retStatus, requestedAt));
+        }
+        return ret;
+    }
 
     // add reminders related methods below (delimiter for avoiding conflicts)
 
