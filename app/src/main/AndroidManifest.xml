@@ -49,13 +49,6 @@
         <activity
             android:name="activities.RegisterActivity"
             android:exported="false" />
-        <activity
-            android:name="activities.WelcomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-        </activity>
 
     </application>
 
