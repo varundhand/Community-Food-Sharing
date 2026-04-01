@@ -181,17 +181,53 @@
                 android:layout_marginTop="20dp"
                 android:text="@string/recipient_food_detail_request_item" />
 
-            <TextView
-                android:id="@+id/txtDonorSection"
-                android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginVertical="5dp"
+            android:gravity="start">
+            <ImageView
+                android:id="@+id/imgDonor"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:text="@string/common_donor"/>
-            <TextView
-                android:id="@+id/txtDonorName"
-                android:layout_width="wrap_content"
+                android:layout_margin="10dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="200dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp" />
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txtDonorSection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp"
+                    android:text="@string/common_donor"/>
+                <TextView
+                    android:id="@+id/txtDonorName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/txtDonorPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/txtDonorPostalAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/txtDonorPostalCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

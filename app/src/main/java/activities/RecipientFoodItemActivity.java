@@ -16,8 +16,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
-import java.time.format.DateTimeFormatter;
-
 import database.DatabaseHelper;
 import models.FoodItem;
 import models.User;
@@ -32,7 +30,8 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
     TextView txtFoodName, txtFoodCategory, txtFoodQuantity, txtFoodExpiry, txtFoodAvailableFrom,
             txtFoodAvailableTo, txtFoodAvailableType;
     // Donor
-    TextView txtDonorName;
+    ImageView imgDonor;
+    TextView txtDonorName, txtDonorPhone, txtDonorPostalAddress, txtDonorPostalCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +71,12 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         txtFoodAvailableTo = findViewById(R.id.txtFoodAvailableTo);
         txtFoodAvailableType = findViewById(R.id.txtFoodAvailableType);
 
-        // donor
-        txtDonorName = findViewById(R.id.txtDonorName);
+        // Set values to Food Item
+        String foodItemImageFile = item.getImageKey();
 
-        String imgFilename = item.getImageKey();
-
-        if (imgFilename != null && !imgFilename.isEmpty()) {
-            setPreviewPhoto(imgFilename);
+        if (foodItemImageFile != null && !foodItemImageFile.isEmpty()) {
+            setPhoto(foodItemImageFile, imgFoodItem);
         }
-
 
         txtFoodName.setText(item.getName());
         txtFoodCategory.setText(item.getFoodCategory().toString());
@@ -93,14 +89,29 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         // Issue #35. pick up and delivery options are exclusive each other
         txtFoodAvailableType.setText(item.isPickupAvailable() ? "Available by Pick-Up" : "Available by delivery");
 
+        // donor
+        imgDonor = findViewById(R.id.imgDonor);
+        txtDonorName = findViewById(R.id.txtDonorName);
+        txtDonorPhone = findViewById(R.id.txtDonorPhone);
+        txtDonorPostalAddress = findViewById(R.id.txtDonorPostalAddress);
+        txtDonorPostalCode = findViewById(R.id.txtDonorPostalCode);
+
+        // donor set values
+        String donorImageFile = donor.getImageKey();
+        if (donorImageFile != null && !donorImageFile.isEmpty()) {
+            setPhoto(donorImageFile, imgDonor);
+        }
         txtDonorName.setText(donor.getName());
+        txtDonorPhone.setText(donor.getPhone());
+        txtDonorPostalAddress.setText(donor.getPostalAddress());
+        txtDonorPostalCode.setText(donor.getPostalCode());
     }
 
-    private void setPreviewPhoto(String filename) {
+    private void setPhoto(String filename, ImageView imgView) {
         if (filename != null) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
-            imgFoodItem.setImageBitmap(bitmap);
+            imgView.setImageBitmap(bitmap);
         } else {
             Log.d("PhotoPicker", "No media selected");
         }

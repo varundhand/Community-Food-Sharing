@@ -33,6 +33,10 @@ public class User {
 
     public String getImageKey() { return imageKey; }
 
+    public String getPhone() { return phone; }
+
+    public String getPostalAddress() { return address; }
+
     public String getPostalCode() { return postalCode; }
 
     public void setName(String name) {
