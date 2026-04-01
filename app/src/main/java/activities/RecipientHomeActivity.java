@@ -36,7 +36,7 @@ public class RecipientHomeActivity extends AppCompatActivity {
     public void handleLogout(View view) {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();
-        Intent intent = new Intent(RecipientHomeActivity.this, WelcomeActivity.class);
+        Intent intent = new Intent(RecipientHomeActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 }

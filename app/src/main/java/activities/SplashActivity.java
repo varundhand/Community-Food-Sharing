@@ -13,6 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.foodshare.R;
 
+import database.AuthHelper;
+import models.User;
+import models.UserType;
+
 public class SplashActivity extends AppCompatActivity {
 
     VideoView videoView;
@@ -83,17 +87,23 @@ public class SplashActivity extends AppCompatActivity {
 
     private void goToNextScreen() {
         // Check if user is already logged in using SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("FoodShareSession", MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
-        int userId = prefs.getInt("userId", -1);
+        AuthHelper authHelper = new AuthHelper(this);
+        User user = authHelper.getCurrentUser();
 
         Intent intent;
-        if (isLoggedIn && userId != -1) {
+        if (user != null) {
             // Already logged in — go straight to home
-            intent = new Intent(SplashActivity.this, DonorHomeActivity.class);
+            if (user.getUserType() == UserType.DONOR) {
+                intent = new Intent(SplashActivity.this, DonorHomeActivity.class);
+            } else if (user.getUserType() == UserType.RECIPIENT) {
+                intent = new Intent(SplashActivity.this, RecipientHomeActivity.class);
+            } else {
+                // invalid user. logout and go LoginActivity
+                authHelper.logout();
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
+            }
         } else {
             // Not logged in — go to login
-            // Replace LoginActivity.class with your actual login activity name
             intent = new Intent(SplashActivity.this, LoginActivity.class);
         }
 
