@@ -52,6 +52,11 @@ public class DonorHomeActivity extends AppCompatActivity {
 
     }
 
+    public void handleViewRequests(View view) {
+        Intent intent = new Intent(DonorHomeActivity.this, DonorRequestListActivity.class);
+        startActivity(intent);
+    }
+
     public void handleViewFoodItems(View view) {
         Intent intent = new Intent(DonorHomeActivity.this, DonorFoodItemListActivity.class);
         startActivity(intent);

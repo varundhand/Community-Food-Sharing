@@ -44,6 +44,7 @@
     <string name="login_txt_message">Sign into FoodShare</string>
 
     <!-- Donor Home -->
+    <string name="donor_home_btn_view_requests">View Requests</string>
     <string name="donor_home_btn_new_food">Create a new donation</string>
     <string name="donor_home_btn_list_food_items">View donation items</string>
 

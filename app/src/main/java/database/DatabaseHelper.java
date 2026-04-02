@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -455,7 +456,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
-    public ArrayList<Request> getRequests(int foodItemId, int recipientId, Instant dueAfter, RequestStatus status) {
+    public ArrayList<Request> getRequests(Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
@@ -490,8 +491,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String aliasRecipientImgKey = TABLE_USERS + "_" + COL_USER_IMG_KEY;
         String aliasRecipientType = TABLE_USERS + "_" + COL_USER_TYPE;
 
-        Cursor cursor = db.rawQuery(
-        "SELECT " +
+        String select = "SELECT " +
                 TABLE_REQUESTS + "." + COL_ID + " AS " + aliasReqId + ", " +
                 TABLE_REQUESTS + "." + COL_REQUESTS_DUE + " AS " + aliasReqDue + ", " +
                 TABLE_REQUESTS + "." + COL_REQUESTS_STATUS + " AS " + aliasReqStatus + ", " +
@@ -522,21 +522,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 " FROM " + TABLE_REQUESTS +
                 " JOIN " + TABLE_FOOD_ITEMS +
-                    " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_FOOD_ITEM_ID + " = " +
-                            TABLE_FOOD_ITEMS + "." + COL_ID +
+                " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_FOOD_ITEM_ID + " = " +
+                TABLE_FOOD_ITEMS + "." + COL_ID +
                 " JOIN " + TABLE_USERS +
-                    " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_RECIPIENT_ID + " = " +
-                            TABLE_USERS + "." + COL_ID +
-                " WHERE " + COL_REQUESTS_FOOD_ITEM_ID + " = ?" +
-                " AND " + COL_REQUESTS_RECIPIENT_ID + " = ?" +
-                " AND " + COL_REQUESTS_DUE + " > ?" +
-                " AND " + COL_REQUESTS_STATUS + " = ?",
-        new String[]{
-                String.valueOf(foodItemId),
-                String.valueOf(recipientId),
-                String.valueOf(dueAfter.getEpochSecond()),
-                status.name()
-        });
+                " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_RECIPIENT_ID + " = " +
+                TABLE_USERS + "." + COL_ID;
+
+        Log.d("DatabaseHelper.getRequests", select);
+        ArrayList<String> where = new ArrayList<>();
+        ArrayList<String> args = new ArrayList<>();
+        if (foodItemId != null) {
+            where.add(COL_REQUESTS_FOOD_ITEM_ID + " = ?");
+            args.add(String.valueOf(foodItemId));
+        }
+        if (recipientId != null) {
+            where.add(COL_REQUESTS_RECIPIENT_ID + " = ?");
+            args.add(String.valueOf(recipientId));
+        }
+        if (dueAfter != null) {
+            where.add(COL_REQUESTS_DUE + " > ?");
+            args.add(String.valueOf(dueAfter.getEpochSecond()));
+        }
+        if (status != null) {
+            where.add(COL_REQUESTS_STATUS + " = ?");
+            args.add(status.name());
+        }
+        if (donorId != null) {
+            where.add(TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = ?");
+            args.add(String.valueOf(donorId));
+        }
+
+        String whereStr = String.join(" AND " , where);
+        String[] argsArr = new String[args.size()];
+        args.toArray(argsArr);
+
+        Cursor cursor = db.rawQuery(
+                select +
+                " WHERE " + whereStr, argsArr);
 
         int idReqId = cursor.getColumnIndex(aliasReqId);
         int idDue = cursor.getColumnIndex(aliasReqDue);
@@ -573,7 +595,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Request> ret = new ArrayList<>();
         while (cursor.moveToNext()) {
             int id = cursor.getInt(idReqId);
-            int retFoodItemId = cursor.getInt(idFoodItemId);
             ZonedDateTime due = null;
             if (!cursor.isNull(idDue)) {
                 Instant dueInstant = Instant.ofEpochSecond(cursor.getLong(idDue));
