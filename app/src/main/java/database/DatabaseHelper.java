@@ -189,17 +189,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
         cursor.moveToFirst();
-        int id = cursor.getInt(cursor.getColumnIndex(COL_ID));
-        String name = cursor.getString(cursor.getColumnIndex(COL_USER_NAME));
-        String email = cursor.getString(cursor.getColumnIndex(COL_USER_EMAIL));
-        String phone = cursor.getString(cursor.getColumnIndex(COL_USER_PHONE));
-        String postalCode = cursor.getString(cursor.getColumnIndex(COL_USER_POSTAL_CODE));
-        String address = cursor.getString(cursor.getColumnIndex(COL_USER_ADDRESS));
-        String imgKey = cursor.getString(cursor.getColumnIndex(COL_USER_IMG_KEY));
-        String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
-        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
-        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
+        return userFromCursor(
+                cursor,
+                cursor.getColumnIndex(COL_ID),
+                cursor.getColumnIndex(COL_USER_NAME),
+                cursor.getColumnIndex(COL_USER_EMAIL),
+                cursor.getColumnIndex(COL_USER_PHONE),
+                cursor.getColumnIndex(COL_USER_POSTAL_CODE),
+                cursor.getColumnIndex(COL_USER_ADDRESS),
+                cursor.getColumnIndex(COL_USER_IMG_KEY),
+                cursor.getColumnIndex(COL_USER_TYPE)
+                );
     }
 
     // getUser by email and pass
@@ -602,5 +603,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // add reminders related methods below (delimiter for avoiding conflicts)
 
     // add methods that involves multiple tables below
+
+    // utils
+    private User userFromCursor(Cursor cursor, int colId, int colName, int colEmail, int colPhone,
+                                int colPostalCode, int colAddress, int colImgKey, int colUserType) {
+        int id = cursor.getInt(colId);
+        String name = cursor.getString(colName);
+        String email = cursor.getString(colEmail);
+        String phone = cursor.getString(colPhone);
+        String postalCode = cursor.getString(colPostalCode);
+        String address = cursor.getString(colAddress);
+        String imgKey = cursor.getString(colImgKey);
+        String typeStr = cursor.getString(colUserType);
+        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
+
+        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
+    }
 
 }
