@@ -458,31 +458,122 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Request> getRequests(int foodItemId, int recipientId, Instant dueAfter, RequestStatus status) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + TABLE_REQUESTS +
-                        " WHERE " + COL_REQUESTS_FOOD_ITEM_ID + " = ?" +
-                        " AND " + COL_REQUESTS_RECIPIENT_ID + " = ?" +
-                        " AND " + COL_REQUESTS_DUE + " > ?" +
-                        " AND " + COL_REQUESTS_STATUS + " = ?",
-                new String[]{
-                        String.valueOf(foodItemId),
-                        String.valueOf(recipientId),
-                        String.valueOf(dueAfter.getEpochSecond()),
-                        status.name()
-                });
+        String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
+        String aliasReqDue = TABLE_REQUESTS + "_" + COL_REQUESTS_DUE;
+        String aliasReqStatus = TABLE_REQUESTS + "_" + COL_REQUESTS_STATUS;
+        String aliasReqRequestedAt = TABLE_REQUESTS + "_" + COL_REQUESTS_REQUESTED_AT;
 
-        int idIndex = cursor.getColumnIndex(COL_ID);
-        int idFoodItemId = cursor.getColumnIndex(COL_REQUESTS_FOOD_ITEM_ID);
-        int idRecipientId = cursor.getColumnIndex(COL_REQUESTS_RECIPIENT_ID);
-        int idDue = cursor.getColumnIndex(COL_REQUESTS_DUE);
-        int idStatus = cursor.getColumnIndex(COL_REQUESTS_STATUS);
-        int idRequestedAt = cursor.getColumnIndex(COL_REQUESTS_REQUESTED_AT);
+        // Food
+        String aliasFoodItemId = TABLE_FOOD_ITEMS + "_" + COL_ID;
+        String aliasFoodItemDonorId = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_DONOR_ID;
+        String aliasFoodItemName = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_NAME;
+        String aliasFoodItemCategoryName = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_CATEGORY_NAME;
+        String aliasFoodItemQuantity = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_QUANTITY;
+        String aliasFoodItemExpiry = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_EXPIRY_DATE;
+        String aliasFoodItemAvailableFrom = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_AVAILABLE_FROM;
+        String aliasFoodItemAvailableTo = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_AVAILABLE_TO;
+        String aliasFoodItemIsFree = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_FREE;
+        String aliasFoodItemPriceCents = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_PRICE_CENTS;
+        String aliasFoodItemPickUpAvailable = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE;
+        String aliasFoodItemDeliveryAvailable = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE;
+        String aliasFoodItemImageKey = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IMG_KEY;
+        String aliasFoodItemAddedAt = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_ADDED_AT;
+        String aliasFoodItemCompletedAt = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_COMPLETED_AT;
+
+        // User
+        String aliasRecipientId = TABLE_USERS + "_" + COL_ID;
+        String aliasRecipientName = TABLE_USERS + "_" + COL_USER_NAME;
+        String aliasRecipientEmail = TABLE_USERS + "_" + COL_USER_EMAIL;
+        String aliasRecipientPhone = TABLE_USERS + "_" + COL_USER_PHONE;
+        String aliasRecipientPostalCode = TABLE_USERS + "_" + COL_USER_POSTAL_CODE;
+        String aliasRecipientAddress = TABLE_USERS + "_" + COL_USER_ADDRESS;
+        String aliasRecipientImgKey = TABLE_USERS + "_" + COL_USER_IMG_KEY;
+        String aliasRecipientType = TABLE_USERS + "_" + COL_USER_TYPE;
+
+        Cursor cursor = db.rawQuery(
+        "SELECT " +
+                TABLE_REQUESTS + "." + COL_ID + " AS " + aliasReqId + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_DUE + " AS " + aliasReqDue + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_STATUS + " AS " + aliasReqStatus + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_REQUESTED_AT + " AS " + aliasReqRequestedAt + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_ID + " AS " + aliasFoodItemId + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " AS " + aliasFoodItemDonorId + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_NAME + " AS " + aliasFoodItemName + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_CATEGORY_NAME + " AS " + aliasFoodItemCategoryName + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_QUANTITY + " AS " + aliasFoodItemQuantity + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_EXPIRY_DATE + " AS " + aliasFoodItemExpiry + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " AS " + aliasFoodItemAvailableFrom + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " AS " + aliasFoodItemAvailableTo + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_FREE + " AS " + aliasFoodItemIsFree + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_PRICE_CENTS + " AS " + aliasFoodItemPriceCents + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " AS " + aliasFoodItemPickUpAvailable + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " AS " + aliasFoodItemDeliveryAvailable + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IMG_KEY + " AS " + aliasFoodItemImageKey + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_ADDED_AT + " AS " + aliasFoodItemAddedAt + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " AS " + aliasFoodItemCompletedAt + ", " +
+                TABLE_USERS + "." + COL_ID + " AS " + aliasRecipientId + ", " +
+                TABLE_USERS + "." + COL_USER_NAME + " AS " + aliasRecipientName + ", " +
+                TABLE_USERS + "." + COL_USER_EMAIL + " AS " + aliasRecipientEmail + ", " +
+                TABLE_USERS + "." + COL_USER_PHONE + " AS " + aliasRecipientPhone + ", " +
+                TABLE_USERS + "." + COL_USER_POSTAL_CODE + " AS " + aliasRecipientPostalCode + ", " +
+                TABLE_USERS + "." + COL_USER_ADDRESS + " AS " + aliasRecipientAddress + ", " +
+                TABLE_USERS + "." + COL_USER_IMG_KEY + " AS " + aliasRecipientImgKey + ", " +
+                TABLE_USERS + "." + COL_USER_TYPE + " AS " + aliasRecipientType +
+
+                " FROM " + TABLE_REQUESTS +
+                " JOIN " + TABLE_FOOD_ITEMS +
+                    " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_FOOD_ITEM_ID + " = " +
+                            TABLE_FOOD_ITEMS + "." + COL_ID +
+                " JOIN " + TABLE_USERS +
+                    " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_RECIPIENT_ID + " = " +
+                            TABLE_USERS + "." + COL_ID +
+                " WHERE " + COL_REQUESTS_FOOD_ITEM_ID + " = ?" +
+                " AND " + COL_REQUESTS_RECIPIENT_ID + " = ?" +
+                " AND " + COL_REQUESTS_DUE + " > ?" +
+                " AND " + COL_REQUESTS_STATUS + " = ?",
+        new String[]{
+                String.valueOf(foodItemId),
+                String.valueOf(recipientId),
+                String.valueOf(dueAfter.getEpochSecond()),
+                status.name()
+        });
+
+        int idReqId = cursor.getColumnIndex(aliasReqId);
+        int idDue = cursor.getColumnIndex(aliasReqDue);
+        int idStatus = cursor.getColumnIndex(aliasReqStatus);
+        int idRequestedAt = cursor.getColumnIndex(aliasReqRequestedAt);
+
+        // food items
+        int idFoodItemId = cursor.getColumnIndex(aliasFoodItemId);
+        int idFoodItemDonorId = cursor.getColumnIndex(aliasFoodItemDonorId);
+        int idFoodItemName = cursor.getColumnIndex(aliasFoodItemName);
+        int idFoodItemCategoryName = cursor.getColumnIndex(aliasFoodItemCategoryName);
+        int idFoodItemQuantity = cursor.getColumnIndex(aliasFoodItemQuantity);
+        int idFoodItemExpiry = cursor.getColumnIndex(aliasFoodItemExpiry);
+        int idFoodItemAvailableFrom = cursor.getColumnIndex(aliasFoodItemAvailableFrom);
+        int idFoodItemAvailableTo = cursor.getColumnIndex(aliasFoodItemAvailableTo);
+        int idFoodItemIsFree = cursor.getColumnIndex(aliasFoodItemIsFree);
+        int idFoodItemPriceCents = cursor.getColumnIndex(aliasFoodItemPriceCents);
+        int idFoodItemPickUpAvailable = cursor.getColumnIndex(aliasFoodItemPickUpAvailable);
+        int idFoodItemDeliveryAvailable = cursor.getColumnIndex(aliasFoodItemDeliveryAvailable);
+        int idFoodItemImageKey = cursor.getColumnIndex(aliasFoodItemImageKey);
+        int idFoodItemAddedAt = cursor.getColumnIndex(aliasFoodItemAddedAt);
+        int idFoodItemCompletedAt = cursor.getColumnIndex(aliasFoodItemCompletedAt);
+
+        // user (recipient) related fields
+        int idRecipientId = cursor.getColumnIndex(aliasRecipientId);
+        int idRecipientName = cursor.getColumnIndex(aliasRecipientName);
+        int idRecipientEmail = cursor.getColumnIndex(aliasRecipientEmail);
+        int idRecipientPhone = cursor.getColumnIndex(aliasRecipientPhone);
+        int idRecipientPostalCode = cursor.getColumnIndex(aliasRecipientPostalCode);
+        int idRecipientAddress = cursor.getColumnIndex(aliasRecipientAddress);
+        int idRecipientImgKey = cursor.getColumnIndex(aliasRecipientImgKey);
+        int idRecipientType = cursor.getColumnIndex(aliasRecipientType);
 
         ArrayList<Request> ret = new ArrayList<>();
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
+            int id = cursor.getInt(idReqId);
             int retFoodItemId = cursor.getInt(idFoodItemId);
-            int retRecipientId = cursor.getInt(idRecipientId);
             ZonedDateTime due = null;
             if (!cursor.isNull(idDue)) {
                 Instant dueInstant = Instant.ofEpochSecond(cursor.getLong(idDue));
@@ -496,7 +587,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 requestedAt = ZonedDateTime.ofInstant(requestedAtInstant, ZoneId.systemDefault());
             }
 
-            ret.add(new Request(id, retFoodItemId, retRecipientId, due, retStatus, requestedAt));
+            User recipient = userFromCursor(
+                    cursor,
+                    idRecipientId,
+                    idRecipientName,
+                    idRecipientEmail,
+                    idRecipientPhone,
+                    idRecipientPostalCode,
+                    idRecipientAddress,
+                    idRecipientImgKey,
+                    idRecipientType
+                    );
+
+            FoodItem foodItem = foodItemFromCursor(cursor, idFoodItemId, idFoodItemDonorId, idFoodItemName,
+                    idFoodItemCategoryName, idFoodItemQuantity, idFoodItemExpiry, idFoodItemAvailableFrom,
+                    idFoodItemAvailableTo, idFoodItemIsFree, idFoodItemPriceCents, idFoodItemPickUpAvailable,
+                    idFoodItemDeliveryAvailable, idFoodItemImageKey, idFoodItemAddedAt, idFoodItemCompletedAt);
+
+
+            ret.add(new Request(id, foodItem, recipient, due, retStatus, requestedAt));
         }
         return ret;
     }
