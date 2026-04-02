@@ -90,6 +90,13 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/common_decline"
                 android:onClick="handleDecline"/>
+            <Button
+                android:id="@+id/btnComplete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/common_complete"
+                android:onClick="handleComplete"/>
 
         </LinearLayout>
     </ScrollView>

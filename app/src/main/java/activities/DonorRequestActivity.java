@@ -20,6 +20,7 @@ import com.example.foodshare.R;
 
 import org.w3c.dom.Text;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 import database.DatabaseHelper;
@@ -37,7 +38,7 @@ public class DonorRequestActivity extends AppCompatActivity {
     TextView txtRequestStatus;
     ImageView imgRecipient;
     TextView txtRecipientName, txtRecipientAddress, txtRequestDue;
-    Button btnApprove, btnDecline;
+    Button btnApprove, btnDecline, btnComplete;
 
     private DatabaseHelper dbHelper;
     private Request request;
@@ -82,6 +83,7 @@ public class DonorRequestActivity extends AppCompatActivity {
         txtRequestDue = findViewById(R.id.txtRequestDue);
         btnApprove = findViewById(R.id.btnApprove);
         btnDecline = findViewById(R.id.btnDecline);
+        btnComplete = findViewById(R.id.btnComplete);
 
         FoodItem foodItem = request.getFoodItem();
 
@@ -105,6 +107,11 @@ public class DonorRequestActivity extends AppCompatActivity {
             btnApprove.setEnabled(false);
             btnDecline.setEnabled(false);
         }
+
+        if (request.getStatus() != RequestStatus.APPROVED) {
+            // complete button is enabled only when the status is "Approved"
+            btnComplete.setEnabled(false);
+        }
     }
 
     private void setPhoto(String filename, ImageView imgView) {
@@ -118,19 +125,33 @@ public class DonorRequestActivity extends AppCompatActivity {
     }
 
     public void handleApprove(View view) {
-        dbHelper.updateRequestStatus(request.getId(), RequestStatus.APPROVED, null);
+        dbHelper.updateRequestStatus(request.getId(), RequestStatus.APPROVED);
         txtRequestStatus.setText(RequestStatus.APPROVED.name());
+        Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT);
+
         btnApprove.setEnabled(false);
         btnDecline.setEnabled(false);
-        Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT);
+        btnComplete.setEnabled(true); // "complete" button enabled
     }
 
     public void handleDecline(View view) {
-        dbHelper.updateRequestStatus(request.getId(), RequestStatus.DECLINED, null);
+        dbHelper.updateRequestStatus(request.getId(), RequestStatus.DECLINED);
         txtRequestStatus.setText(RequestStatus.DECLINED.name());
         Toast.makeText(this, "The request is declined", Toast.LENGTH_SHORT);
 
         btnApprove.setEnabled(false);
         btnDecline.setEnabled(false);
+        btnComplete.setEnabled(false);
+    }
+
+    public void handleComplete(View view) {
+        dbHelper.updateRequestStatus(request.getId(), RequestStatus.COMPLETE);
+        dbHelper.completeFoodItem(request.getFoodItem().getId(), Instant.now());
+        txtRequestStatus.setText(RequestStatus.COMPLETE.name());
+        Toast.makeText(this, "The request is complete", Toast.LENGTH_SHORT);
+
+        btnApprove.setEnabled(false);
+        btnDecline.setEnabled(false);
+        btnComplete.setEnabled(false);
     }
 }

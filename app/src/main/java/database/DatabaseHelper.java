@@ -315,6 +315,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
+    public boolean completeFoodItem(int foodItemId, Instant instant) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (instant == null) instant = Instant.now();
+        values.put(COL_FOOD_ITEM_COMPLETED_AT, instant.getEpochSecond());
+        int result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
+        return result == 1;
+    }
+
     public FoodItem getFoodItem(int foodItemId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
@@ -456,14 +465,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
-    public boolean updateRequestStatus(int requestId, RequestStatus status, Instant completedAt) {
+    public boolean updateRequestStatus(int requestId, RequestStatus status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_REQUESTS_STATUS, status.name());
-        if (status == RequestStatus.COMPLETE) {
-            if (completedAt == null) completedAt = Instant.now();
-            values.put(COL_FOOD_ITEM_COMPLETED_AT, completedAt.getEpochSecond());
-        }
 
         long result = db.update(TABLE_REQUESTS, values,
                 COL_ID + " = ?", new String[] { String.valueOf(requestId) });

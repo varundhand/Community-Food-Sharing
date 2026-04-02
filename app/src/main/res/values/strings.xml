@@ -32,6 +32,7 @@
     <string name="common_request">Request</string>
     <string name="common_approve">Approve</string>
     <string name="common_decline">Decline</string>
+    <string name="common_complete">Complete</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
