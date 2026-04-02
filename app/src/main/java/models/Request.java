@@ -34,6 +34,8 @@ public class Request {
         this.requested_at = requested_at;
     }
 
+    public int getId() { return id; }
+
     public FoodItem getFoodItem() { return foodItem; }
 
     public User getRecipient() { return recipient; }

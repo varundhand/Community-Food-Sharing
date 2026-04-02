@@ -456,7 +456,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
-    public ArrayList<Request> getRequests(Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
+    public ArrayList<Request> getRequests(Integer requestId, Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
@@ -531,20 +531,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d("DatabaseHelper.getRequests", select);
         ArrayList<String> where = new ArrayList<>();
         ArrayList<String> args = new ArrayList<>();
+        if (requestId != null) {
+            where.add(TABLE_REQUESTS + "." + COL_ID + " = ?");
+            args.add(String.valueOf(requestId));
+        }
         if (foodItemId != null) {
-            where.add(COL_REQUESTS_FOOD_ITEM_ID + " = ?");
+            where.add(TABLE_REQUESTS + "." + COL_REQUESTS_FOOD_ITEM_ID + " = ?");
             args.add(String.valueOf(foodItemId));
         }
         if (recipientId != null) {
-            where.add(COL_REQUESTS_RECIPIENT_ID + " = ?");
+            where.add(TABLE_REQUESTS + "." + COL_REQUESTS_RECIPIENT_ID + " = ?");
             args.add(String.valueOf(recipientId));
         }
         if (dueAfter != null) {
-            where.add(COL_REQUESTS_DUE + " > ?");
+            where.add(TABLE_REQUESTS + "." + COL_REQUESTS_DUE + " > ?");
             args.add(String.valueOf(dueAfter.getEpochSecond()));
         }
         if (status != null) {
-            where.add(COL_REQUESTS_STATUS + " = ?");
+            where.add(TABLE_REQUESTS + "." + COL_REQUESTS_STATUS + " = ?");
             args.add(status.name());
         }
         if (donorId != null) {

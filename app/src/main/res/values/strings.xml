@@ -30,6 +30,8 @@
     <string name="common_update">Update</string>
     <string name="common_delete">Delete</string>
     <string name="common_request">Request</string>
+    <string name="common_approve">Approve</string>
+    <string name="common_decline">Decline</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
@@ -65,4 +67,7 @@
     <!-- Recipient Food Detail -->
     <string name="recipient_food_detail_title">Donation Detail</string>
     <string name="recipient_food_detail_request_item">Request This Item</string>
+
+    <!-- Donor Request Details -->
+    <string name="donor_request_details_title">Request Details</string>
 </resources>

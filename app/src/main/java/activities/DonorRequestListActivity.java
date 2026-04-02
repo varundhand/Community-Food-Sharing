@@ -39,7 +39,7 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         authHelper = new AuthHelper(this);
-        requests = dbHelper.getRequests(null, null, null, null, authHelper.getCurrentUser().getId());
+        requests = dbHelper.getRequests(null, null, null, null, null, authHelper.getCurrentUser().getId());
 
         recyclerView = findViewById(R.id.recyclerView);
         DonorRequestListRecyclerViewAdapter adapter = new DonorRequestListRecyclerViewAdapter(requests);

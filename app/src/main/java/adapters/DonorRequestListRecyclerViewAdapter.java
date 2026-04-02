@@ -1,5 +1,6 @@
 package adapters;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.example.foodshare.R;
 
 import java.util.ArrayList;
 
+import activities.DonorRequestActivity;
 import models.FoodItem;
 import models.Request;
 import models.User;
@@ -64,6 +66,9 @@ public class DonorRequestListRecyclerViewAdapter extends RecyclerView.Adapter<Do
             @Override
             public void onClick(View view) {
                 // TODO
+                Intent intent = new Intent(holder.itemView.getContext(), DonorRequestActivity.class);
+                intent.putExtra(DonorRequestActivity.EXTRA_REQ_ID, item.getId());
+                holder.itemView.getContext().startActivity(intent);
             }
         });
     }
