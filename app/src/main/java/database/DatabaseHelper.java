@@ -456,6 +456,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
+    public boolean updateRequestStatus(int requestId, RequestStatus status, Instant completedAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_REQUESTS_STATUS, status.name());
+        if (status == RequestStatus.COMPLETE) {
+            if (completedAt == null) completedAt = Instant.now();
+            values.put(COL_FOOD_ITEM_COMPLETED_AT, completedAt.getEpochSecond());
+        }
+
+        long result = db.update(TABLE_REQUESTS, values,
+                COL_ID + " = ?", new String[] { String.valueOf(requestId) });
+        return result == 1;
+    }
+
     public ArrayList<Request> getRequests(Integer requestId, Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
