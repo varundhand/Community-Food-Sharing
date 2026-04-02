@@ -34,6 +34,13 @@
             android:layout_marginBottom="30dp"
             android:textSize="34sp" />
         <Button
+            android:id="@+id/btnViewRequests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/donor_home_btn_view_requests"
+            android:onClick="handleViewRequests"/>
+        <Button
             android:id="@+id/btnViewFoodItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

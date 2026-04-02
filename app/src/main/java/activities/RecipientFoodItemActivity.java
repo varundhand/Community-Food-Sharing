@@ -149,7 +149,7 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
 
     private void fetchPendingRequests() {
         Log.d("RecipientFoodItemActivity.fetchPendingReqs", "item id: " + item.getId() + ", recipient id: " + currentUser.getId());
-        requests = dbHelper.getRequests(item.getId(), currentUser.getId(), Instant.now(), RequestStatus.PENDING);
+        requests = dbHelper.getRequests(item.getId(), currentUser.getId(), Instant.now(), RequestStatus.PENDING, null);
     }
 
     private void disableRequest() {

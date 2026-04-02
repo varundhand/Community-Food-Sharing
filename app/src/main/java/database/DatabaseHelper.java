@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -189,17 +190,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
         cursor.moveToFirst();
-        int id = cursor.getInt(cursor.getColumnIndex(COL_ID));
-        String name = cursor.getString(cursor.getColumnIndex(COL_USER_NAME));
-        String email = cursor.getString(cursor.getColumnIndex(COL_USER_EMAIL));
-        String phone = cursor.getString(cursor.getColumnIndex(COL_USER_PHONE));
-        String postalCode = cursor.getString(cursor.getColumnIndex(COL_USER_POSTAL_CODE));
-        String address = cursor.getString(cursor.getColumnIndex(COL_USER_ADDRESS));
-        String imgKey = cursor.getString(cursor.getColumnIndex(COL_USER_IMG_KEY));
-        String typeStr = cursor.getString(cursor.getColumnIndex(COL_USER_TYPE));
-        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
-        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
+        return userFromCursor(
+                cursor,
+                cursor.getColumnIndex(COL_ID),
+                cursor.getColumnIndex(COL_USER_NAME),
+                cursor.getColumnIndex(COL_USER_EMAIL),
+                cursor.getColumnIndex(COL_USER_PHONE),
+                cursor.getColumnIndex(COL_USER_POSTAL_CODE),
+                cursor.getColumnIndex(COL_USER_ADDRESS),
+                cursor.getColumnIndex(COL_USER_IMG_KEY),
+                cursor.getColumnIndex(COL_USER_TYPE)
+                );
     }
 
     // getUser by email and pass
@@ -339,45 +341,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
-        int id = cursor.getInt(idIndex);
-        String name = cursor.getString(idName);
-        int donorId = cursor.getInt(idDonorId);
-        String category = cursor.getString(idCategory);
-        String quantity = cursor.getString(idQuantity);
-        String expiry = cursor.getString(idExpiry);
 
-        boolean isFree = cursor.getInt(idIsFree) == 1;
-        int priceCents = cursor.getInt(idPriceCents);
-        boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-        boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-        String imageKey = cursor.getString(idImageKey);
-        long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-        ZonedDateTime availableFrom;
-        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-        else
-            availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                    ZoneId.systemDefault());
-
-        ZonedDateTime availableTo;
-        if (cursor.isNull(idAvailableTo)) availableTo = null;
-        else
-            availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                    ZoneId.systemDefault());
-
-        // Not null
-        ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                ZoneId.systemDefault());
-
-        ZonedDateTime completedAt;
-        if (cursor.isNull(idCompletedAt)) completedAt = null;
-        else
-            completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                    ZoneId.systemDefault());
-
-        return new FoodItem(id, donorId, name, category, quantity,
-                expiry, imageKey, availableFrom,
-                availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+        return foodItemFromCursor(
+                cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                idAddedAt, idCompletedAt
+        );
     }
 
     public ArrayList<FoodItem> listFoodItem(int donorId) {
@@ -393,6 +362,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         int idIndex = cursor.getColumnIndex(COL_ID);
         int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idDonorId = cursor.getColumnIndex(COL_FOOD_ITEM_DONOR_ID);
         int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
         int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
         int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
@@ -407,46 +377,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
-            String name = cursor.getString(idName);
-            String category = cursor.getString(idCategory);
-            String quantity = cursor.getString(idQuantity);
-            String expiry = cursor.getString(idExpiry);
-            long availableFromEpochSecs = cursor.getLong(idAvailableFrom);
-            long availableToEpochSecs = cursor.getLong(idAvailableTo);
-            boolean isFree = cursor.getInt(idIsFree) == 1;
-            int priceCents = cursor.getInt(idPriceCents);
-            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-            String imageKey = cursor.getString(idImageKey);
-            long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-            ZonedDateTime availableFrom;
-            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-            else
-                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                        ZoneId.systemDefault());
-
-            ZonedDateTime availableTo;
-            if (cursor.isNull(idAvailableTo)) availableTo = null;
-            else
-                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                        ZoneId.systemDefault());
-
-            // Not null
-            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                    ZoneId.systemDefault());
-
-            ZonedDateTime completedAt;
-            if (cursor.isNull(idCompletedAt)) completedAt = null;
-            else
-                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                        ZoneId.systemDefault());
-
-            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
-                    expiry, imageKey, availableFrom,
-                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
-            results.add(foodItem);
+            FoodItem item = foodItemFromCursor(
+                    cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                    idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                    idAddedAt, idCompletedAt
+            );
+            results.add(item);
         }
 
         return results;
@@ -486,45 +422,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
-            int donorId = cursor.getInt(idDonorId);
-            String name = cursor.getString(idName);
-            String category = cursor.getString(idCategory);
-            String quantity = cursor.getString(idQuantity);
-            String expiry = cursor.getString(idExpiry);
-            boolean isFree = cursor.getInt(idIsFree) == 1;
-            int priceCents = cursor.getInt(idPriceCents);
-            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-            String imageKey = cursor.getString(idImageKey);
-            long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-            ZonedDateTime availableFrom;
-            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-            else
-                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                        ZoneId.systemDefault());
-
-            ZonedDateTime availableTo;
-            if (cursor.isNull(idAvailableTo)) availableTo = null;
-            else
-                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                        ZoneId.systemDefault());
-
-            // Not null
-            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                    ZoneId.systemDefault());
-
-            ZonedDateTime completedAt;
-            if (cursor.isNull(idCompletedAt)) completedAt = null;
-            else
-                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                        ZoneId.systemDefault());
-
-            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
-                    expiry, imageKey, availableFrom,
-                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
-            results.add(foodItem);
+            FoodItem item = foodItemFromCursor(
+                    cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                    idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                    idAddedAt, idCompletedAt
+            );
+            results.add(item);
         }
 
         return results;
@@ -553,34 +456,145 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
-    public ArrayList<Request> getRequests(int foodItemId, int recipientId, Instant dueAfter, RequestStatus status) {
+    public ArrayList<Request> getRequests(Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + TABLE_REQUESTS +
-                        " WHERE " + COL_REQUESTS_FOOD_ITEM_ID + " = ?" +
-                        " AND " + COL_REQUESTS_RECIPIENT_ID + " = ?" +
-                        " AND " + COL_REQUESTS_DUE + " > ?" +
-                        " AND " + COL_REQUESTS_STATUS + " = ?",
-                new String[]{
-                        String.valueOf(foodItemId),
-                        String.valueOf(recipientId),
-                        String.valueOf(dueAfter.getEpochSecond()),
-                        status.name()
-                });
+        String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
+        String aliasReqDue = TABLE_REQUESTS + "_" + COL_REQUESTS_DUE;
+        String aliasReqStatus = TABLE_REQUESTS + "_" + COL_REQUESTS_STATUS;
+        String aliasReqRequestedAt = TABLE_REQUESTS + "_" + COL_REQUESTS_REQUESTED_AT;
 
-        int idIndex = cursor.getColumnIndex(COL_ID);
-        int idFoodItemId = cursor.getColumnIndex(COL_REQUESTS_FOOD_ITEM_ID);
-        int idRecipientId = cursor.getColumnIndex(COL_REQUESTS_RECIPIENT_ID);
-        int idDue = cursor.getColumnIndex(COL_REQUESTS_DUE);
-        int idStatus = cursor.getColumnIndex(COL_REQUESTS_STATUS);
-        int idRequestedAt = cursor.getColumnIndex(COL_REQUESTS_REQUESTED_AT);
+        // Food
+        String aliasFoodItemId = TABLE_FOOD_ITEMS + "_" + COL_ID;
+        String aliasFoodItemDonorId = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_DONOR_ID;
+        String aliasFoodItemName = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_NAME;
+        String aliasFoodItemCategoryName = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_CATEGORY_NAME;
+        String aliasFoodItemQuantity = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_QUANTITY;
+        String aliasFoodItemExpiry = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_EXPIRY_DATE;
+        String aliasFoodItemAvailableFrom = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_AVAILABLE_FROM;
+        String aliasFoodItemAvailableTo = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_AVAILABLE_TO;
+        String aliasFoodItemIsFree = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_FREE;
+        String aliasFoodItemPriceCents = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_PRICE_CENTS;
+        String aliasFoodItemPickUpAvailable = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE;
+        String aliasFoodItemDeliveryAvailable = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE;
+        String aliasFoodItemImageKey = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_IMG_KEY;
+        String aliasFoodItemAddedAt = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_ADDED_AT;
+        String aliasFoodItemCompletedAt = TABLE_FOOD_ITEMS + "_" + COL_FOOD_ITEM_COMPLETED_AT;
+
+        // User
+        String aliasRecipientId = TABLE_USERS + "_" + COL_ID;
+        String aliasRecipientName = TABLE_USERS + "_" + COL_USER_NAME;
+        String aliasRecipientEmail = TABLE_USERS + "_" + COL_USER_EMAIL;
+        String aliasRecipientPhone = TABLE_USERS + "_" + COL_USER_PHONE;
+        String aliasRecipientPostalCode = TABLE_USERS + "_" + COL_USER_POSTAL_CODE;
+        String aliasRecipientAddress = TABLE_USERS + "_" + COL_USER_ADDRESS;
+        String aliasRecipientImgKey = TABLE_USERS + "_" + COL_USER_IMG_KEY;
+        String aliasRecipientType = TABLE_USERS + "_" + COL_USER_TYPE;
+
+        String select = "SELECT " +
+                TABLE_REQUESTS + "." + COL_ID + " AS " + aliasReqId + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_DUE + " AS " + aliasReqDue + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_STATUS + " AS " + aliasReqStatus + ", " +
+                TABLE_REQUESTS + "." + COL_REQUESTS_REQUESTED_AT + " AS " + aliasReqRequestedAt + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_ID + " AS " + aliasFoodItemId + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " AS " + aliasFoodItemDonorId + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_NAME + " AS " + aliasFoodItemName + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_CATEGORY_NAME + " AS " + aliasFoodItemCategoryName + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_QUANTITY + " AS " + aliasFoodItemQuantity + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_EXPIRY_DATE + " AS " + aliasFoodItemExpiry + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " AS " + aliasFoodItemAvailableFrom + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " AS " + aliasFoodItemAvailableTo + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_FREE + " AS " + aliasFoodItemIsFree + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_PRICE_CENTS + " AS " + aliasFoodItemPriceCents + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " AS " + aliasFoodItemPickUpAvailable + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " AS " + aliasFoodItemDeliveryAvailable + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IMG_KEY + " AS " + aliasFoodItemImageKey + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_ADDED_AT + " AS " + aliasFoodItemAddedAt + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " AS " + aliasFoodItemCompletedAt + ", " +
+                TABLE_USERS + "." + COL_ID + " AS " + aliasRecipientId + ", " +
+                TABLE_USERS + "." + COL_USER_NAME + " AS " + aliasRecipientName + ", " +
+                TABLE_USERS + "." + COL_USER_EMAIL + " AS " + aliasRecipientEmail + ", " +
+                TABLE_USERS + "." + COL_USER_PHONE + " AS " + aliasRecipientPhone + ", " +
+                TABLE_USERS + "." + COL_USER_POSTAL_CODE + " AS " + aliasRecipientPostalCode + ", " +
+                TABLE_USERS + "." + COL_USER_ADDRESS + " AS " + aliasRecipientAddress + ", " +
+                TABLE_USERS + "." + COL_USER_IMG_KEY + " AS " + aliasRecipientImgKey + ", " +
+                TABLE_USERS + "." + COL_USER_TYPE + " AS " + aliasRecipientType +
+
+                " FROM " + TABLE_REQUESTS +
+                " JOIN " + TABLE_FOOD_ITEMS +
+                " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_FOOD_ITEM_ID + " = " +
+                TABLE_FOOD_ITEMS + "." + COL_ID +
+                " JOIN " + TABLE_USERS +
+                " ON " + TABLE_REQUESTS + "." + COL_REQUESTS_RECIPIENT_ID + " = " +
+                TABLE_USERS + "." + COL_ID;
+
+        Log.d("DatabaseHelper.getRequests", select);
+        ArrayList<String> where = new ArrayList<>();
+        ArrayList<String> args = new ArrayList<>();
+        if (foodItemId != null) {
+            where.add(COL_REQUESTS_FOOD_ITEM_ID + " = ?");
+            args.add(String.valueOf(foodItemId));
+        }
+        if (recipientId != null) {
+            where.add(COL_REQUESTS_RECIPIENT_ID + " = ?");
+            args.add(String.valueOf(recipientId));
+        }
+        if (dueAfter != null) {
+            where.add(COL_REQUESTS_DUE + " > ?");
+            args.add(String.valueOf(dueAfter.getEpochSecond()));
+        }
+        if (status != null) {
+            where.add(COL_REQUESTS_STATUS + " = ?");
+            args.add(status.name());
+        }
+        if (donorId != null) {
+            where.add(TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = ?");
+            args.add(String.valueOf(donorId));
+        }
+
+        String whereStr = String.join(" AND " , where);
+        String[] argsArr = new String[args.size()];
+        args.toArray(argsArr);
+
+        Cursor cursor = db.rawQuery(
+                select +
+                " WHERE " + whereStr, argsArr);
+
+        int idReqId = cursor.getColumnIndex(aliasReqId);
+        int idDue = cursor.getColumnIndex(aliasReqDue);
+        int idStatus = cursor.getColumnIndex(aliasReqStatus);
+        int idRequestedAt = cursor.getColumnIndex(aliasReqRequestedAt);
+
+        // food items
+        int idFoodItemId = cursor.getColumnIndex(aliasFoodItemId);
+        int idFoodItemDonorId = cursor.getColumnIndex(aliasFoodItemDonorId);
+        int idFoodItemName = cursor.getColumnIndex(aliasFoodItemName);
+        int idFoodItemCategoryName = cursor.getColumnIndex(aliasFoodItemCategoryName);
+        int idFoodItemQuantity = cursor.getColumnIndex(aliasFoodItemQuantity);
+        int idFoodItemExpiry = cursor.getColumnIndex(aliasFoodItemExpiry);
+        int idFoodItemAvailableFrom = cursor.getColumnIndex(aliasFoodItemAvailableFrom);
+        int idFoodItemAvailableTo = cursor.getColumnIndex(aliasFoodItemAvailableTo);
+        int idFoodItemIsFree = cursor.getColumnIndex(aliasFoodItemIsFree);
+        int idFoodItemPriceCents = cursor.getColumnIndex(aliasFoodItemPriceCents);
+        int idFoodItemPickUpAvailable = cursor.getColumnIndex(aliasFoodItemPickUpAvailable);
+        int idFoodItemDeliveryAvailable = cursor.getColumnIndex(aliasFoodItemDeliveryAvailable);
+        int idFoodItemImageKey = cursor.getColumnIndex(aliasFoodItemImageKey);
+        int idFoodItemAddedAt = cursor.getColumnIndex(aliasFoodItemAddedAt);
+        int idFoodItemCompletedAt = cursor.getColumnIndex(aliasFoodItemCompletedAt);
+
+        // user (recipient) related fields
+        int idRecipientId = cursor.getColumnIndex(aliasRecipientId);
+        int idRecipientName = cursor.getColumnIndex(aliasRecipientName);
+        int idRecipientEmail = cursor.getColumnIndex(aliasRecipientEmail);
+        int idRecipientPhone = cursor.getColumnIndex(aliasRecipientPhone);
+        int idRecipientPostalCode = cursor.getColumnIndex(aliasRecipientPostalCode);
+        int idRecipientAddress = cursor.getColumnIndex(aliasRecipientAddress);
+        int idRecipientImgKey = cursor.getColumnIndex(aliasRecipientImgKey);
+        int idRecipientType = cursor.getColumnIndex(aliasRecipientType);
 
         ArrayList<Request> ret = new ArrayList<>();
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
-            int retFoodItemId = cursor.getInt(idFoodItemId);
-            int retRecipientId = cursor.getInt(idRecipientId);
+            int id = cursor.getInt(idReqId);
             ZonedDateTime due = null;
             if (!cursor.isNull(idDue)) {
                 Instant dueInstant = Instant.ofEpochSecond(cursor.getLong(idDue));
@@ -594,7 +608,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 requestedAt = ZonedDateTime.ofInstant(requestedAtInstant, ZoneId.systemDefault());
             }
 
-            ret.add(new Request(id, retFoodItemId, retRecipientId, due, retStatus, requestedAt));
+            User recipient = userFromCursor(
+                    cursor,
+                    idRecipientId,
+                    idRecipientName,
+                    idRecipientEmail,
+                    idRecipientPhone,
+                    idRecipientPostalCode,
+                    idRecipientAddress,
+                    idRecipientImgKey,
+                    idRecipientType
+                    );
+
+            FoodItem foodItem = foodItemFromCursor(cursor, idFoodItemId, idFoodItemDonorId, idFoodItemName,
+                    idFoodItemCategoryName, idFoodItemQuantity, idFoodItemExpiry, idFoodItemAvailableFrom,
+                    idFoodItemAvailableTo, idFoodItemIsFree, idFoodItemPriceCents, idFoodItemPickUpAvailable,
+                    idFoodItemDeliveryAvailable, idFoodItemImageKey, idFoodItemAddedAt, idFoodItemCompletedAt);
+
+
+            ret.add(new Request(id, foodItem, recipient, due, retStatus, requestedAt));
         }
         return ret;
     }
@@ -602,5 +634,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // add reminders related methods below (delimiter for avoiding conflicts)
 
     // add methods that involves multiple tables below
+
+    // utils
+    private User userFromCursor(Cursor cursor, int colId, int colName, int colEmail, int colPhone,
+                                int colPostalCode, int colAddress, int colImgKey, int colUserType) {
+        int id = cursor.getInt(colId);
+        String name = cursor.getString(colName);
+        String email = cursor.getString(colEmail);
+        String phone = cursor.getString(colPhone);
+        String postalCode = cursor.getString(colPostalCode);
+        String address = cursor.getString(colAddress);
+        String imgKey = cursor.getString(colImgKey);
+        String typeStr = cursor.getString(colUserType);
+        UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
+
+        return new User(id, name, email, phone, address, postalCode, userType, imgKey);
+    }
+
+    private FoodItem foodItemFromCursor(
+            Cursor cursor, int idIndex, int idDonorId, int idName, int idCategory, int idQuantity,
+            int idExpiry, int idAvailableFrom, int idAvailableTo, int idIsFree, int idPriceCents,
+            int idPickUpAvailable, int idDeliveryAvailable, int idImageKey, int idAddedAt, int idCompletedAt
+    ) {
+        int id = cursor.getInt(idIndex);
+        int donorId = cursor.getInt(idDonorId);
+        String name = cursor.getString(idName);
+        String category = cursor.getString(idCategory);
+        String quantity = cursor.getString(idQuantity);
+        String expiry = cursor.getString(idExpiry);
+        boolean isFree = cursor.getInt(idIsFree) == 1;
+        int priceCents = cursor.getInt(idPriceCents);
+        boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+        boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+        String imageKey = cursor.getString(idImageKey);
+        long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+        ZonedDateTime availableFrom;
+        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+        else
+            availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
+                    ZoneId.systemDefault());
+
+        ZonedDateTime availableTo;
+        if (cursor.isNull(idAvailableTo)) availableTo = null;
+        else
+            availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
+                    ZoneId.systemDefault());
+
+        // Not null
+        ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                ZoneId.systemDefault());
+
+        ZonedDateTime completedAt;
+        if (cursor.isNull(idCompletedAt)) completedAt = null;
+        else
+            completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
+                    ZoneId.systemDefault());
+
+        return new FoodItem(id, donorId, name, category, quantity,
+                expiry, imageKey, availableFrom,
+                availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+    }
 
 }
