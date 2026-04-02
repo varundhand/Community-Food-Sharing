@@ -340,45 +340,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
-        int id = cursor.getInt(idIndex);
-        String name = cursor.getString(idName);
-        int donorId = cursor.getInt(idDonorId);
-        String category = cursor.getString(idCategory);
-        String quantity = cursor.getString(idQuantity);
-        String expiry = cursor.getString(idExpiry);
 
-        boolean isFree = cursor.getInt(idIsFree) == 1;
-        int priceCents = cursor.getInt(idPriceCents);
-        boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-        boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-        String imageKey = cursor.getString(idImageKey);
-        long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-        ZonedDateTime availableFrom;
-        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-        else
-            availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                    ZoneId.systemDefault());
-
-        ZonedDateTime availableTo;
-        if (cursor.isNull(idAvailableTo)) availableTo = null;
-        else
-            availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                    ZoneId.systemDefault());
-
-        // Not null
-        ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                ZoneId.systemDefault());
-
-        ZonedDateTime completedAt;
-        if (cursor.isNull(idCompletedAt)) completedAt = null;
-        else
-            completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                    ZoneId.systemDefault());
-
-        return new FoodItem(id, donorId, name, category, quantity,
-                expiry, imageKey, availableFrom,
-                availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+        return foodItemFromCursor(
+                cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                idAddedAt, idCompletedAt
+        );
     }
 
     public ArrayList<FoodItem> listFoodItem(int donorId) {
@@ -394,6 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         int idIndex = cursor.getColumnIndex(COL_ID);
         int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idDonorId = cursor.getColumnIndex(COL_FOOD_ITEM_DONOR_ID);
         int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
         int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
         int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
@@ -408,46 +376,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
-            String name = cursor.getString(idName);
-            String category = cursor.getString(idCategory);
-            String quantity = cursor.getString(idQuantity);
-            String expiry = cursor.getString(idExpiry);
-            long availableFromEpochSecs = cursor.getLong(idAvailableFrom);
-            long availableToEpochSecs = cursor.getLong(idAvailableTo);
-            boolean isFree = cursor.getInt(idIsFree) == 1;
-            int priceCents = cursor.getInt(idPriceCents);
-            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-            String imageKey = cursor.getString(idImageKey);
-            long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-            ZonedDateTime availableFrom;
-            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-            else
-                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                        ZoneId.systemDefault());
-
-            ZonedDateTime availableTo;
-            if (cursor.isNull(idAvailableTo)) availableTo = null;
-            else
-                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                        ZoneId.systemDefault());
-
-            // Not null
-            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                    ZoneId.systemDefault());
-
-            ZonedDateTime completedAt;
-            if (cursor.isNull(idCompletedAt)) completedAt = null;
-            else
-                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                        ZoneId.systemDefault());
-
-            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
-                    expiry, imageKey, availableFrom,
-                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
-            results.add(foodItem);
+            FoodItem item = foodItemFromCursor(
+                    cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                    idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                    idAddedAt, idCompletedAt
+            );
+            results.add(item);
         }
 
         return results;
@@ -487,45 +421,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(idIndex);
-            int donorId = cursor.getInt(idDonorId);
-            String name = cursor.getString(idName);
-            String category = cursor.getString(idCategory);
-            String quantity = cursor.getString(idQuantity);
-            String expiry = cursor.getString(idExpiry);
-            boolean isFree = cursor.getInt(idIsFree) == 1;
-            int priceCents = cursor.getInt(idPriceCents);
-            boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
-            boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
-            String imageKey = cursor.getString(idImageKey);
-            long addedAtEpochSecs = cursor.getLong(idAddedAt);
-
-            ZonedDateTime availableFrom;
-            if (cursor.isNull(idAvailableFrom)) availableFrom = null;
-            else
-                availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
-                        ZoneId.systemDefault());
-
-            ZonedDateTime availableTo;
-            if (cursor.isNull(idAvailableTo)) availableTo = null;
-            else
-                availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
-                        ZoneId.systemDefault());
-
-            // Not null
-            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
-                    ZoneId.systemDefault());
-
-            ZonedDateTime completedAt;
-            if (cursor.isNull(idCompletedAt)) completedAt = null;
-            else
-                completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
-                        ZoneId.systemDefault());
-
-            FoodItem foodItem = new FoodItem(id, donorId, name, category, quantity,
-                    expiry, imageKey, availableFrom,
-                    availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
-            results.add(foodItem);
+            FoodItem item = foodItemFromCursor(
+                    cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                    idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                    idAddedAt, idCompletedAt
+            );
+            results.add(item);
         }
 
         return results;
@@ -618,6 +519,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         UserType userType = UserType.valueOf(typeStr); // TODO: handle exception (invalid string)
 
         return new User(id, name, email, phone, address, postalCode, userType, imgKey);
+    }
+
+    private FoodItem foodItemFromCursor(
+            Cursor cursor, int idIndex, int idDonorId, int idName, int idCategory, int idQuantity,
+            int idExpiry, int idAvailableFrom, int idAvailableTo, int idIsFree, int idPriceCents,
+            int idPickUpAvailable, int idDeliveryAvailable, int idImageKey, int idAddedAt, int idCompletedAt
+    ) {
+        int id = cursor.getInt(idIndex);
+        int donorId = cursor.getInt(idDonorId);
+        String name = cursor.getString(idName);
+        String category = cursor.getString(idCategory);
+        String quantity = cursor.getString(idQuantity);
+        String expiry = cursor.getString(idExpiry);
+        boolean isFree = cursor.getInt(idIsFree) == 1;
+        int priceCents = cursor.getInt(idPriceCents);
+        boolean isPickupAvailable = cursor.getInt(idPickUpAvailable) == 1;
+        boolean isDeliveryAvailable = cursor.getInt(idDeliveryAvailable) == 1;
+        String imageKey = cursor.getString(idImageKey);
+        long addedAtEpochSecs = cursor.getLong(idAddedAt);
+
+        ZonedDateTime availableFrom;
+        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+        else
+            availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
+                    ZoneId.systemDefault());
+
+        ZonedDateTime availableTo;
+        if (cursor.isNull(idAvailableTo)) availableTo = null;
+        else
+            availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
+                    ZoneId.systemDefault());
+
+        // Not null
+        ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                ZoneId.systemDefault());
+
+        ZonedDateTime completedAt;
+        if (cursor.isNull(idCompletedAt)) completedAt = null;
+        else
+            completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
+                    ZoneId.systemDefault());
+
+        return new FoodItem(id, donorId, name, category, quantity,
+                expiry, imageKey, availableFrom,
+                availableTo, addedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
     }
 
 }
