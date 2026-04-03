@@ -29,6 +29,14 @@
             android:text="@string/common_recipient" />
 
         <Button
+            android:id="@+id/btnViewReminders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/common_reminders"
+            android:onClick="handleViewReminders"/>
+
+        <Button
             android:id="@+id/btnViewRequests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

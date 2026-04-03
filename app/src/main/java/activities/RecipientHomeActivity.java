@@ -28,6 +28,11 @@ public class RecipientHomeActivity extends AppCompatActivity {
         });
     }
 
+    public void handleViewReminders(View view) {
+        Intent intent = new Intent(this, RecipientReminderListActivity.class);
+        startActivity(intent);
+    }
+
     public void handleViewRequests(View view) {
         Intent intent = new Intent(this, RecipientRequestListActivity.class);
         startActivity(intent);
