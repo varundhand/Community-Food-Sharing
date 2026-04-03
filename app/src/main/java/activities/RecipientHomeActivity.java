@@ -38,6 +38,11 @@ public class RecipientHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void handleViewFoodItemsSearch(View view) {
+        Intent intent = new Intent(RecipientHomeActivity.this, RecipientFoodItemSearchActivity.class);
+        startActivity(intent);
+    }
+
     public void handleViewNearbyFood(View view) {
         Intent intent = new Intent(RecipientHomeActivity.this, RecipientNearbyFoodItemActivity.class);
         startActivity(intent);
