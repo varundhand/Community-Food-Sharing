@@ -671,6 +671,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_REMINDERS, null, values);
     }
 
+    public boolean setReadToReminder(int reminderId, Instant readAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (readAt == null) readAt = Instant.now();
+        values.put(COL_REMINDERS_READ_AT, readAt.getEpochSecond());
+
+        int affectedRows = db.update(TABLE_REMINDERS, values, COL_ID + " = ?", new String[] { String.valueOf(reminderId) });
+        return affectedRows == 1;
+    }
+
     public ArrayList<Reminder> getReminders(Integer userId, Integer requestId, boolean unreadOnly) {
         SQLiteDatabase db = this.getReadableDatabase();
 

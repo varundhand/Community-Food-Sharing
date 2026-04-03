@@ -1,6 +1,7 @@
 package models;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Reminder {
     private int id, userId, requestId;
@@ -42,5 +43,16 @@ public class Reminder {
 
     public ZonedDateTime getAddedAt() {
         return addedAt;
+    }
+
+    public String getFormattedAddedAt() {
+        return formatZonedDateTime(addedAt, null);
+    }
+
+    private String formatZonedDateTime(ZonedDateTime date, String defaultText) {
+        if (date == null) return defaultText == null ? "" : defaultText;
+        // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
     }
 }
