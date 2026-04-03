@@ -45,6 +45,14 @@
             android:onClick="handleViewRequests"/>
 
         <Button
+            android:id="@+id/btnViewFoodItemsSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/recipient_home_btn_search"
+            android:onClick="handleViewFoodItemsSearch"/>
+
+        <Button
             android:id="@+id/btnViewNearbyFood"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

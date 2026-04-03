@@ -63,6 +63,7 @@
     <string name="edit_food_btn_upload_img">Change Food Image</string>
 
     <!-- Recipient Home -->
+    <string name="recipient_home_btn_search">Search Donations</string>
     <string name="recipient_home_btn_nearby">Nearby Donations</string>
     <string name="recipient_home_btn_view_requests">View Requests</string>
 
@@ -78,4 +79,8 @@
 
     <!-- Recipient Request Details -->
     <string name="recipient_request_details_title">Request Details</string>
+
+    <!-- Recipient Search Food Items -->
+    <string name="recipient_food_items_search_title">Search Donations</string>
+    <string name="recipient_food_items_search_search_hint">🔎Search</string>
 </resources>
