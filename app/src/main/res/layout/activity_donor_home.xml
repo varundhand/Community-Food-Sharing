@@ -69,12 +69,6 @@
             android:layout_margin="20dp"
             android:text="@string/common_logout"
             android:onClick="handleLogout"/>
-
-        <!-- TODO: remove the debug image below -->
-        <ImageView
-            android:id="@+id/imgDebug"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
