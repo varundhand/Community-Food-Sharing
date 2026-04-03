@@ -1,0 +1,160 @@
+package activities;
+
+import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.example.foodshare.R;
+
+import database.AuthHelper;
+import database.DatabaseHelper;
+import models.User;
+import models.UserType;
+import utils.ImageServer;
+
+public class EditProfileActivity extends AppCompatActivity {
+    AuthHelper authHelper;
+    DatabaseHelper dbHelper;
+
+    TextView txtUserType;
+    EditText inputName;
+    TextView txtUserEmail;
+    EditText inputPhone, inputPostalCode, inputPostalAddress;
+
+
+    ImageView imgUploadPreview;
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
+    Uri photoUri;
+
+    User user;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_edit_profile);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+        authHelper = new AuthHelper(this);
+        dbHelper = new DatabaseHelper(this);
+
+        user = authHelper.getCurrentUser();
+
+        txtUserType = findViewById(R.id.txtUserType);
+        inputName = findViewById(R.id.inputName);
+        txtUserEmail = findViewById(R.id.txtUserEmail);
+        inputPhone = findViewById(R.id.inputPhone);
+        inputPostalCode = findViewById(R.id.inputPostalCode);
+        inputPostalAddress = findViewById(R.id.inputPostalAddress);
+        imgUploadPreview = findViewById(R.id.imgUploadPreview);
+
+        pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::setPreviewPhoto);
+        setValues();
+    }
+
+    private void setPreviewPhoto(Uri uri) {
+        if (uri != null) {
+            photoUri = uri;
+            ImageServer imgServer = new ImageServer(this);
+            Bitmap bitmap = imgServer.loadImage(uri);
+            setPreviewPhoto(bitmap);
+        } else {
+            Log.d("PhotoPicker", "No media selected");
+        }
+    }
+
+    private void setPreviewPhoto(String filename) {
+        if (filename != null) {
+            ImageServer imgServer = new ImageServer(this);
+            Bitmap bitmap = imgServer.loadImage(filename);
+            setPreviewPhoto(bitmap);
+        } else {
+            Log.d("PhotoPicker", "No media selected");
+        }
+    }
+
+    private void setPreviewPhoto(Bitmap bitmap) {
+        if (bitmap == null) {
+            Log.d("PhotoPicker", "Invalid media selected");
+            photoUri = null;
+
+            // clear image view
+            // reference: https://stackoverflow.com/a/8243184
+            imgUploadPreview.setImageResource(0);
+            return;
+        }
+
+        // valid image
+        imgUploadPreview.setImageBitmap(bitmap);
+    }
+
+    private void setValues() {
+        if (user == null) return;
+
+        inputName.setText(user.getName());
+        txtUserType.setText(user.getUserType().name());
+        txtUserEmail.setText(user.getEmail());
+        inputPhone.setText(user.getPhone());
+        inputPostalCode.setText(user.getPostalCode());
+        inputPostalAddress.setText(user.getPostalAddress());
+
+        setPreviewPhoto(user.getImageKey());
+    }
+
+    public void pickPhoto(View view) {
+        pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+    }
+
+    public void handleSaveUser(View view) {
+        String name = inputName.getText().toString();
+        String phone = inputPhone.getText().toString();
+        String postalCode = inputPostalCode.getText().toString();
+        String postalAddress = inputPostalAddress.getText().toString();
+
+        String imageKey = null;
+        if (photoUri != null) {
+            ImageServer imageServer = new ImageServer(this);
+            imageKey = imageServer.saveImage(photoUri);
+        }
+
+        boolean success = dbHelper.updateUser(user.getId(), name, phone, postalCode, postalAddress, imageKey);
+        if (success) {
+            Toast.makeText(this, "Profile Updated", Toast.LENGTH_LONG).show();
+            Intent intent;
+            if (user.getUserType() == UserType.DONOR) {
+                intent = new Intent(EditProfileActivity.this, DonorHomeActivity.class);
+            } else if (user.getUserType() == UserType.RECIPIENT) {
+                intent = new Intent(EditProfileActivity.this, RecipientHomeActivity.class);
+            } else {
+                // unexpected user. logout the user and and navigate to login
+                authHelper.logout();
+                intent = new Intent(EditProfileActivity.this, LoginActivity.class);
+            }
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
+        }
+    }
+}

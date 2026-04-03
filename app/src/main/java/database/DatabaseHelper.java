@@ -240,6 +240,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    public boolean updateUser(int userId, String name,
+                              String phone, String postalCode,
+                              String postalAddress, String imageKey) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        if (name != null && !name.isEmpty()) {
+            values.put(COL_USER_NAME, name);
+        }
+        if (phone != null && !phone.isEmpty()) {
+            values.put(COL_USER_PHONE, phone);
+        }
+        if (postalAddress != null && !postalAddress.isEmpty()) {
+            values.put(COL_USER_ADDRESS, postalAddress);
+        }
+        if (postalCode != null && !postalCode.isEmpty()) {
+            values.put(COL_USER_POSTAL_CODE, postalCode);
+        }
+        if (imageKey != null && !imageKey.isEmpty()) {
+            values.put(COL_USER_IMG_KEY, imageKey);
+        }
+
+        int affected = db.update(TABLE_USERS, values, COL_ID + " = ?", new String[] { String.valueOf(userId) });
+        return affected == 1;
+    }
+
     // add food items related methods below (delimiter for avoiding conflicts)
 
     public boolean saveFoodItem(int donorId, String name, String category, String quantity,

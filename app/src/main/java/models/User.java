@@ -32,6 +32,8 @@ public class User {
         return name;
     }
 
+    public String getEmail() { return email; }
+
     public UserType getUserType() { return userType; }
 
     public String getImageKey() { return imageKey; }

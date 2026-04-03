@@ -67,6 +67,11 @@ public class DonorHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void handleEditProfile(View view) {
+        Intent intent = new Intent(DonorHomeActivity.this, EditProfileActivity.class);
+        startActivity(intent);
+    }
+
     public void handleLogout(View view) {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();
