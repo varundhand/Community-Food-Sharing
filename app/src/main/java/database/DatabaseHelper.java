@@ -444,7 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // add requests related methods below (delimiter for avoiding conflicts)
-    public boolean createRequest(int foodItemId, int recipientId, Instant due, RequestStatus status, Instant requestedAt) {
+    public long createRequest(int foodItemId, int recipientId, Instant due, RequestStatus status, Instant requestedAt) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_REQUESTS_FOOD_ITEM_ID, foodItemId);
@@ -461,8 +461,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(COL_REQUESTS_REQUESTED_AT, now.getEpochSecond());
         }
 
-        long result = db.insert(TABLE_REQUESTS, null, values);
-        return result == 1;
+        long id = db.insert(TABLE_REQUESTS, null, values);
+        return id;
     }
 
     public boolean updateRequestStatus(int requestId, RequestStatus status) {

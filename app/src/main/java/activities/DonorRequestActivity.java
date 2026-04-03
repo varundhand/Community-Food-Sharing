@@ -104,14 +104,25 @@ public class DonorRequestActivity extends AppCompatActivity {
         }
 
         if (request.getStatus() != RequestStatus.PENDING) {
-            btnApprove.setEnabled(false);
-            btnDecline.setEnabled(false);
+            hideButton(btnApprove);
+            hideButton(btnDecline);
         }
 
         if (request.getStatus() != RequestStatus.APPROVED) {
             // complete button is enabled only when the status is "Approved"
-            btnComplete.setEnabled(false);
+            hideButton(btnComplete);
         }
+    }
+
+    private void hideButton(Button btn) {
+        // Reference: https://stackoverflow.com/a/5756190
+        btn.setEnabled(false);
+        btn.setVisibility(View.GONE);
+    }
+
+    private void showButton(Button btn) {
+        btn.setEnabled(true);
+        btn.setVisibility(View.VISIBLE);
     }
 
     private void setPhoto(String filename, ImageView imgView) {
@@ -129,9 +140,9 @@ public class DonorRequestActivity extends AppCompatActivity {
         txtRequestStatus.setText(RequestStatus.APPROVED.name());
         Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT);
 
-        btnApprove.setEnabled(false);
-        btnDecline.setEnabled(false);
-        btnComplete.setEnabled(true); // "complete" button enabled
+        hideButton(btnApprove);
+        hideButton(btnDecline);
+        showButton(btnComplete);
     }
 
     public void handleDecline(View view) {
@@ -139,9 +150,9 @@ public class DonorRequestActivity extends AppCompatActivity {
         txtRequestStatus.setText(RequestStatus.DECLINED.name());
         Toast.makeText(this, "The request is declined", Toast.LENGTH_SHORT);
 
-        btnApprove.setEnabled(false);
-        btnDecline.setEnabled(false);
-        btnComplete.setEnabled(false);
+        hideButton(btnApprove);
+        hideButton(btnDecline);
+        hideButton(btnComplete);
     }
 
     public void handleComplete(View view) {
@@ -150,8 +161,8 @@ public class DonorRequestActivity extends AppCompatActivity {
         txtRequestStatus.setText(RequestStatus.COMPLETE.name());
         Toast.makeText(this, "The request is complete", Toast.LENGTH_SHORT);
 
-        btnApprove.setEnabled(false);
-        btnDecline.setEnabled(false);
-        btnComplete.setEnabled(false);
+        hideButton(btnApprove);
+        hideButton(btnDecline);
+        hideButton(btnComplete);
     }
 }
