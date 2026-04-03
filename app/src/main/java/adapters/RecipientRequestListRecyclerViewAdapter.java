@@ -1,5 +1,6 @@
 package adapters;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.example.foodshare.R;
 
 import java.util.ArrayList;
 
+import activities.RecipientRequestActivity;
 import models.FoodItem;
 import models.Request;
 import utils.ImageServer;
@@ -46,6 +48,15 @@ public class RecipientRequestListRecyclerViewAdapter extends RecyclerView.Adapte
         holder.txtRequestStatus.setText(request.getStatus().name());
         holder.txtFoodItemName.setText(foodItem.getName());
         holder.txtRequestDue.setText("Due: " + request.getFormattedDue());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(holder.itemView.getContext(), RecipientRequestActivity.class);
+                intent.putExtra(RecipientRequestActivity.EXTRA_REQ_ID, request.getId());
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

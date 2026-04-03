@@ -73,4 +73,7 @@
 
     <!-- Donor Request Details -->
     <string name="donor_request_details_title">Request Details</string>
+
+    <!-- Recipient Request Details -->
+    <string name="recipient_request_details_title">Request Details</string>
 </resources>
