@@ -114,9 +114,11 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
 
         // Requests
         btnRequest = findViewById(R.id.btnRequest);
-        if (requests != null && !requests.isEmpty()) {
+        if (!item.isActive())  {
             // disable button
-            disableRequest();
+            disableRequest("Not Available");
+        } else if (requests != null && !requests.isEmpty()) {
+            disableRequest("Request Pending");
         }
 
         // donor
@@ -152,16 +154,21 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         requests = dbHelper.getRequests(null, item.getId(), currentUser.getId(), Instant.now(), RequestStatus.PENDING, null);
     }
 
-    private void disableRequest() {
-        btnRequest.setText("Request Pending");
+    private void disableRequest(String btnText) {
+        btnRequest.setText(btnText);
         btnRequest.setEnabled(false);
     }
 
     public void handleRequest(View view) {
         fetchPendingRequests();
-        if (requests != null && !requests.isEmpty()) {
+        if (!item.isActive()) {
+            Toast.makeText(RecipientFoodItemActivity.this, "The food is already not active", Toast.LENGTH_SHORT);
+            disableRequest("Not Available");
+            return;
+        }
+        else if (requests != null && !requests.isEmpty()) {
             Toast.makeText(RecipientFoodItemActivity.this, "You have already requested this item", Toast.LENGTH_SHORT);
-            disableRequest();
+            disableRequest("Request Pending");
             return;
         }
         Log.d("RecipientFoodItemActivity.handleRequest", requests.toString());
@@ -173,8 +180,9 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
                 Instant due = item.getAvailableTo() == null
                         ? Instant.now().plusSeconds(60 * 60 * 24 * 3) // three days
                         : item.getAvailableTo().toInstant();
-                boolean success = dbHelper.createRequest(item.getId(), currentUser.getId(), due, RequestStatus.PENDING, null);
-                if (success) {
+                long id = dbHelper.createRequest(item.getId(), currentUser.getId(), due, RequestStatus.PENDING, null);
+                if (id > 0) {
+                    disableRequest("Request Pending");
                     Toast.makeText(RecipientFoodItemActivity.this, "Request Created", Toast.LENGTH_SHORT);
                     Intent intent = new Intent(RecipientFoodItemActivity.this, RecipientHomeActivity.class);
                     startActivity(intent);
