@@ -68,12 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // reminders
     public static final String COL_REMINDERS_USER_ID = "user_id";
     public static final String COL_REMINDERS_REQUEST_ID = "request_id";
-    public static final String COL_REMINDERS_DISPLAY_FROM = "display_from";
     public static final String COL_REMINDERS_READ_AT = "read_at";
     public static final String COL_REMINDERS_TITLE = "title";
     public static final String COL_REMINDERS_CONTENT = "content"; // "text" in the ERD
-    public static final String COL_REMINDERS_DEEPLINK_TEXT = "deeplink_text";
-    public static final String COL_REMINDERS_DEEPLINK = "deeplink";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -134,14 +131,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // reminders
         String CREATE_REMINDERS_TABLE = "CREATE TABLE " + TABLE_REMINDERS + "("
+                + COL_ID + " PRIMARY KEY AUTOINCREMENT,"
                 + COL_REMINDERS_USER_ID + " INTEGER,"
                 + COL_REMINDERS_REQUEST_ID + " INTEGER,"
-                + COL_REMINDERS_DISPLAY_FROM + " INTEGER," // UNIX EPOCH
                 + COL_REMINDERS_READ_AT + " INTEGER," // UNIX EPOCH
                 + COL_REMINDERS_TITLE + " TEXT,"
                 + COL_REMINDERS_CONTENT + " TEXT,"
-                + COL_REMINDERS_DEEPLINK_TEXT + " TEXT,"
-                + COL_REMINDERS_DEEPLINK + " TEXT,"
+
                 + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
                 + ") ON DELETE CASCADE ON UPDATE CASCADE,"
                 + "FOREIGN KEY(" + COL_REMINDERS_REQUEST_ID + ") REFERENCES " + TABLE_REQUESTS + "(" + COL_ID
