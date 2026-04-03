@@ -444,6 +444,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<FoodItem> searchFoodItemsByName(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor;
+        if (name == null) {
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS, new String[] {});
+        } else {
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS +
+                            " WHERE " + COL_FOOD_ITEM_NAME + " LIKE ?",
+                    new String[] { "%" + name + "%" });
+        }
+
+
+        ArrayList<FoodItem> results = new ArrayList<>();
+
+        if (cursor.getCount() == 0) {
+            return results;
+        }
+
+        int idIndex = cursor.getColumnIndex(COL_ID);
+        int idDonorId = cursor.getColumnIndex(COL_FOOD_ITEM_DONOR_ID);
+        int idName = cursor.getColumnIndex(COL_FOOD_ITEM_NAME);
+        int idCategory = cursor.getColumnIndex(COL_FOOD_ITEM_CATEGORY_NAME);
+        int idQuantity = cursor.getColumnIndex(COL_FOOD_ITEM_QUANTITY);
+        int idExpiry = cursor.getColumnIndex(COL_FOOD_ITEM_EXPIRY_DATE);
+        int idAvailableFrom = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_FROM);
+        int idAvailableTo = cursor.getColumnIndex(COL_FOOD_ITEM_AVAILABLE_TO);
+        int idIsFree = cursor.getColumnIndex(COL_FOOD_ITEM_IS_FREE);
+        int idPriceCents = cursor.getColumnIndex(COL_FOOD_ITEM_PRICE_CENTS);
+        int idPickUpAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_PICKUP_AVAILABLE);
+        int idDeliveryAvailable = cursor.getColumnIndex(COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE);
+        int idImageKey = cursor.getColumnIndex(COL_FOOD_ITEM_IMG_KEY);
+        int idAddedAt = cursor.getColumnIndex(COL_FOOD_ITEM_ADDED_AT);
+        int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
+
+        while (cursor.moveToNext()) {
+            FoodItem item = foodItemFromCursor(
+                    cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
+                    idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
+                    idAddedAt, idCompletedAt
+            );
+            results.add(item);
+        }
+
+        return results;
+
+    }
+
     // add requests related methods below (delimiter for avoiding conflicts)
     public long createRequest(int foodItemId, int recipientId, Instant due, RequestStatus status, Instant requestedAt) {
         SQLiteDatabase db = this.getWritableDatabase();
