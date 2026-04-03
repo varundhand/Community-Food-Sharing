@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="activities.RecipientHomeActivity">
+    tools:context="activities.RecipientRequestListActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,33 +24,17 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
-            android:textSize="34sp"
-            android:text="@string/common_recipient" />
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:text="@string/common_requests" />
 
-        <Button
-            android:id="@+id/btnViewRequests"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/recipient_home_btn_view_requests"
-            android:onClick="handleViewRequests"/>
-
-        <Button
-            android:id="@+id/btnViewNearbyFood"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/recipient_home_btn_nearby"
-            android:onClick="handleViewNearbyFood"/>
-
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="@string/common_logout"
-            android:onClick="handleLogout"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

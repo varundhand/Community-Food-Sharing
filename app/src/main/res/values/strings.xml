@@ -30,6 +30,7 @@
     <string name="common_update">Update</string>
     <string name="common_delete">Delete</string>
     <string name="common_request">Request</string>
+    <string name="common_requests">Requests</string>
     <string name="common_approve">Approve</string>
     <string name="common_decline">Decline</string>
     <string name="common_complete">Complete</string>
@@ -61,6 +62,7 @@
 
     <!-- Recipient Home -->
     <string name="recipient_home_btn_nearby">Nearby Donations</string>
+    <string name="recipient_home_btn_view_requests">View Requests</string>
 
     <!-- Nearby Food Items -->
     <string name="nearby_food_txt_nearby">Nearby Donations based on your Postal Code</string>
@@ -71,4 +73,7 @@
 
     <!-- Donor Request Details -->
     <string name="donor_request_details_title">Request Details</string>
+
+    <!-- Recipient Request Details -->
+    <string name="recipient_request_details_title">Request Details</string>
 </resources>
