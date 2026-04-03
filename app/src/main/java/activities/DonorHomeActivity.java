@@ -20,6 +20,7 @@ import models.User;
 import utils.ImageServer;
 
 public class DonorHomeActivity extends AppCompatActivity {
+    AuthHelper authHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,22 +33,13 @@ public class DonorHomeActivity extends AppCompatActivity {
             return insets;
         });
 
-        TextView donorName = findViewById(R.id.txtDonorName);
-        ImageView debugImage = findViewById(R.id.imgDebug);
+        authHelper = new AuthHelper(this);
 
-        AuthHelper authHelper = new AuthHelper(this);
+        TextView donorName = findViewById(R.id.txtDonorName);
+
         User user = authHelper.getCurrentUser();
         if (user != null) {
             donorName.setText(user.getName());
-
-
-            // TODO: remove debug image
-            String imageKey = user.getImageKey();
-            if (imageKey != null) {
-                ImageServer imageServer = new ImageServer(this);
-                Bitmap bitmap = imageServer.loadImage(imageKey);
-                debugImage.setImageBitmap(bitmap);
-            }
         }
 
     }
@@ -64,6 +56,11 @@ public class DonorHomeActivity extends AppCompatActivity {
 
     public void handleNewFood(View view) {
         Intent intent = new Intent(DonorHomeActivity.this, NewFoodItemActivity.class);
+        startActivity(intent);
+    }
+
+    public void handleEditProfile(View view) {
+        Intent intent = new Intent(DonorHomeActivity.this, EditProfileActivity.class);
         startActivity(intent);
     }
 

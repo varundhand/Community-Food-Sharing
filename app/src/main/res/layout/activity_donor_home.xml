@@ -55,18 +55,20 @@
             android:text="@string/donor_home_btn_new_food"
             android:onClick="handleNewFood"/>
         <Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/common_edit_profile"
+            android:onClick="handleEditProfile"/>
+
+        <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="@string/common_logout"
             android:onClick="handleLogout"/>
-
-        <!-- TODO: remove the debug image below -->
-        <ImageView
-            android:id="@+id/imgDebug"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

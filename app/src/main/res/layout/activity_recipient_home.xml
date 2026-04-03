@@ -61,7 +61,15 @@
             android:onClick="handleViewNearbyFood"/>
 
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/common_edit_profile"
+            android:onClick="handleEditProfile"/>
+
+        <Button
+            android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
