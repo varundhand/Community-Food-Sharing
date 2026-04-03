@@ -7,12 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.foodshare.R;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import models.FoodItem;
+import models.Reminder;
 import models.Request;
 import models.RequestStatus;
 import models.User;
@@ -71,6 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_REMINDERS_READ_AT = "read_at";
     public static final String COL_REMINDERS_TITLE = "title";
     public static final String COL_REMINDERS_CONTENT = "content"; // "text" in the ERD
+    public static final String COL_REMINDERS_ADDED_AT = "added_at";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -131,12 +135,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // reminders
         String CREATE_REMINDERS_TABLE = "CREATE TABLE " + TABLE_REMINDERS + "("
-                + COL_ID + " PRIMARY KEY AUTOINCREMENT,"
+                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COL_REMINDERS_USER_ID + " INTEGER,"
                 + COL_REMINDERS_REQUEST_ID + " INTEGER,"
                 + COL_REMINDERS_READ_AT + " INTEGER," // UNIX EPOCH
                 + COL_REMINDERS_TITLE + " TEXT,"
                 + COL_REMINDERS_CONTENT + " TEXT,"
+                + COL_REMINDERS_ADDED_AT + " INTEGER,"
 
                 + "FOREIGN KEY(" + COL_REMINDERS_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID
                 + ") ON DELETE CASCADE ON UPDATE CASCADE,"
@@ -651,6 +656,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // add reminders related methods below (delimiter for avoiding conflicts)
+    // add requests related methods below (delimiter for avoiding conflicts)
+    public long createReminder(int userId, int requestId, String title, String content, Instant addedAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_REMINDERS_USER_ID, userId);
+        values.put(COL_REMINDERS_REQUEST_ID, requestId);
+        values.put(COL_REMINDERS_TITLE, title);
+        values.put(COL_REMINDERS_CONTENT, content);
+        if (addedAt == null) addedAt = Instant.now();
+        values.put(COL_REMINDERS_ADDED_AT, addedAt.getEpochSecond());
+
+        // returns primary key (-1 if failed)
+        return db.insert(TABLE_REMINDERS, null, values);
+    }
+
+    public ArrayList<Reminder> getReminders(Integer userId, Integer requestId, boolean unreadOnly) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ArrayList<String> where = new ArrayList<>();
+        ArrayList<String> args = new ArrayList<>();
+        if (userId != null) {
+            where.add(COL_REMINDERS_USER_ID + " = ?");
+            args.add(String.valueOf(userId));
+        }
+        if (requestId != null) {
+            where.add(COL_REMINDERS_REQUEST_ID + " = ?");
+            args.add(String.valueOf(requestId));
+        }
+        if (unreadOnly) {
+            where.add(COL_REMINDERS_READ_AT + " IS NOT NULL");
+        }
+
+        String whereStr = String.join(" AND " , where);
+        String[] argsArr = new String[args.size()];
+        args.toArray(argsArr);
+        String sqlTpl = "SELECT * FROM " + TABLE_REMINDERS + " WHERE " + whereStr +
+                " ORDER BY " + COL_REMINDERS_ADDED_AT + " ASC ";
+
+        Cursor cursor = db.rawQuery(sqlTpl, argsArr);
+
+        int idId = cursor.getColumnIndex(COL_ID);
+        int idUserId = cursor.getColumnIndex(COL_REMINDERS_USER_ID);
+        int idRequestId = cursor.getColumnIndex(COL_REMINDERS_REQUEST_ID);
+        int idReadAt = cursor.getColumnIndex(COL_REMINDERS_READ_AT);
+        int idTitle = cursor.getColumnIndex(COL_REMINDERS_TITLE);
+        int idContent = cursor.getColumnIndex(COL_REMINDERS_CONTENT);
+        int idAddedAt= cursor.getColumnIndex(COL_REMINDERS_ADDED_AT);
+
+        ArrayList<Reminder> result = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(idId);
+            int retUserId = cursor.getInt(idUserId);
+            int retRequestId = cursor.getInt(idRequestId);
+            long readAtEpochSecs = cursor.getLong(idReadAt);
+            ZonedDateTime readAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(readAtEpochSecs), ZoneId.systemDefault());
+            String title = cursor.getString(idTitle);
+            String content = cursor.getString(idContent);
+            long addedAtEpochSecs = cursor.getLong(idAddedAt);
+            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs), ZoneId.systemDefault());
+
+            result.add(new Reminder(id, retUserId, retRequestId, readAt, title, content, addedAt));
+        }
+
+        return result;
+    }
 
     // add methods that involves multiple tables below
 
