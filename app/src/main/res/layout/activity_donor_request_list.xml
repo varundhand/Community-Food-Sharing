@@ -27,7 +27,27 @@
             android:layout_margin="10dp"
             android:textSize="24sp"
             android:gravity="center"
-            android:text="@string/common_request" />
+            android:text="@string/common_requests" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginVertical="5dp"
+            android:gravity="start">
+            <TextView
+                android:id="@+id/lblStatus"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:textSize="20sp"
+                android:text="@string/common_status"/>
+            <Spinner
+                android:id="@+id/spinnerStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
