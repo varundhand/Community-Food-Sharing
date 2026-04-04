@@ -24,9 +24,15 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_marginTop="30dp"
             android:textSize="34sp"
-            android:text="@string/common_recipient" />
+            android:text="@string/common_hello_comma" />
+        <TextView
+            android:id="@+id/txtRecipientName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:textSize="34sp" />
 
         <Button
             android:id="@+id/btnViewReminders"
