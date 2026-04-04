@@ -37,6 +37,7 @@
     <string name="common_remind">Remind</string>
     <string name="common_reminders">Reminders</string>
     <string name="common_edit_profile">Edit Profile</string>
+    <string name="common_status">Status</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
