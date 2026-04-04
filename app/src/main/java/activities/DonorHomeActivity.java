@@ -3,11 +3,13 @@ package activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,12 +17,20 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
+import java.util.ArrayList;
+
 import database.AuthHelper;
+import database.DatabaseHelper;
+import models.Reminder;
+import models.Request;
+import models.RequestStatus;
 import models.User;
 import utils.ImageServer;
 
 public class DonorHomeActivity extends AppCompatActivity {
     AuthHelper authHelper;
+    DatabaseHelper dbHelper;
+    ArrayList<Request> pendingRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +44,35 @@ public class DonorHomeActivity extends AppCompatActivity {
         });
 
         authHelper = new AuthHelper(this);
+        dbHelper = new DatabaseHelper(this);
 
         TextView donorName = findViewById(R.id.txtDonorName);
 
         User user = authHelper.getCurrentUser();
-        if (user != null) {
-            donorName.setText(user.getName());
+
+        if (user == null) {
+            authHelper.logout();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
         }
 
+        donorName.setText(user.getName());
+
+        pendingRequests = dbHelper.getRequests(null, null, null, null, RequestStatus.PENDING, user.getId());
+
+        if (!pendingRequests.isEmpty()) {
+            String message;
+            if (pendingRequests.size() == 1) {
+                message = "There is a pending request";
+            } else {
+                message = String.format("There are %d pending requests", pendingRequests.size());
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(true);
+            builder.setMessage(message);
+            builder.show();
+        }
     }
 
     public void handleViewRequests(View view) {
