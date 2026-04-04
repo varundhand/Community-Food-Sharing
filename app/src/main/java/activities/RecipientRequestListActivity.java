@@ -1,6 +1,11 @@
 package activities;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,14 +22,24 @@ import java.util.ArrayList;
 import adapters.RecipientRequestListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
+import models.FoodCategory;
 import models.Request;
+import models.RequestStatus;
 import models.User;
 
 public class RecipientRequestListActivity extends AppCompatActivity {
+    private final String SPINNER_VALUE_ALL = "ALL";
+
     DatabaseHelper dbHelper;
     AuthHelper authHelper;
+
+    Spinner spinnerStatus;
     RecyclerView recyclerView;
     ArrayList<Request> requests;
+
+    ArrayList<String> spinnerValues;
+
+    User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +55,48 @@ public class RecipientRequestListActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         authHelper = new AuthHelper(this);
 
+        spinnerStatus = findViewById(R.id.spinnerStatus);
         recyclerView = findViewById(R.id.recyclerView);
 
-        User user = authHelper.getCurrentUser();
-        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null);
-        RecipientRequestListRecyclerViewAdapter adapter = new RecipientRequestListRecyclerViewAdapter(requests);
-        recyclerView.setAdapter(adapter);
+        user = authHelper.getCurrentUser();
+
+        // spinner from enum
+        spinnerValues = new ArrayList<>();
+        spinnerValues.add(SPINNER_VALUE_ALL);
+        for (RequestStatus status : RequestStatus.values()) {
+            spinnerValues.add(status.name());
+        }
+        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerValues);
+        spinnerStatus.setAdapter(spinnerAdapter);
+        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                if (pos == 0) {
+                    recyclerView.swapAdapter(selectAll(), true); // id is not stable
+                    return;
+                }
+                String statusStr = spinnerValues.get(pos);
+                recyclerView.swapAdapter(selectByStatus(RequestStatus.valueOf(statusStr)), true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        recyclerView.setAdapter(selectAll());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private RecipientRequestListRecyclerViewAdapter selectAll() {
+        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null);
+        return new RecipientRequestListRecyclerViewAdapter(requests);
+    }
+
+    private RecipientRequestListRecyclerViewAdapter selectByStatus(RequestStatus status) {
+        requests = dbHelper.getRequests(null, null, user.getId(), null, status, null);
+        return new RecipientRequestListRecyclerViewAdapter(requests);
     }
 
 }

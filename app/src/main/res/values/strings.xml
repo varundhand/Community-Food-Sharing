@@ -37,6 +37,7 @@
     <string name="common_remind">Remind</string>
     <string name="common_reminders">Reminders</string>
     <string name="common_edit_profile">Edit Profile</string>
+    <string name="common_status">Status</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
@@ -72,6 +73,7 @@
     <string name="recipient_home_btn_search">Search Donations</string>
     <string name="recipient_home_btn_nearby">Nearby Donations</string>
     <string name="recipient_home_btn_view_requests">View Requests</string>
+    <string name="recipient_home_btn_view_request_history">Request History</string>
 
     <!-- Nearby Food Items -->
     <string name="nearby_food_txt_nearby">Nearby Donations based on your Postal Code</string>
@@ -89,4 +91,7 @@
     <!-- Recipient Search Food Items -->
     <string name="recipient_food_items_search_title">Search Donations</string>
     <string name="recipient_food_items_search_search_hint">🔎Search</string>
+
+    <!-- Recipient Request History -->
+    <string name="recipient_request_history_title">Request History</string>
 </resources>
