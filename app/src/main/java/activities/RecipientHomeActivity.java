@@ -53,6 +53,11 @@ public class RecipientHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void handleViewRequestHistory(View view) {
+        Intent intent = new Intent(RecipientHomeActivity.this, RecipientRequestHistoryActivity.class);
+        startActivity(intent);
+    }
+
     public void handleLogout(View view) {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();

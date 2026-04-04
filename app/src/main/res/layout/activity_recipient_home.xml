@@ -69,6 +69,14 @@
             android:onClick="handleEditProfile"/>
 
         <Button
+            android:id="@+id/btnViewRequestHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/recipient_home_btn_view_request_history"
+            android:onClick="handleViewRequestHistory"/>
+
+        <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

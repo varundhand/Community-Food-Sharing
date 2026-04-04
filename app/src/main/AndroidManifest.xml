@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodShare">
         <activity
+            android:name="activities.RecipientRequestHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name="activities.EditProfileActivity"
             android:exported="false" />
         <activity
