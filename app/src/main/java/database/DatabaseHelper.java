@@ -815,7 +815,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             args.add(String.valueOf(requestId));
         }
         if (unreadOnly) {
-            where.add(COL_REMINDERS_READ_AT + " IS NOT NULL");
+            where.add(COL_REMINDERS_READ_AT + " IS NULL");
         }
 
         String whereStr = String.join(" AND " , where);
