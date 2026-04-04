@@ -64,6 +64,11 @@ public class DonorHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void handleFoodItemHistory(View view) {
+        Intent intent = new Intent(DonorHomeActivity.this, DonorFoodItemHistoryActivity.class);
+        startActivity(intent);
+    }
+
     public void handleLogout(View view) {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();

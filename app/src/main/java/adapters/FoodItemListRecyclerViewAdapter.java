@@ -1,5 +1,6 @@
 package adapters;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -21,10 +22,12 @@ import models.FoodItem;
 import utils.ImageServer;
 
 public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodItemListRecyclerViewAdapter.ViewHolder> {
+    Class<?> detailClass;
     ArrayList<FoodItem> items;
 
-    public FoodItemListRecyclerViewAdapter(ArrayList<FoodItem> items) {
+    public FoodItemListRecyclerViewAdapter(ArrayList<FoodItem> items, Class<?> detailClass) {
         this.items = items;
+        this.detailClass = detailClass;
     }
 
     @NonNull
@@ -58,7 +61,7 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(holder.itemView.getContext(), EditFoodItemActivity.class);
+                Intent intent = new Intent(holder.itemView.getContext(), detailClass);
                 intent.putExtra("FoodItemId", item.getId());
                 holder.itemView.getContext().startActivity(intent);
             }

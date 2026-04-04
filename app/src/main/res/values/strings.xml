@@ -14,6 +14,7 @@
     <string name="common_login">Login</string>
     <string name="common_logout">Logout</string>
     <string name="common_hello_comma">Hello</string>
+    <string name="common_food_items">Food Items</string>
     <string name="common_food_name">Food Name</string>
     <string name="common_category">Category</string>
     <string name="common_quantity">Quantity</string>
@@ -60,6 +61,7 @@
     <string name="donor_home_btn_view_requests">View Requests</string>
     <string name="donor_home_btn_new_food">Create a new donation</string>
     <string name="donor_home_btn_list_food_items">View donation items</string>
+    <string name="donor_home_btn_view_history">Donation History</string>
 
     <!-- New Food -->
     <string name="new_food_txt_title">New Donation</string>
@@ -68,6 +70,9 @@
     <!-- Edit Food -->
     <string name="edit_food_txt_title">View/Edit Donation</string>
     <string name="edit_food_btn_upload_img">Change Food Image</string>
+
+    <!-- Donor Readonly Food item -->
+    <string name="donor_readonly_food_item_title">View Donation</string>
 
     <!-- Recipient Home -->
     <string name="recipient_home_btn_search">Search Donations</string>
@@ -81,6 +86,9 @@
     <!-- Recipient Food Detail -->
     <string name="recipient_food_detail_title">Donation Detail</string>
     <string name="recipient_food_detail_request_item">Request This Item</string>
+
+    <!-- Donor Food History -->
+    <string name="donor_food_item_history_title">Donation History</string>
 
     <!-- Donor Request Details -->
     <string name="donor_request_details_title">Request Details</string>
