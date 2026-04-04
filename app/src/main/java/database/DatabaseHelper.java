@@ -822,7 +822,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] argsArr = new String[args.size()];
         args.toArray(argsArr);
         String sqlTpl = "SELECT * FROM " + TABLE_REMINDERS + " WHERE " + whereStr +
-                " ORDER BY " + COL_REMINDERS_ADDED_AT + " ASC ";
+                " ORDER BY " + COL_REMINDERS_ADDED_AT + " DESC ";
 
         Cursor cursor = db.rawQuery(sqlTpl, argsArr);
 
@@ -839,8 +839,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int id = cursor.getInt(idId);
             int retUserId = cursor.getInt(idUserId);
             int retRequestId = cursor.getInt(idRequestId);
-            long readAtEpochSecs = cursor.getLong(idReadAt);
-            ZonedDateTime readAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(readAtEpochSecs), ZoneId.systemDefault());
+            ZonedDateTime readAt = null;
+            if (!cursor.isNull(idReadAt)) {
+                long readAtEpochSecs = cursor.getLong(idReadAt);
+                readAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(readAtEpochSecs), ZoneId.systemDefault());
+            }
             String title = cursor.getString(idTitle);
             String content = cursor.getString(idContent);
             long addedAtEpochSecs = cursor.getLong(idAddedAt);

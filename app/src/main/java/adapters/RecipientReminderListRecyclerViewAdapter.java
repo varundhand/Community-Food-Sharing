@@ -1,6 +1,7 @@
 package adapters;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,13 @@ public class RecipientReminderListRecyclerViewAdapter extends RecyclerView.Adapt
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Reminder item = reminders.get(position);
-        holder.txtReminderTitle.setText(item.getTitle());
+        String titlePrefix = "";
+
+        if (!item.isRead()) {
+            titlePrefix += "[new] ";
+        }
+        holder.txtReminderTitle.setText(titlePrefix + item.getTitle());
+
         holder.txtReminderContent.setText(item.getContent());
         holder.txtReminderAddedAt.setText(item.getFormattedAddedAt());
 
