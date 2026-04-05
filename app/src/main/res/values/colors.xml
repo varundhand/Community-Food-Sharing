@@ -13,6 +13,8 @@
     <color name="primary_fixed">#C9EF99</color>
     <color name="on_primary_fixed">#102000</color>
 
+    <color name="secondary">#7B426F</color>
+    <color name="on_secondary">#FFFFFF</color>
     <color name="secondary_container">#FEB6EA</color>
     <color name="on_secondary_container">#7B426F</color>
     <color name="tertiary_fixed">#FFD7F1</color>
