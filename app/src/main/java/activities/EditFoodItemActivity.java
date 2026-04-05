@@ -42,8 +42,7 @@ import utils.ImageServer;
 
 public class EditFoodItemActivity extends AppCompatActivity {
     EditText inputName, inputQuantity, inputExpiry, inputAvailableFrom, inputAvailableTo, inputPrice;
-    RadioButton rdFree, rdDiscounted;
-    CheckBox chkPickUp, chkDelivery;
+    RadioButton rdFree, rdDiscounted, rdPickup, rdDelivery;
     Spinner spinnerCategory;
     ImageView imgUploadPreview;
     Button btnSave, btnDelete;
@@ -92,8 +91,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
         rdFree = findViewById(R.id.rdFree);
         rdDiscounted = findViewById(R.id.rdDiscounted);
 
-        chkPickUp = findViewById(R.id.chkPickup);
-        chkDelivery = findViewById(R.id.chkDelivery);
+        rdPickup = findViewById(R.id.rdPickup);
+        rdDelivery = findViewById(R.id.rdDelivery);
 
         btnSave = findViewById(R.id.btnSaveFood);
         btnDelete = findViewById(R.id.btnDeleteFood);
@@ -176,8 +175,9 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         inputPrice.setText(String.format("%.2f", item.getPriceDollar()));
 
-        if (item.isPickupAvailable()) chkPickUp.setChecked(true);
-        if (item.isDeliveryAvailable()) chkDelivery.setChecked(true);
+        // pickup and delivery are mutually exclusive
+        if (item.isPickupAvailable()) rdPickup.setChecked(true);
+        else rdDelivery.setChecked(true);
     }
 
     public void pickPhoto(View view) {
@@ -245,11 +245,11 @@ public class EditFoodItemActivity extends AppCompatActivity {
             }
         }
 
-        boolean isPickUpAvailable = chkPickUp.isChecked();
-        boolean isDeliveryAvailable = chkDelivery.isChecked();
+        boolean isPickup = rdPickup.isChecked();
+        boolean isDelivery = rdDelivery.isChecked();
 
-        if (!isPickUpAvailable && !isDeliveryAvailable) {
-            Toast.makeText(this, "Please select Pick-Up and/or Delivery", Toast.LENGTH_SHORT).show();
+        if (!isPickup && !isDelivery) {
+            Toast.makeText(this, "Please select Pick-Up or Delivery", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -261,8 +261,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         FoodItem updatedItem = new FoodItem(item.getId(), item.getDonorId(), foodName,
                 categoryName, quantity, expiry, imageKey, availableFrom, availableTo,
-                item.getAddedAt(), item.getReservedAt(), item.getCompletedAt(), isFree, isPickUpAvailable,
-                isDeliveryAvailable, cents);
+                item.getAddedAt(), item.getReservedAt(), item.getCompletedAt(), isFree, isPickup,
+                isDelivery, cents);
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
             boolean success = dbHelper.saveFoodItem(updatedItem);
