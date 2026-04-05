@@ -7,11 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,13 +31,12 @@ import java.time.Instant;
 import database.AuthHelper;
 import database.DatabaseHelper;
 import models.FoodCategory;
-import models.User;
 import utils.ImageServer;
 
 public class NewFoodItemActivity extends AppCompatActivity {
     EditText inputName, inputQuantity, inputExpiry, inputAvailableFrom, inputAvailableTo, inputPrice;
     RadioButton rdFree, rdDiscounted, rdPickup, rdDelivery;
-    Spinner spinnerCategory;
+    AutoCompleteTextView spinnerFoodCategory;
     ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     Uri photoUri;
@@ -67,12 +65,21 @@ public class NewFoodItemActivity extends AppCompatActivity {
         rdPickup = findViewById(R.id.rdPickup);
         rdDelivery = findViewById(R.id.rdDelivery);
 
-        spinnerCategory = findViewById(R.id.spinnerFoodCategory);
+        spinnerFoodCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
 
         // spinner from enum
-        // reference: https://stackoverflow.com/a/8619228
-        spinnerCategory.setAdapter(new ArrayAdapter<FoodCategory>(this, android.R.layout.simple_spinner_item, FoodCategory.values()));
+        FoodCategory[] categories = FoodCategory.values();
+
+        // Create an ArrayAdapter using a standard Android dropdown layout
+        ArrayAdapter<FoodCategory> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                categories
+        );
+
+        // Attach the adapter
+        spinnerFoodCategory.setAdapter(adapter);
 
         pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -85,7 +92,6 @@ public class NewFoodItemActivity extends AppCompatActivity {
                             photoUri = null;
 
                             // clear image view
-                            // reference: https://stackoverflow.com/a/8243184
                             imgUploadPreview.setImageResource(0);
                             return;
                         }
@@ -111,12 +117,20 @@ public class NewFoodItemActivity extends AppCompatActivity {
             return;
         }
 
-        FoodCategory category = (FoodCategory) spinnerCategory.getSelectedItem();
+        // Fix: Correctly get the selected category from AutoCompleteTextView
+        String selectedCategoryText = spinnerFoodCategory.getText().toString();
+        FoodCategory category = FoodCategory.NOT_SELECTED;
+        for (FoodCategory fc : FoodCategory.values()) {
+            if (fc.toString().equals(selectedCategoryText)) {
+                category = fc;
+                break;
+            }
+        }
+
         if (category == FoodCategory.NOT_SELECTED) {
             Toast.makeText(this, "Please Select a Category", Toast.LENGTH_SHORT).show();
             return;
         }
-        String categoryName = category.name();
 
         String quantity = inputQuantity.getText().toString();
         if (quantity.isEmpty()) {
@@ -126,6 +140,9 @@ public class NewFoodItemActivity extends AppCompatActivity {
 
         // allow empty for expiry, availability
         String expiry = inputExpiry.getText().toString();
+        
+        // Note: Instant.parse expects full ISO-8601 string. 
+        // If input is just time (HH:mm), this might still crash.
         Instant availableFrom;
         try {
             availableFrom = Instant.parse(inputAvailableFrom.getText().toString());
@@ -139,6 +156,7 @@ public class NewFoodItemActivity extends AppCompatActivity {
         } catch (Exception e) {
             availableTo = null;
         }
+        
         boolean isFree = rdFree.isChecked();
         boolean isDiscounted = rdDiscounted.isChecked();
         if (isFree == isDiscounted) {
@@ -178,7 +196,8 @@ public class NewFoodItemActivity extends AppCompatActivity {
         int currentUserId = new AuthHelper(this).getCurrentUser().getId();
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
-            boolean success = dbHelper.saveFoodItem(currentUserId, foodName, categoryName, quantity,
+            // Fix: Use category.name() and fix undefined 'categoryName' variable
+            boolean success = dbHelper.saveFoodItem(currentUserId, foodName, category.name(), quantity,
                     expiry, availableFrom, availableTo, isFree, cents, isPickup,
                     isDelivery, imageKey);
             if (success) {
