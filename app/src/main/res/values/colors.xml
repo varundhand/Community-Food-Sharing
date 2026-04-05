@@ -3,4 +3,20 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="splash_background">#000000</color>
+    <color name="surface">#FAF9F7</color>
+    <color name="on_surface">#1A1C1B</color>
+    <color name="on_surface_variant">#44483C</color>
+
+    <color name="primary">#1C3200</color>
+    <color name="primary_dark">#2D4A05</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_fixed">#C9EF99</color>
+    <color name="on_primary_fixed">#102000</color>
+
+    <color name="secondary_container">#FEB6EA</color>
+    <color name="on_secondary_container">#7B426F</color>
+    <color name="tertiary_fixed">#FFD7F1</color>
+    <color name="on_tertiary_fixed">#370530</color>
+
+    <color name="glass_card_bg">#26FEB6EA</color>
 </resources>
