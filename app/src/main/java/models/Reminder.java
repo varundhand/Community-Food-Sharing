@@ -49,6 +49,8 @@ public class Reminder {
         return formatZonedDateTime(addedAt, null);
     }
 
+    public boolean isRead() { return readAt != null; }
+
     private String formatZonedDateTime(ZonedDateTime date, String defaultText) {
         if (date == null) return defaultText == null ? "" : defaultText;
         // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle

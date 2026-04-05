@@ -1,6 +1,12 @@
 package activities;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,16 +21,24 @@ import com.example.foodshare.R;
 import java.util.ArrayList;
 
 import adapters.DonorRequestListRecyclerViewAdapter;
+import adapters.RecipientRequestListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
 import models.Request;
+import models.RequestStatus;
+import models.User;
 
 public class DonorRequestListActivity extends AppCompatActivity {
+    private final String SPINNER_VALUE_ALL = "ALL";
+
     DatabaseHelper dbHelper;
     AuthHelper authHelper;
     ArrayList<Request> requests;
 
+    Spinner spinnerStatus;
     RecyclerView recyclerView;
+
+    User donor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +53,50 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         authHelper = new AuthHelper(this);
-        requests = dbHelper.getRequests(null, null, null, null, null, authHelper.getCurrentUser().getId());
 
+        spinnerStatus = findViewById(R.id.spinnerStatus);
         recyclerView = findViewById(R.id.recyclerView);
-        DonorRequestListRecyclerViewAdapter adapter = new DonorRequestListRecyclerViewAdapter(requests);
-        recyclerView.setAdapter(adapter);
+
+        ArrayList<String> spinnerValues;
+
+        donor = authHelper.getCurrentUser();
+
+        // spinner from enum
+        spinnerValues = new ArrayList<>();
+        spinnerValues.add(SPINNER_VALUE_ALL);
+        for (RequestStatus status : RequestStatus.values()) {
+            spinnerValues.add(status.name());
+        }
+        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerValues);
+        spinnerStatus.setAdapter(spinnerAdapter);
+        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                if (pos == 0) {
+                    recyclerView.swapAdapter(selectAll(), true); // id is not stable
+                    return;
+                }
+                String statusStr = spinnerValues.get(pos);
+                recyclerView.swapAdapter(selectByStatus(RequestStatus.valueOf(statusStr)), true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        recyclerView.setAdapter(selectAll());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private DonorRequestListRecyclerViewAdapter selectAll() {
+        requests = dbHelper.getRequests(null, null, null,null, null, donor.getId());
+        return new DonorRequestListRecyclerViewAdapter(requests);
+    }
+
+    private DonorRequestListRecyclerViewAdapter selectByStatus(RequestStatus status) {
+        requests = dbHelper.getRequests(null, null, null, null, status, donor.getId());
+        return new DonorRequestListRecyclerViewAdapter(requests);
     }
 }

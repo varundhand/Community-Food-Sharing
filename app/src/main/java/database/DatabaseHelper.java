@@ -385,10 +385,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-    public ArrayList<FoodItem> listFoodItem(int donorId) {
+    public ArrayList<FoodItem> listFoodItem(int donorId, boolean onlyActive) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_FOOD_ITEM_DONOR_ID + "=?",
-                new String[] { String.format("%d", donorId) });
+
+        ArrayList<String> wheres = new ArrayList<>();
+        ArrayList<String> args = new ArrayList<>();
+
+        wheres.add(COL_FOOD_ITEM_DONOR_ID + "=?");
+        args.add(String.format("%d", donorId));
+
+        if (onlyActive) {
+            long now = Instant.now().getEpochSecond();
+            wheres.add( COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
+            args.add(String.valueOf(now));
+
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            args.add(String.valueOf(now));
+        }
+
+        String[] argsArr = args.toArray(new String[0]);
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + String.join(" AND ", wheres),
+                argsArr);
 
         ArrayList<FoodItem> results = new ArrayList<>();
 
@@ -427,13 +448,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<FoodItem> listNearbyFoodItems(String postalCode) {
         SQLiteDatabase db = this.getReadableDatabase();
+        String now = String.valueOf(Instant.now().getEpochSecond());
 
         // Search Food that are posted by donors who has the same first 3 digits of postalCode
         Cursor cursor = db.rawQuery("SELECT " + TABLE_FOOD_ITEMS + ".* FROM " + TABLE_FOOD_ITEMS +
                         " JOIN " + TABLE_USERS +
                         " ON " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = " + TABLE_USERS + "." + COL_ID +
-                        " WHERE " + TABLE_USERS + "." +COL_USER_TYPE + "=? AND " + TABLE_USERS + "." +COL_USER_POSTAL_CODE + " LIKE ?",
-                new String[] { UserType.DONOR.name(), postalCode.substring(0, 3) + "%" });
+                        " WHERE " + TABLE_USERS + "." +COL_USER_TYPE + "=? AND " + TABLE_USERS + "." +COL_USER_POSTAL_CODE + " LIKE ? " +
+                        " AND " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " IS NULL " +
+                        " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?) " +
+                        " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " > ?) ",
+                new String[] { UserType.DONOR.name(), postalCode.substring(0, 3) + "%", now, now });
 
         ArrayList<FoodItem> results = new ArrayList<>();
 
@@ -470,15 +495,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<FoodItem> searchFoodItemsByName(String name) {
+    public ArrayList<FoodItem> searchFoodItemsByName(String name, boolean onlyActive) {
         SQLiteDatabase db = this.getReadableDatabase();
+
+
+        ArrayList<String> wheres = new ArrayList<>();
+        ArrayList<String> args = new ArrayList<>();
+
+        if (name != null) {
+            wheres.add(COL_FOOD_ITEM_NAME + " LIKE ?");
+            args.add("%" + name + "%");
+        }
+
+        if (onlyActive) {
+            long now = Instant.now().getEpochSecond();
+            wheres.add( COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
+            args.add(String.valueOf(now));
+
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            args.add(String.valueOf(now));
+        }
+
+        String[] argsArr = args.toArray(new String[0]);
+
         Cursor cursor;
-        if (name == null) {
+        if (wheres.isEmpty()) {
             cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS, new String[] {});
         } else {
             cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS +
-                            " WHERE " + COL_FOOD_ITEM_NAME + " LIKE ?",
-                    new String[] { "%" + name + "%" });
+                            " WHERE " + String.join(" AND ", wheres), argsArr);
         }
 
 
@@ -768,14 +815,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             args.add(String.valueOf(requestId));
         }
         if (unreadOnly) {
-            where.add(COL_REMINDERS_READ_AT + " IS NOT NULL");
+            where.add(COL_REMINDERS_READ_AT + " IS NULL");
         }
 
         String whereStr = String.join(" AND " , where);
         String[] argsArr = new String[args.size()];
         args.toArray(argsArr);
         String sqlTpl = "SELECT * FROM " + TABLE_REMINDERS + " WHERE " + whereStr +
-                " ORDER BY " + COL_REMINDERS_ADDED_AT + " ASC ";
+                " ORDER BY " + COL_REMINDERS_ADDED_AT + " DESC ";
 
         Cursor cursor = db.rawQuery(sqlTpl, argsArr);
 
@@ -792,8 +839,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int id = cursor.getInt(idId);
             int retUserId = cursor.getInt(idUserId);
             int retRequestId = cursor.getInt(idRequestId);
-            long readAtEpochSecs = cursor.getLong(idReadAt);
-            ZonedDateTime readAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(readAtEpochSecs), ZoneId.systemDefault());
+            ZonedDateTime readAt = null;
+            if (!cursor.isNull(idReadAt)) {
+                long readAtEpochSecs = cursor.getLong(idReadAt);
+                readAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(readAtEpochSecs), ZoneId.systemDefault());
+            }
             String title = cursor.getString(idTitle);
             String content = cursor.getString(idContent);
             long addedAtEpochSecs = cursor.getLong(idAddedAt);
