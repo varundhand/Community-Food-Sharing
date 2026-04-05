@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#F69AC8"
     tools:context="activities.LoginActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,8 +15,8 @@
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,8 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:textSize="24dp"
-            android:text="@string/login_txt_welcome"/>
+            android:text="@string/login_txt_welcome"
+            android:textSize="24dp" />
 
         <TextView
             android:id="@+id/loginTxtMessage"
@@ -35,8 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:textSize="24dp"
-            android:text="@string/login_txt_message"/>
+            android:text="@string/login_txt_message"
+            android:textSize="24dp" />
 
         <EditText
             android:id="@+id/inputEmail"
@@ -65,16 +67,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#2B3F2E"
+            android:onClick="handleLogin"
             android:text="@string/common_login"
-            android:onClick="handleLogin"/>
+            android:textColor="#F69AC8" />
 
         <TextView
             android:id="@+id/welcomeBtnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginTop="20dp"
-            android:text="@string/common_register"
-            android:onClick="handleClickRegister"/>
+            android:gravity="center"
+            android:onClick="handleClickRegister"
+            android:text="@string/common_register" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
