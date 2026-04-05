@@ -114,7 +114,7 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
 
         // Requests
         btnRequest = findViewById(R.id.btnRequest);
-        if (!item.isActive())  {
+        if (!item.isActive() || item.isReserved())  {
             // disable button
             disableRequest("Not Available");
         } else if (requests != null && !requests.isEmpty()) {

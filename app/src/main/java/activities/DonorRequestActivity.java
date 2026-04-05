@@ -146,6 +146,7 @@ public class DonorRequestActivity extends AppCompatActivity {
 
     public void handleApprove(View view) {
         dbHelper.updateRequestStatus(request.getId(), RequestStatus.APPROVED);
+        dbHelper.reserveFoodItem(request.getFoodItemId(), Instant.now());
         txtRequestStatus.setText(RequestStatus.APPROVED.name());
         Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT);
 

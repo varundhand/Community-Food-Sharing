@@ -38,6 +38,8 @@ public class Request {
 
     public FoodItem getFoodItem() { return foodItem; }
 
+    public int getFoodItemId() { return foodItemId; }
+
     public User getRecipient() { return recipient; }
 
     public RequestStatus getStatus() { return status; }

@@ -248,7 +248,7 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         FoodItem updatedItem = new FoodItem(item.getId(), item.getDonorId(), foodName,
                 categoryName, quantity, expiry, imageKey, availableFrom, availableTo,
-                item.getAddedAt(), item.getCompletedAt(), isFree, isPickUpAvailable,
+                item.getAddedAt(), null, item.getCompletedAt(), isFree, isPickUpAvailable,
                 isDeliveryAvailable, cents);
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {

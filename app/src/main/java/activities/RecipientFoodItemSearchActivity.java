@@ -43,7 +43,7 @@ public class RecipientFoodItemSearchActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         inputSearch = findViewById(R.id.inputSearch);
 
-        foodItems = dbHelper.searchFoodItemsByName(null, true);
+        foodItems = dbHelper.searchFoodItemsByName(null, true, true);
         RecipientFoodItemListRecyclerViewAdapter adapter = new RecipientFoodItemListRecyclerViewAdapter(foodItems);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -54,7 +54,7 @@ public class RecipientFoodItemSearchActivity extends AppCompatActivity {
                 if (act == EditorInfo.IME_ACTION_SEARCH) {
                     // Reference https://stackoverflow.com/a/26645164
 
-                    foodItems = dbHelper.searchFoodItemsByName(inputSearch.getText().toString(), true);
+                    foodItems = dbHelper.searchFoodItemsByName(inputSearch.getText().toString(), true, true);
                     RecipientFoodItemListRecyclerViewAdapter adapter = new RecipientFoodItemListRecyclerViewAdapter(foodItems);
                     recyclerView.swapAdapter(adapter, false);
                 }

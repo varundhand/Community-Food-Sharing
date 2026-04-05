@@ -7,13 +7,13 @@ import java.time.format.DateTimeFormatter;
 public class FoodItem {
     int id, donorId;
     String name, category, quantity, expiry, imageKey;
-    ZonedDateTime availableFrom, availableTo, addedAt, completedAt;
+    ZonedDateTime availableFrom, availableTo, addedAt, reservedAt, completedAt;
     boolean isFree, isPickupAvailable, isDeliveryAvailable;
     int priceCents;
 
     public FoodItem(int id, int donorId, String name, String category, String quantity,
                     String expiry, String imageKey, ZonedDateTime availableFrom,
-                    ZonedDateTime availableTo, ZonedDateTime addedAt, ZonedDateTime completedAt,
+                    ZonedDateTime availableTo, ZonedDateTime addedAt,ZonedDateTime reservedAt, ZonedDateTime completedAt,
                     boolean isFree, boolean isPickupAvailable, boolean isDeliveryAvailable,
                     int priceCents) {
         this.id = id;
@@ -26,6 +26,7 @@ public class FoodItem {
         this.availableFrom = availableFrom;
         this.availableTo = availableTo;
         this.addedAt = addedAt;
+        this.reservedAt = reservedAt;
         this.completedAt = completedAt;
         this.isFree = isFree;
         this.isPickupAvailable = isPickupAvailable;
@@ -55,6 +56,7 @@ public class FoodItem {
 
     public ZonedDateTime getAddedAt() { return addedAt; }
 
+    public ZonedDateTime getReservedAt() { return reservedAt; }
     public ZonedDateTime getCompletedAt() { return completedAt; }
 
     public boolean isFree() { return isFree; }
@@ -75,6 +77,10 @@ public class FoodItem {
         boolean isBefore = availableTo == null || now.isBefore(availableTo);
 
         return isAfter && isBefore;
+    }
+
+    public boolean isReserved() {
+        return reservedAt != null;
     }
 
     public boolean isActive() {
