@@ -37,8 +37,7 @@ import utils.ImageServer;
 
 public class NewFoodItemActivity extends AppCompatActivity {
     EditText inputName, inputQuantity, inputExpiry, inputAvailableFrom, inputAvailableTo, inputPrice;
-    RadioButton rdFree, rdDiscounted;
-    CheckBox chkPickUp, chkDelivery;
+    RadioButton rdFree, rdDiscounted, rdPickup, rdDelivery;
     Spinner spinnerCategory;
     ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
@@ -65,8 +64,8 @@ public class NewFoodItemActivity extends AppCompatActivity {
         rdFree = findViewById(R.id.rdFree);
         rdDiscounted = findViewById(R.id.rdDiscounted);
 
-        chkPickUp = findViewById(R.id.chkPickup);
-        chkDelivery = findViewById(R.id.chkDelivery);
+        rdPickup = findViewById(R.id.rdPickup);
+        rdDelivery = findViewById(R.id.rdDelivery);
 
         spinnerCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
@@ -162,11 +161,11 @@ public class NewFoodItemActivity extends AppCompatActivity {
             }
         }
 
-        boolean allowPickup = chkPickUp.isChecked();
-        boolean allowDelivery = chkDelivery.isChecked();
+        boolean isPickup = rdPickup.isChecked();
+        boolean isDelivery = rdDelivery.isChecked();
 
-        if (!allowPickup && !allowDelivery) {
-            Toast.makeText(this, "Please select Pick-Up and/or Delivery", Toast.LENGTH_SHORT).show();
+        if (!isPickup && !isDelivery) {
+            Toast.makeText(this, "Please select Pick-Up or Delivery", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -180,8 +179,8 @@ public class NewFoodItemActivity extends AppCompatActivity {
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
             boolean success = dbHelper.saveFoodItem(currentUserId, foodName, categoryName, quantity,
-                    expiry, availableFrom, availableTo, isFree, cents, allowPickup,
-                    allowDelivery, imageKey);
+                    expiry, availableFrom, availableTo, isFree, cents, isPickup,
+                    isDelivery, imageKey);
             if (success) {
                 Toast.makeText(this, "Food Item Created", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(NewFoodItemActivity.this, DonorHomeActivity.class);
