@@ -1,9 +1,13 @@
 package activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +39,14 @@ public class LoginActivity extends AppCompatActivity {
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
+
+        //SpannableString to separate color between text on register link
+        TextView registerText = findViewById(R.id.welcomeBtnRegister);
+        String fullText = "Don\'t have an account? Sign Up Now";
+        SpannableString span = new SpannableString(fullText);
+        int start = fullText.indexOf("Sign Up Now");
+        span.setSpan(new ForegroundColorSpan(Color.parseColor("#0000EE")), start, fullText.length(),0);
+        registerText.setText(span);
     }
 
     public void handleLogin(View view) {

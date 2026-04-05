@@ -5,7 +5,7 @@
     <string name="common_donor">Donor</string>
     <string name="common_recipient">Recipient</string>
     <string name="common_name">Name</string>
-    <string name="common_email">Email</string>
+    <string name="common_email">Email Address</string>
     <string name="common_password">Password</string>
     <string name="common_phone_number">Phone Number</string>
     <string name="common_postal_code">Postal Code</string>
@@ -54,8 +54,9 @@
 
     <!-- Login -->
     <string name="login_toast_login_failed">Login Failed</string>
-    <string name="login_txt_welcome">Welcome Back!</string>
-    <string name="login_txt_message">Sign into FoodShare</string>
+    <string name="login_txt_welcome">Welcome</string>
+    <string name="login_txt_message">Sign into Rebite</string>
+    <string name="login_txt_register">Don\'t have an account? Sign Up Now</string>
 
     <!-- Donor Home -->
     <string name="donor_home_btn_view_requests">View Requests</string>
