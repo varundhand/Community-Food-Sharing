@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,6 +46,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
     CheckBox chkPickUp, chkDelivery;
     Spinner spinnerCategory;
     ImageView imgUploadPreview;
+    Button btnSave, btnDelete;
+
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     Uri photoUri;
 
@@ -92,6 +95,9 @@ public class EditFoodItemActivity extends AppCompatActivity {
         chkPickUp = findViewById(R.id.chkPickup);
         chkDelivery = findViewById(R.id.chkDelivery);
 
+        btnSave = findViewById(R.id.btnSaveFood);
+        btnDelete = findViewById(R.id.btnDeleteFood);
+
         spinnerCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
 
@@ -101,6 +107,13 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::setPreviewPhoto);
         setValues();
+
+        if (item.isReserved()) {
+            btnSave.setText("Update not Allowed (Already Approved)");
+            btnSave.setEnabled(false);
+            btnDelete.setText("Delete not Allowed (Already Approved)");
+            btnDelete.setEnabled(false);
+        }
     }
 
     private void setPreviewPhoto(Uri uri) {
@@ -248,7 +261,7 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         FoodItem updatedItem = new FoodItem(item.getId(), item.getDonorId(), foodName,
                 categoryName, quantity, expiry, imageKey, availableFrom, availableTo,
-                item.getAddedAt(), null, item.getCompletedAt(), isFree, isPickUpAvailable,
+                item.getAddedAt(), item.getReservedAt(), item.getCompletedAt(), isFree, isPickUpAvailable,
                 isDeliveryAvailable, cents);
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
