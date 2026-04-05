@@ -1,12 +1,9 @@
 package activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,26 +14,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodshare.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import adapters.DonorRequestListRecyclerViewAdapter;
-import adapters.RecipientRequestListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
 import models.Request;
-import models.RequestStatus;
 import models.User;
 
 public class DonorRequestListActivity extends AppCompatActivity {
-    private final String SPINNER_VALUE_ALL = "ALL";
 
     DatabaseHelper dbHelper;
     AuthHelper authHelper;
-    ArrayList<Request> requests;
+    ArrayList<Request> allRequests;
 
-    Spinner spinnerStatus;
     RecyclerView recyclerView;
+    BottomNavigationView bottomNav;
+    
+    Button btnFilterAll, btnFilterUrgent, btnFilterNearby, btnFilterGroceries;
 
     User donor;
 
@@ -53,50 +53,70 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         authHelper = new AuthHelper(this);
-
-        spinnerStatus = findViewById(R.id.spinnerStatus);
-        recyclerView = findViewById(R.id.recyclerView);
-
-        ArrayList<String> spinnerValues;
-
         donor = authHelper.getCurrentUser();
 
-        // spinner from enum
-        spinnerValues = new ArrayList<>();
-        spinnerValues.add(SPINNER_VALUE_ALL);
-        for (RequestStatus status : RequestStatus.values()) {
-            spinnerValues.add(status.name());
-        }
-        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerValues);
-        spinnerStatus.setAdapter(spinnerAdapter);
-        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-                if (pos == 0) {
-                    recyclerView.swapAdapter(selectAll(), true); // id is not stable
-                    return;
-                }
-                String statusStr = spinnerValues.get(pos);
-                recyclerView.swapAdapter(selectByStatus(RequestStatus.valueOf(statusStr)), true);
-            }
+        recyclerView = findViewById(R.id.recyclerView);
+        bottomNav = findViewById(R.id.bottomNav);
+        
+        btnFilterAll = findViewById(R.id.filterAll);
+        btnFilterUrgent = findViewById(R.id.filterUrgent);
+        btnFilterNearby = findViewById(R.id.filterNearby);
+        btnFilterGroceries = findViewById(R.id.filterGroceries);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+        setupFilters();
+        setupNavigation();
 
-            }
-        });
-
-        recyclerView.setAdapter(selectAll());
+        allRequests = dbHelper.getRequests(null, null, null, null, null, donor.getId());
+        updateRecyclerView(allRequests);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private DonorRequestListRecyclerViewAdapter selectAll() {
-        requests = dbHelper.getRequests(null, null, null,null, null, donor.getId());
-        return new DonorRequestListRecyclerViewAdapter(requests);
+    private void setupFilters() {
+        btnFilterAll.setOnClickListener(v -> updateRecyclerView(allRequests));
+
+        btnFilterUrgent.setOnClickListener(v -> {
+            Instant tomorrow = Instant.now().plus(1, ChronoUnit.DAYS);
+            ArrayList<Request> urgent = (ArrayList<Request>) allRequests.stream()
+                    .filter(r -> r.getDue() != null && r.getDue().toInstant().isBefore(tomorrow))
+                    .collect(Collectors.toList());
+            updateRecyclerView(urgent);
+        });
+
+        btnFilterNearby.setOnClickListener(v -> {
+            String donorPrefix = donor.getPostalCode().substring(0, 3);
+            ArrayList<Request> nearby = (ArrayList<Request>) allRequests.stream()
+                    .filter(r -> r.getRecipient().getPostalCode().startsWith(donorPrefix))
+                    .collect(Collectors.toList());
+            updateRecyclerView(nearby);
+        });
+
+        btnFilterGroceries.setOnClickListener(v -> {
+            ArrayList<Request> groceries = (ArrayList<Request>) allRequests.stream()
+                    .filter(r -> "Groceries".equalsIgnoreCase(r.getFoodItem().getCategory()))
+                    .collect(Collectors.toList());
+            updateRecyclerView(groceries);
+        });
     }
 
-    private DonorRequestListRecyclerViewAdapter selectByStatus(RequestStatus status) {
-        requests = dbHelper.getRequests(null, null, null, null, status, donor.getId());
-        return new DonorRequestListRecyclerViewAdapter(requests);
+    private void updateRecyclerView(ArrayList<Request> requests) {
+        recyclerView.setAdapter(new DonorRequestListRecyclerViewAdapter(requests));
+    }
+
+    private void setupNavigation() {
+        bottomNav.setSelectedItemId(R.id.nav_requests);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, DonorHomeActivity.class));
+                return true;
+            } else if (id == R.id.nav_donations) {
+                startActivity(new Intent(this, DonorFoodItemListActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 }

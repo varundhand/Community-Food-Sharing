@@ -22,6 +22,11 @@ public class Request {
         this.requested_at = requested_at;
     }
 
+    // Inside models/Request.java
+    public void setRequestStatus(RequestStatus status) {
+        this.status = status; // Ensure the field name matches (usually 'status')
+    }
+
     // variant with associations
     public Request(int id, FoodItem foodItem, User recipient, ZonedDateTime due, RequestStatus status, ZonedDateTime requested_at) {
         this.id = id;

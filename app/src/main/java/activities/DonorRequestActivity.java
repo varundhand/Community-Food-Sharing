@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class DonorRequestActivity extends AppCompatActivity {
     ImageView imgRecipient;
     TextView txtRecipientName, txtRecipientAddress, txtRequestDue;
     Button btnApprove, btnDecline, btnComplete, btnRemind;
+    BottomNavigationView bottomNav;
 
     private DatabaseHelper dbHelper;
     private Request request;
@@ -87,6 +89,7 @@ public class DonorRequestActivity extends AppCompatActivity {
         btnDecline = findViewById(R.id.btnDecline);
         btnComplete = findViewById(R.id.btnComplete);
         btnRemind = findViewById(R.id.btnRemind);
+        bottomNav = findViewById(R.id.bottomNav);
 
         FoodItem foodItem = request.getFoodItem();
 
@@ -96,35 +99,42 @@ public class DonorRequestActivity extends AppCompatActivity {
 
         User recipient = request.getRecipient();
         setPhoto(recipient.getImageKey(), imgRecipient);
-        txtRecipientName.setText("Name: " + recipient.getName());
-        txtRecipientAddress.setText("Address: " + recipient.getPostalAddress());
+        txtRecipientName.setText(recipient.getName());
+        txtRecipientAddress.setText(recipient.getPostalAddress());
 
         if (foodItem.isPickupAvailable()) {
             txtRequestDue.setText("Pick Up due " + request.getFormattedDue());
         } else {
-            // Pickup/Delivery is Mutually exclusive
-            txtRequestDue.setText("Delivery");
+            txtRequestDue.setText("Delivery requested");
         }
 
+        updateUIBasedOnStatus();
+        setupNavigation();
+    }
+
+    private void updateUIBasedOnStatus() {
         if (request.getStatus() != RequestStatus.PENDING) {
             hideButton(btnApprove);
             hideButton(btnDecline);
+        } else {
+            showButton(btnApprove);
+            showButton(btnDecline);
         }
 
-        if (request.getStatus() != RequestStatus.APPROVED) {
-            // complete button and remind button is enabled only when the status is "Approved"
+        if (request.getStatus() == RequestStatus.APPROVED) {
+            showButton(btnComplete);
+            if (reminders == null || reminders.isEmpty()) {
+                showButton(btnRemind);
+            } else {
+                hideButton(btnRemind);
+            }
+        } else {
             hideButton(btnComplete);
-            hideButton(btnRemind);
-        }
-
-        if (reminders != null && !reminders.isEmpty()) {
-            // Hide remind button if reminder is already sent
             hideButton(btnRemind);
         }
     }
 
     private void hideButton(Button btn) {
-        // Reference: https://stackoverflow.com/a/5756190
         btn.setEnabled(false);
         btn.setVisibility(View.GONE);
     }
@@ -135,61 +145,85 @@ public class DonorRequestActivity extends AppCompatActivity {
     }
 
     private void setPhoto(String filename, ImageView imgView) {
-        if (filename != null) {
+        if (filename != null && !filename.isEmpty()) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
-            imgView.setImageBitmap(bitmap);
-        } else {
-            Log.d("DonorRequestActivity.setPhoto", "No media selected");
+            if (bitmap != null) {
+                imgView.setImageBitmap(bitmap);
+            }
         }
     }
 
+    private void setupNavigation() {
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, DonorHomeActivity.class));
+                return true;
+            } else if (id == R.id.nav_donations) {
+                startActivity(new Intent(this, DonorFoodItemListActivity.class));
+                return true;
+            } else if (id == R.id.nav_requests) {
+                startActivity(new Intent(this, DonorRequestListActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                return true;
+            }
+            return false;
+        });
+    }
+
     public void handleApprove(View view) {
+        if (request == null) return;
+
+        // 1. Update Database
         dbHelper.updateRequestStatus(request.getId(), RequestStatus.APPROVED);
         dbHelper.reserveFoodItem(request.getFoodItemId(), Instant.now());
-        txtRequestStatus.setText(RequestStatus.APPROVED.name());
-        Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT);
 
-        hideButton(btnApprove);
-        hideButton(btnDecline);
-        showButton(btnComplete);
-        showButton(btnRemind);
+        // 2. Update Local Object - Use the correct setter from your Request model
+        // If the method is named differently, change 'setRequestStatus' to that name
+        request.setRequestStatus(RequestStatus.APPROVED);
+
+        // 3. Update UI
+        txtRequestStatus.setText(RequestStatus.APPROVED.name());
+        Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT).show();
+        updateUIBasedOnStatus();
     }
 
     public void handleDecline(View view) {
-        dbHelper.updateRequestStatus(request.getId(), RequestStatus.DECLINED);
-        txtRequestStatus.setText(RequestStatus.DECLINED.name());
-        Toast.makeText(this, "The request is declined", Toast.LENGTH_SHORT);
+        if (request == null) return;
 
-        hideButton(btnApprove);
-        hideButton(btnDecline);
-        hideButton(btnComplete);
-        hideButton(btnRemind);
+        dbHelper.updateRequestStatus(request.getId(), RequestStatus.DECLINED);
+        // Update local object
+        request.setRequestStatus(RequestStatus.DECLINED);
+
+        txtRequestStatus.setText(RequestStatus.DECLINED.name());
+        Toast.makeText(this, "The request is declined", Toast.LENGTH_SHORT).show();
+        updateUIBasedOnStatus();
     }
 
+    public void handleComplete(View view) {
+        if (request == null) return;
+
+        dbHelper.updateRequestStatus(request.getId(), RequestStatus.COMPLETE);
+        dbHelper.completeFoodItem(request.getFoodItem().getId(), Instant.now());
+        // Update local object
+        request.setRequestStatus(RequestStatus.COMPLETE);
+
+        txtRequestStatus.setText(RequestStatus.COMPLETE.name());
+        Toast.makeText(this, "The request is complete", Toast.LENGTH_SHORT).show();
+        updateUIBasedOnStatus();
+    }
     public void handleRemind(View view) {
         String content;
         if (request.getFoodItem().isPickupAvailable()) {
-            // PickUp and Delivery are mutually exclusive
             content = "Please pick up the item by " + request.getFormattedDue();
         } else {
             content = "The food will be delivered soon";
         }
         dbHelper.createReminder(request.getRecipient().getId(), request.getId(), "Reminder", content, null);
-        Toast.makeText(this, "Reminded the recipient", Toast.LENGTH_LONG);
-
+        Toast.makeText(this, "Reminded the recipient", Toast.LENGTH_LONG).show();
         hideButton(btnRemind);
-    }
+    }}
 
-    public void handleComplete(View view) {
-        dbHelper.updateRequestStatus(request.getId(), RequestStatus.COMPLETE);
-        dbHelper.completeFoodItem(request.getFoodItem().getId(), Instant.now());
-        txtRequestStatus.setText(RequestStatus.COMPLETE.name());
-        Toast.makeText(this, "The request is complete", Toast.LENGTH_SHORT);
-
-        hideButton(btnApprove);
-        hideButton(btnDecline);
-        hideButton(btnComplete);
-        hideButton(btnRemind);
-    }
-}
