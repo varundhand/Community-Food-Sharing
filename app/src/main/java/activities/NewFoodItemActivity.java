@@ -24,7 +24,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -68,17 +67,13 @@ public class NewFoodItemActivity extends AppCompatActivity {
         spinnerFoodCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
 
-        // spinner from enum
+        // Populate spinner from FoodCategory enum
         FoodCategory[] categories = FoodCategory.values();
-
-        // Create an ArrayAdapter using a standard Android dropdown layout
         ArrayAdapter<FoodCategory> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
                 categories
         );
-
-        // Attach the adapter
         spinnerFoodCategory.setAdapter(adapter);
 
         pickMedia =
@@ -90,13 +85,9 @@ public class NewFoodItemActivity extends AppCompatActivity {
                         if (bitmap == null) {
                             Log.d("PhotoPicker", "Invalid media selected");
                             photoUri = null;
-
-                            // clear image view
                             imgUploadPreview.setImageResource(0);
                             return;
                         }
-
-                        // valid image
                         imgUploadPreview.setImageBitmap(bitmap);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
@@ -111,13 +102,13 @@ public class NewFoodItemActivity extends AppCompatActivity {
     }
 
     public void handleCreate(View view) {
-        String foodName = inputName.getText().toString();
+        String foodName = inputName.getText().toString().trim();
         if (foodName.isEmpty()) {
             Toast.makeText(this, "Please enter food name", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Fix: Correctly get the selected category from AutoCompleteTextView
+        // Fix: Retrieve category from AutoCompleteTextView correctly
         String selectedCategoryText = spinnerFoodCategory.getText().toString();
         FoodCategory category = FoodCategory.NOT_SELECTED;
         for (FoodCategory fc : FoodCategory.values()) {
@@ -132,47 +123,40 @@ public class NewFoodItemActivity extends AppCompatActivity {
             return;
         }
 
-        String quantity = inputQuantity.getText().toString();
+        String quantity = inputQuantity.getText().toString().trim();
         if (quantity.isEmpty()) {
             Toast.makeText(this, "Please enter quantity", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // allow empty for expiry, availability
-        String expiry = inputExpiry.getText().toString();
+        String expiry = inputExpiry.getText().toString().trim();
         
-        // Note: Instant.parse expects full ISO-8601 string. 
-        // If input is just time (HH:mm), this might still crash.
-        Instant availableFrom;
+        // Basic parsing for availability (Note: Instant.parse expects ISO-8601)
+        Instant availableFrom = null;
         try {
-            availableFrom = Instant.parse(inputAvailableFrom.getText().toString());
+            String fromStr = inputAvailableFrom.getText().toString().trim();
+            if (!fromStr.isEmpty()) availableFrom = Instant.parse(fromStr);
         } catch (Exception e) {
-            availableFrom = null;
+            Log.e("NewFoodItem", "Failed to parse availableFrom", e);
         }
 
-        Instant availableTo;
+        Instant availableTo = null;
         try {
-            availableTo = Instant.parse(inputAvailableTo.getText().toString());
+            String toStr = inputAvailableTo.getText().toString().trim();
+            if (!toStr.isEmpty()) availableTo = Instant.parse(toStr);
         } catch (Exception e) {
-            availableTo = null;
+            Log.e("NewFoodItem", "Failed to parse availableTo", e);
         }
         
         boolean isFree = rdFree.isChecked();
         boolean isDiscounted = rdDiscounted.isChecked();
-        if (isFree == isDiscounted) {
-            Toast.makeText(this, "Please check free/discounted", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         int cents = 0;
         if (isDiscounted) {
             try {
-                BigDecimal decimal = new BigDecimal(inputPrice.getText().toString());
+                String priceStr = inputPrice.getText().toString().trim();
+                BigDecimal decimal = new BigDecimal(priceStr);
                 cents = decimal.multiply(new BigDecimal(100)).intValue();
-                if (cents == 0) {
-                    Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
-                    return;
-                }
             } catch (Exception e) {
                 Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
                 return;
@@ -182,35 +166,36 @@ public class NewFoodItemActivity extends AppCompatActivity {
         boolean isPickup = rdPickup.isChecked();
         boolean isDelivery = rdDelivery.isChecked();
 
-        if (!isPickup && !isDelivery) {
-            Toast.makeText(this, "Please select Pick-Up or Delivery", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         String imageKey = null;
         if (photoUri != null) {
             ImageServer imageServer = new ImageServer(this);
             imageKey = imageServer.saveImage(photoUri);
         }
 
-        int currentUserId = new AuthHelper(this).getCurrentUser().getId();
+        AuthHelper authHelper = new AuthHelper(this);
+        if (authHelper.getCurrentUser() == null) {
+            Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int currentUserId = authHelper.getCurrentUser().getId();
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
-            // Fix: Use category.name() and fix undefined 'categoryName' variable
+            // Fix: Use category.name() to store enum constant string in DB
             boolean success = dbHelper.saveFoodItem(currentUserId, foodName, category.name(), quantity,
                     expiry, availableFrom, availableTo, isFree, cents, isPickup,
                     isDelivery, imageKey);
             if (success) {
                 Toast.makeText(this, "Food Item Created", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(NewFoodItemActivity.this, DonorHomeActivity.class);
+                Intent intent = new Intent(this, DonorHomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             } else {
-                throw new IOException("DB save failed");
+                Toast.makeText(this, "Database save failed", Toast.LENGTH_SHORT).show();
             }
-        }
-        catch (Exception e) {
-            Log.d("NewFoodItemActivity.handleCreate", e.toString());
-            Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e("NewFoodItemActivity", "Error saving food item", e);
+            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -1,12 +1,10 @@
 package activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.AutoCompleteTextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import com.example.foodshare.R;
 import java.util.ArrayList;
 
 import adapters.DonorRequestListRecyclerViewAdapter;
-import adapters.RecipientRequestListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
 import models.Request;
@@ -35,7 +32,7 @@ public class DonorRequestListActivity extends AppCompatActivity {
     AuthHelper authHelper;
     ArrayList<Request> requests;
 
-    Spinner spinnerStatus;
+    AutoCompleteTextView spinnerStatus;
     RecyclerView recyclerView;
 
     User donor;
@@ -67,23 +64,20 @@ public class DonorRequestListActivity extends AppCompatActivity {
         for (RequestStatus status : RequestStatus.values()) {
             spinnerValues.add(status.name());
         }
-        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerValues);
-        spinnerStatus.setAdapter(spinnerAdapter);
-        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-                if (pos == 0) {
-                    recyclerView.swapAdapter(selectAll(), true); // id is not stable
-                    return;
-                }
-                String statusStr = spinnerValues.get(pos);
-                recyclerView.swapAdapter(selectByStatus(RequestStatus.valueOf(statusStr)), true);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, spinnerValues);
+        spinnerStatus.setAdapter(adapter);
+        
+        // Default value
+        spinnerStatus.setText(SPINNER_VALUE_ALL, false);
 
+        spinnerStatus.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 0) {
+                recyclerView.swapAdapter(selectAll(), true);
+                return;
             }
+            String statusStr = spinnerValues.get(position);
+            recyclerView.swapAdapter(selectByStatus(RequestStatus.valueOf(statusStr)), true);
         });
 
         recyclerView.setAdapter(selectAll());
