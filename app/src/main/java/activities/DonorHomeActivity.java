@@ -1,11 +1,8 @@
 package activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -16,21 +13,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
 import database.AuthHelper;
 import database.DatabaseHelper;
-import models.Reminder;
 import models.Request;
 import models.RequestStatus;
 import models.User;
-import utils.ImageServer;
 
 public class DonorHomeActivity extends AppCompatActivity {
     AuthHelper authHelper;
     DatabaseHelper dbHelper;
     ArrayList<Request> pendingRequests;
+    BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +44,7 @@ public class DonorHomeActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         TextView donorName = findViewById(R.id.txtDonorName);
+        bottomNav = findViewById(R.id.bottomNav);
 
         User user = authHelper.getCurrentUser();
 
@@ -73,6 +71,26 @@ public class DonorHomeActivity extends AppCompatActivity {
             builder.setMessage(message);
             builder.show();
         }
+
+        setupNavigation();
+    }
+
+    private void setupNavigation() {
+        bottomNav.setSelectedItemId(R.id.nav_home);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_donations) {
+                startActivity(new Intent(this, DonorFoodItemListActivity.class));
+                return true;
+            } else if (id == R.id.nav_requests) {
+                startActivity(new Intent(this, DonorRequestListActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, EditProfileActivity.class));
+                return true;
+            }
+            return id == R.id.nav_home;
+        });
     }
 
     public void handleViewRequests(View view) {
