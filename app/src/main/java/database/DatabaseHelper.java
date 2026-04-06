@@ -411,7 +411,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 idAddedAt, idReservedAt, idCompletedAt);
     }
 
-    public ArrayList<FoodItem> listFoodItem(int donorId, boolean onlyActive) {
+    public ArrayList<FoodItem> listFoodItem(int donorId, boolean onlyIncomplete, boolean onlyAfterFrom, boolean onlyBeforeUntil) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         ArrayList<String> wheres = new ArrayList<>();
@@ -420,14 +420,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         wheres.add(COL_FOOD_ITEM_DONOR_ID + "=?");
         args.add(String.format("%d", donorId));
 
-        if (onlyActive) {
-            long now = Instant.now().getEpochSecond();
-            wheres.add(COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+        long now = Instant.now().getEpochSecond();
 
+        if (onlyIncomplete) {
+            wheres.add(COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+        }
+
+        if (onlyAfterFrom) {
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
+        }
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+        if (onlyBeforeUntil) {
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
@@ -544,7 +549,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
