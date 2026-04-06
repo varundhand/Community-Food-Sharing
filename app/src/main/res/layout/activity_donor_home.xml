@@ -75,7 +75,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Your community has shared 128 meals today. Ready to contribute?"
+                    android:text="Ready to contribute?"
                     android:textColor="@color/surface"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -132,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="14 neighbors are looking for items in your area today."
+                        android:text="Checkout incoming requests"
                         android:textColor="@color/on_surface_variant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -250,6 +250,42 @@
                         android:layout_marginTop="8dp"
                         android:text="Review your impact and past shares."
                         android:textColor="@color/on_surface_variant" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="handleLogout"
+                app:cardBackgroundColor="@color/glass_card_bg"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/cardDonationHistory">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/common_logout"
+                        android:textColor="@color/primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="8dp"-->
+<!--                        android:text="Review your impact and past shares."-->
+<!--                        android:textColor="@color/on_surface_variant" />-->
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
