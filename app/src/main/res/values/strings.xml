@@ -39,6 +39,7 @@
     <string name="common_reminders">Reminders</string>
     <string name="common_edit_profile">Edit Profile</string>
     <string name="common_status">Status</string>
+    <string name="rebite">Rebite</string>
 
     <!-- Register -->
     <string name="register_btn_upload_img">Upload Optional Profile Image</string>
@@ -46,6 +47,7 @@
     <string name="register_toast_register_failed">Registration Failed</string>
     <string name="register_toast_invalid_form">Please input valid values</string>
     <string name="register_txt_title">Create Account</string>
+    <string name="register_choice">Register As A</string>
 
     <!-- Profile Edit -->
     <string name="profile_edit_txt_title">View/Edit Profile</string>
