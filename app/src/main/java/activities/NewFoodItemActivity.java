@@ -1,5 +1,6 @@
 package activities;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -17,19 +18,26 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.example.foodshare.R;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 import database.AuthHelper;
 import database.DatabaseHelper;
+import fragments.DatePickerFragment;
+import fragments.TimePickerFragment;
 import models.FoodCategory;
 import utils.ImageServer;
 
@@ -40,6 +48,12 @@ public class NewFoodItemActivity extends AppCompatActivity {
     ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     Uri photoUri;
+
+    private int pendingYear;
+    private int pendingMonth;
+    private int pendingDay;
+    private EditText pendingAvailabilityInput;
+    private final DateTimeFormatter availabilityDisplayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,33 +89,79 @@ public class NewFoodItemActivity extends AppCompatActivity {
         ArrayAdapter<FoodCategory> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
-                categories
-        );
+                categories);
 
         // Attach the adapter
         spinnerFoodCategory.setAdapter(adapter);
 
-        pickMedia =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    if (uri != null) {
-                        photoUri = uri;
-                        ImageServer imgServer = new ImageServer(this);
-                        Bitmap bitmap = imgServer.loadImage(uri);
-                        if (bitmap == null) {
-                            Log.d("PhotoPicker", "Invalid media selected");
-                            photoUri = null;
+        pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            if (uri != null) {
+                photoUri = uri;
+                ImageServer imgServer = new ImageServer(this);
+                Bitmap bitmap = imgServer.loadImage(uri);
+                if (bitmap == null) {
+                    Log.d("PhotoPicker", "Invalid media selected");
+                    photoUri = null;
 
-                            // clear image view
-                            imgUploadPreview.setImageResource(0);
+                    // clear image view
+                    imgUploadPreview.setImageResource(0);
+                    return;
+                }
+
+                // valid image
+                imgUploadPreview.setImageBitmap(bitmap);
+            } else {
+                Log.d("PhotoPicker", "No media selected");
+            }
+        });
+
+        getSupportFragmentManager().setFragmentResultListener(
+                DatePickerFragment.REQUEST_KEY,
+                this,
+                new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        pendingYear = result.getInt(DatePickerFragment.KEY_YEAR);
+                        pendingMonth = result.getInt(DatePickerFragment.KEY_MONTH);
+                        pendingDay = result.getInt(DatePickerFragment.KEY_DAY);
+
+                        new TimePickerFragment().show(getSupportFragmentManager(), "timePicker");
+                    }
+                });
+
+        getSupportFragmentManager().setFragmentResultListener(
+                TimePickerFragment.REQUEST_KEY,
+                this,
+                new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        int hourOfDay = result.getInt(TimePickerFragment.KEY_HOUR_OF_DAY);
+                        int minute = result.getInt(TimePickerFragment.KEY_MINUTE);
+
+                        if (pendingAvailabilityInput == null) {
                             return;
                         }
 
-                        // valid image
-                        imgUploadPreview.setImageBitmap(bitmap);
-                    } else {
-                        Log.d("PhotoPicker", "No media selected");
+                        LocalDateTime selectedDateTime = LocalDateTime.of(
+                                pendingYear,
+                                pendingMonth + 1,
+                                pendingDay,
+                                hourOfDay,
+                                minute);
+
+                        pendingAvailabilityInput.setText(availabilityDisplayFormatter.format(selectedDateTime));
                     }
                 });
+
+        inputAvailableFrom.setOnClickListener(v -> {
+            pendingAvailabilityInput = inputAvailableFrom;
+            new DatePickerFragment().show(getSupportFragmentManager(), "datePicker");
+        });
+
+        inputAvailableTo.setOnClickListener(v -> {
+            pendingAvailabilityInput = inputAvailableTo;
+            new DatePickerFragment().show(getSupportFragmentManager(), "datePicker");
+        });
     }
 
     public void pickPhoto(View view) {
@@ -140,23 +200,10 @@ public class NewFoodItemActivity extends AppCompatActivity {
 
         // allow empty for expiry, availability
         String expiry = inputExpiry.getText().toString();
-        
-        // Note: Instant.parse expects full ISO-8601 string. 
-        // If input is just time (HH:mm), this might still crash.
-        Instant availableFrom;
-        try {
-            availableFrom = Instant.parse(inputAvailableFrom.getText().toString());
-        } catch (Exception e) {
-            availableFrom = null;
-        }
 
-        Instant availableTo;
-        try {
-            availableTo = Instant.parse(inputAvailableTo.getText().toString());
-        } catch (Exception e) {
-            availableTo = null;
-        }
-        
+        Instant availableFrom = parseAvailabilityInstant(inputAvailableFrom);
+        Instant availableTo = parseAvailabilityInstant(inputAvailableTo);
+
         boolean isFree = rdFree.isChecked();
         boolean isDiscounted = rdDiscounted.isChecked();
         if (isFree == isDiscounted) {
@@ -207,10 +254,24 @@ public class NewFoodItemActivity extends AppCompatActivity {
             } else {
                 throw new IOException("DB save failed");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d("NewFoodItemActivity.handleCreate", e.toString());
             Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private Instant parseAvailabilityInstant(EditText input) {
+        String value = input.getText() == null ? "" : input.getText().toString().trim();
+        if (value.isEmpty()) {
+            return null;
+        }
+
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(value, availabilityDisplayFormatter);
+            return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        } catch (Exception ignored) {
+            Log.d("NewFoodItemActivity parsetime", "failed to parse time: " + value);
+            return null;
         }
     }
 }

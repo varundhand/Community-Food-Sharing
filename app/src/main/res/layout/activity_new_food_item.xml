@@ -215,7 +215,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="0dp"
-                        android:inputType="time" />
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:cursorVisible="false"
+                        android:longClickable="false"
+                        android:textIsSelectable="false"
+                        android:clickable="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -232,7 +238,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="0dp"
-                        android:inputType="time" />
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:cursorVisible="false"
+                        android:longClickable="false"
+                        android:textIsSelectable="false"
+                        android:clickable="true" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
