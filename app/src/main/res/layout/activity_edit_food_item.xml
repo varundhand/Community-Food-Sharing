@@ -12,7 +12,7 @@
         android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginTop="1dp"
             android:layout_marginEnd="1dp"
@@ -24,11 +24,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <!--Rebite Title-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="24dp">
+
+                <ImageView
+                    android:id="@+id/imgLogo"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@mipmap/ic_launcher"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="Rebite Logo"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/rebite"
+                    android:textColor="@color/primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/imgLogo"
+                    app:layout_constraintStart_toEndOf="@id/imgLogo"
+                    app:layout_constraintTop_toTopOf="@id/imgLogo" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <TextView
                 android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
                 android:textSize="34sp"
                 android:text="@string/edit_food_txt_title" />
 
@@ -95,8 +124,8 @@
                 android:minHeight="48dp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center">
                 <ImageView
@@ -108,30 +137,50 @@
                     android:maxWidth="50dp"/>
                 <Button
                     android:id="@+id/btnUploadFoodImage"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="80dp"
+                    android:layout_marginVertical="15dp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#3a5432"
+                    android:textColor="#FFB6C1"
                     android:text="@string/edit_food_btn_upload_img"
-                    android:onClick="pickPhoto"/>
+                    android:onClick="pickPhoto"
+                    app:cornerRadius="15dp"/>
+
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_food_txt_price"
+                android:gravity="center"
+                android:layout_marginTop="15dp"/>
+
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginHorizontal="50dp">
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginHorizontal="50dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
                 <RadioButton
                     android:id="@+id/rdFree"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_free" />
+                    android:text="@string/common_free"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
 
                 <RadioButton
                     android:id="@+id/rdDiscounted"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_discounted_price" />
+                    android:text="@string/common_discounted_price"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
             </RadioGroup>
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -155,41 +204,63 @@
                     android:minHeight="48dp" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_food_txt_type"
+                android:gravity="center"
+                android:layout_marginTop="15dp"/>
+
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:layout_marginHorizontal="50dp">
+                android:layout_marginHorizontal="50dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
                 <RadioButton
                     android:id="@+id/rdPickup"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_pick_up" />
+                    android:text="@string/common_pick_up"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
 
                 <RadioButton
                     android:id="@+id/rdDelivery"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_delivery" />
+                    android:text="@string/common_delivery"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
             </RadioGroup>
 
             <Button
                 android:id="@+id/btnSaveFood"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/common_update"
+                android:layout_marginHorizontal="80dp"
+                android:layout_marginVertical="15dp"
+                android:textStyle="bold"
+                android:backgroundTint="#3a5432"
+                android:textColor="#FFB6C1"
                 android:onClick="handleSave"/>
 
             <Button
                 android:id="@+id/btnDeleteFood"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/design_default_color_error"
                 android:onClick="handleDelete"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginVertical="15dp"
+                android:textStyle="bold"
+                android:textColor="#FFB6C1"
                 android:text="@string/common_delete" />
 
         </LinearLayout>
