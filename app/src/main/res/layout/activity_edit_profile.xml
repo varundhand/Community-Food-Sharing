@@ -300,16 +300,6 @@
                         android:onClick="handleSaveUser"
                         app:backgroundTint="@color/primary_dark"
                         app:cornerRadius="12dp" />
-
-                    <Button
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginTop="8dp"
-                        android:text="CANCEL"
-                        android:textColor="@color/on_surface_variant"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
