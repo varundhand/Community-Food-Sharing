@@ -43,7 +43,7 @@ public class DonorFoodItemHistoryActivity extends AppCompatActivity {
 
         User user = new AuthHelper(this).getCurrentUser();
 
-        foodItems = dbHelper.listFoodItem(user.getId(), false);
+        foodItems = dbHelper.listFoodItem(user.getId(), false, false, false); // all
         FoodItemListRecyclerViewAdapter adapter = new FoodItemListRecyclerViewAdapter(foodItems, DonorReadOnlyFoodItemActivity.class);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
