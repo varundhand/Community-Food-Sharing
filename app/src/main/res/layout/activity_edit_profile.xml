@@ -163,6 +163,7 @@
                             android:layout_marginStart="8dp"
                             android:text="Remove"
                             android:textColor="@color/on_surface_variant"
+                            android:onClick="handleRemovePhoto"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>

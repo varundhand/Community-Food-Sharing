@@ -1,6 +1,7 @@
 package activities;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -100,7 +102,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             // clear image view
             // reference: https://stackoverflow.com/a/8243184
-            imgUploadPreview.setImageResource(0);
+            imgUploadPreview.setImageResource(android.R.drawable.sym_def_app_icon);
             return;
         }
 
@@ -125,6 +127,36 @@ public class EditProfileActivity extends AppCompatActivity {
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                 .build());
+    }
+
+    public void handleRemovePhoto(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Removing Profile Photo");
+        builder.setMessage("Please confirm");
+        builder.setCancelable(true);
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // first, remove it from db
+                // then remove it from filesystem
+                String imgKey = user.getImageKey();
+                boolean success = dbHelper.removePhotoFromUser(user.getId());
+
+                if (success) {
+                    // show toast regardless of the result of removal from file system (because it is already not referenced)
+                    Toast.makeText(EditProfileActivity.this, "Successfully removed photo", Toast.LENGTH_LONG).show();
+                    new ImageServer(EditProfileActivity.this).removeImage(imgKey);
+                    imgUploadPreview.setImageResource(android.R.drawable.sym_def_app_icon);
+                    photoUri = null;
+                }
+                else {
+                    Toast.makeText(EditProfileActivity.this, "DB Save failed", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        builder.show();
     }
 
     public void handleSaveUser(View view) {

@@ -268,6 +268,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return affected == 1;
     }
 
+    public boolean removePhotoFromUser(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.putNull(COL_USER_IMG_KEY);
+        int affected = db.update(TABLE_USERS, values, COL_ID + " = ?", new String[] { String.valueOf(userId) });
+        return affected == 1;
+    }
+
     // add food items related methods below (delimiter for avoiding conflicts)
 
     public boolean saveFoodItem(int donorId, String name, String category, String quantity,
