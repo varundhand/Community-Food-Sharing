@@ -427,7 +427,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
@@ -544,7 +544,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
