@@ -75,7 +75,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Your community has shared 128 meals today. Ready to contribute?"
+                    android:text="Ready to contribute?"
                     android:textColor="@color/surface"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -132,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="14 neighbors are looking for items in your area today."
+                        android:text="Checkout incoming requests"
                         android:textColor="@color/on_surface_variant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
