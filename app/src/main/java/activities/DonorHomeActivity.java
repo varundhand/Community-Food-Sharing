@@ -104,6 +104,9 @@ public class DonorHomeActivity extends AppCompatActivity {
         AuthHelper helper = new AuthHelper(this);
         helper.logout();
         Intent intent = new Intent(DonorHomeActivity.this, LoginActivity.class);
+        // reference: https://stackoverflow.com/a/5794572
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 }
