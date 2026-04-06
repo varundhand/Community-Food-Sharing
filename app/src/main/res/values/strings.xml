@@ -110,6 +110,7 @@
     <!-- Recipient Search Food Items -->
     <string name="recipient_food_items_search_title">Search Donations</string>
     <string name="recipient_food_items_search_search_hint">🔎Search</string>
+    <string name="recipient_food_items_search_subtitle">Find surplus food shared by donors near you</string>
 
     <!-- Recipient Request History -->
     <string name="recipient_request_history_title">Request History</string>
