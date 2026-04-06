@@ -3,14 +3,11 @@ package activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -62,9 +59,9 @@ public class DonorReadOnlyFoodItemActivity extends AppCompatActivity {
         txtFoodExpiry = findViewById(R.id.txtFoodExpiry);
         txtFoodAvailableFrom = findViewById(R.id.txtFoodAvailableFrom);
         txtFoodAvailableTo = findViewById(R.id.txtFoodAvailableTo);
-        txtFoodFreeDiscounted = findViewById(R.id.txtFoodFreeDiscounted);
+        txtFoodFreeDiscounted = findViewById(R.id.chipPriceType);
         txtFoodPrice = findViewById(R.id.txtFoodPrice);
-        txtFoodPickUpDelivery = findViewById(R.id.txtFoodPickUpDelivery);
+        txtFoodPickUpDelivery = findViewById(R.id.chipOrderType);
 
         String imageKey = item.getImageKey();
         if (imageKey != null && !imageKey.isEmpty()) {

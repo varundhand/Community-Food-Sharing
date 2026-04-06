@@ -39,6 +39,7 @@
     <string name="common_reminders">Reminders</string>
     <string name="common_edit_profile">Edit Profile</string>
     <string name="common_status">Status</string>
+    <string name="common_availability">Availability</string>
     <string name="rebite">Rebite</string>
 
     <!-- Register -->
@@ -63,7 +64,7 @@
     <!-- Donor Home -->
     <string name="donor_home_btn_view_requests">View Requests</string>
     <string name="donor_home_btn_new_food">Create a new donation</string>
-    <string name="donor_home_btn_list_food_items">View donation items</string>
+    <string name="donor_home_btn_list_food_items">Donation items</string>
     <string name="donor_home_btn_view_history">Donation History</string>
 
     <!-- New Food -->
@@ -78,6 +79,7 @@
 
     <!-- Donor Readonly Food item -->
     <string name="donor_readonly_food_item_title">View Donation</string>
+    <string name="donor_readonly_food_item_subtitle">Review the details of your contribution</string>
 
     <!-- Recipient Home -->
     <string name="recipient_home_btn_search">Search Donations</string>
@@ -94,6 +96,10 @@
 
     <!-- Donor Food History -->
     <string name="donor_food_item_history_title">Donation History</string>
+    <string name="donor_food_item_history_subtitle">Review your past contributions and shared impact</string>
+
+    <!-- Donor Food List -->
+    <string name="donor_food_item_list_subtitle">Manage and update your active food listings</string>
 
     <!-- Donor Request Details -->
     <string name="donor_request_details_title">Request Details</string>
