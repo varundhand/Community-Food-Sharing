@@ -18,11 +18,11 @@
     <string name="common_food_name">Food Name</string>
     <string name="common_category">Category</string>
     <string name="common_quantity">Quantity</string>
-    <string name="common_expiry_date">Expiry Date</string>
+    <string name="common_expiry_date">Expiration Date</string>
     <string name="common_available_from">Available From</string>
-    <string name="common_available_to">Available To</string>
+    <string name="common_available_to">Available Until</string>
     <string name="common_free">Free</string>
-    <string name="common_discounted_price">Discounted Price</string>
+    <string name="common_discounted_price">Discounted</string>
     <string name="common_dollar_prefix">$</string>
     <string name="common_price">Price</string>
     <string name="common_pick_up">Pick Up</string>
@@ -71,8 +71,10 @@
     <string name="new_food_btn_upload_img">Upload Food Image</string>
 
     <!-- Edit Food -->
-    <string name="edit_food_txt_title">View/Edit Donation</string>
+    <string name="edit_food_txt_title">Manage Donation</string>
     <string name="edit_food_btn_upload_img">Change Food Image</string>
+    <string name="edit_food_txt_price">Choose your pricing option</string>
+    <string name="edit_food_txt_type">Choose order type</string>
 
     <!-- Donor Readonly Food item -->
     <string name="donor_readonly_food_item_title">View Donation</string>
