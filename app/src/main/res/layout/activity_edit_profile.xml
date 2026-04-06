@@ -110,24 +110,6 @@
                                 android:src="@android:drawable/sym_def_app_icon" />
                         </com.google.android.material.card.MaterialCardView>
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            app:cardBackgroundColor="@color/secondary_container"
-                            app:cardCornerRadius="18dp"
-                            app:cardElevation="4dp"
-                            app:layout_constraintBottom_toBottomOf="@id/avatarWrapper"
-                            app:layout_constraintEnd_toEndOf="@id/avatarWrapper"
-                            android:layout_marginBottom="4dp"
-                            android:layout_marginEnd="4dp">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
-                                android:src="@android:drawable/ic_menu_camera"
-                                app:tint="@color/on_secondary_container" />
-                        </com.google.android.material.card.MaterialCardView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
@@ -163,6 +145,7 @@
                             android:layout_marginStart="8dp"
                             android:text="Remove"
                             android:textColor="@color/on_surface_variant"
+                            android:onClick="handleRemovePhoto"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>

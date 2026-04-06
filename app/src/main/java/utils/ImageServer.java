@@ -86,4 +86,18 @@ public class ImageServer {
             return null;
         }
     }
+
+    // reference
+    // https://stackoverflow.com/a/24659789
+    public boolean removeImage(String filename) {
+        File imgFile = new File(context.getFilesDir(), filename);
+        if (imgFile.exists()) {
+            try {
+                return imgFile.delete();
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return false;
+    }
 }

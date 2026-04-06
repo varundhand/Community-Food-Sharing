@@ -1,6 +1,6 @@
 package activities;
 
-import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,6 +16,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -41,7 +42,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     ImageView imgUploadPreview;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
-    Uri photoUri;
 
     User user;
 
@@ -68,13 +68,42 @@ public class EditProfileActivity extends AppCompatActivity {
         inputPostalAddress = findViewById(R.id.inputPostalAddress);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
 
-        pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::setPreviewPhoto);
+        pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::setPreviewPhotoCallback);
         setValues();
+    }
+
+    private void setPreviewPhotoCallback(Uri uri) {
+        if (uri == null) return;
+
+        // set the uri to the preview then show dialog
+        setPreviewPhoto(uri);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Changing Photo. Confirm?");
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String imageKey = updatePhoto(uri);
+
+                if (imageKey != null) {
+                    // set updated image
+                    setPreviewPhoto(imageKey);
+                    user.setImageKey(imageKey);
+                    Toast.makeText(EditProfileActivity.this, "Changed the Photo", Toast.LENGTH_LONG).show();
+                } else {
+                    // set previous image
+                    setPreviewPhoto(user.getImageKey());
+                    Toast.makeText(EditProfileActivity.this, "Failed to Change the Photo", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        builder.show();
     }
 
     private void setPreviewPhoto(Uri uri) {
         if (uri != null) {
-            photoUri = uri;
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(uri);
             setPreviewPhoto(bitmap);
@@ -96,11 +125,10 @@ public class EditProfileActivity extends AppCompatActivity {
     private void setPreviewPhoto(Bitmap bitmap) {
         if (bitmap == null) {
             Log.d("PhotoPicker", "Invalid media selected");
-            photoUri = null;
 
             // clear image view
             // reference: https://stackoverflow.com/a/8243184
-            imgUploadPreview.setImageResource(0);
+            imgUploadPreview.setImageResource(android.R.drawable.sym_def_app_icon);
             return;
         }
 
@@ -127,19 +155,50 @@ public class EditProfileActivity extends AppCompatActivity {
                 .build());
     }
 
+    private String updatePhoto(Uri uri) {
+        ImageServer imageServer = new ImageServer(this);
+        String imageKey = imageServer.saveImage(uri);
+        boolean success = dbHelper.updateUser(user.getId(), null, null, null, null, imageKey);
+        if (success) return imageKey;
+        else return null;
+    }
+
+    public void handleRemovePhoto(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Removing Profile Photo");
+        builder.setMessage("Please confirm");
+        builder.setCancelable(true);
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // first, remove it from db
+                // then remove it from filesystem
+                String imgKey = user.getImageKey();
+                boolean success = dbHelper.removePhotoFromUser(user.getId());
+
+                if (success) {
+                    // show toast regardless of the result of removal from file system (because it is already not referenced)
+                    Toast.makeText(EditProfileActivity.this, "Successfully removed photo", Toast.LENGTH_LONG).show();
+                    new ImageServer(EditProfileActivity.this).removeImage(imgKey);
+                    imgUploadPreview.setImageResource(android.R.drawable.sym_def_app_icon);
+                }
+                else {
+                    Toast.makeText(EditProfileActivity.this, "DB Save failed", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        builder.show();
+    }
+
     public void handleSaveUser(View view) {
         String name = inputName.getText().toString();
         String phone = inputPhone.getText().toString();
         String postalCode = inputPostalCode.getText().toString();
         String postalAddress = inputPostalAddress.getText().toString();
 
-        String imageKey = null;
-        if (photoUri != null) {
-            ImageServer imageServer = new ImageServer(this);
-            imageKey = imageServer.saveImage(photoUri);
-        }
-
-        boolean success = dbHelper.updateUser(user.getId(), name, phone, postalCode, postalAddress, imageKey);
+        boolean success = dbHelper.updateUser(user.getId(), name, phone, postalCode, postalAddress, null);
         if (success) {
             Toast.makeText(this, "Profile Updated", Toast.LENGTH_LONG).show();
             Intent intent;

@@ -48,4 +48,6 @@ public class User {
         this.name = name;
     }
 
+    public void setImageKey(String imageKey) { this.imageKey = imageKey; }
+
 }
