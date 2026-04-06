@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodshare.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -34,7 +33,6 @@ public class DonorRequestListActivity extends AppCompatActivity {
     ArrayList<Request> allRequests;
 
     RecyclerView recyclerView;
-    BottomNavigationView bottomNav;
     
     Button btnFilterAll, btnFilterUrgent, btnFilterNearby, btnFilterGroceries;
 
@@ -56,7 +54,6 @@ public class DonorRequestListActivity extends AppCompatActivity {
         donor = authHelper.getCurrentUser();
 
         recyclerView = findViewById(R.id.recyclerView);
-        bottomNav = findViewById(R.id.bottomNav);
         
         btnFilterAll = findViewById(R.id.filterAll);
         btnFilterUrgent = findViewById(R.id.filterUrgent);
@@ -64,7 +61,6 @@ public class DonorRequestListActivity extends AppCompatActivity {
         btnFilterGroceries = findViewById(R.id.filterGroceries);
 
         setupFilters();
-        setupNavigation();
 
         allRequests = dbHelper.getRequests(null, null, null, null, null, donor.getId());
         updateRecyclerView(allRequests);
@@ -100,23 +96,5 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
     private void updateRecyclerView(ArrayList<Request> requests) {
         recyclerView.setAdapter(new DonorRequestListRecyclerViewAdapter(requests));
-    }
-
-    private void setupNavigation() {
-        bottomNav.setSelectedItemId(R.id.nav_requests);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
-                startActivity(new Intent(this, DonorHomeActivity.class));
-                return true;
-            } else if (id == R.id.nav_donations) {
-                startActivity(new Intent(this, DonorFoodItemListActivity.class));
-                return true;
-            } else if (id == R.id.nav_profile) {
-                startActivity(new Intent(this, EditProfileActivity.class));
-                return true;
-            }
-            return false;
-        });
     }
 }

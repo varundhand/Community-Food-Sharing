@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodshare.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -25,7 +24,6 @@ import models.User;
 public class DonorFoodItemListActivity extends AppCompatActivity {
     DatabaseHelper dbHelper;
     RecyclerView recyclerView;
-    BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +38,6 @@ public class DonorFoodItemListActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         recyclerView = findViewById(R.id.recyclerView);
-        bottomNav = findViewById(R.id.bottomNav);
 
         User user = new AuthHelper(this).getCurrentUser();
 
@@ -48,25 +45,5 @@ public class DonorFoodItemListActivity extends AppCompatActivity {
         FoodItemListRecyclerViewAdapter adapter = new FoodItemListRecyclerViewAdapter(foodItems, EditFoodItemActivity.class);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        setupNavigation();
-    }
-
-    private void setupNavigation() {
-        bottomNav.setSelectedItemId(R.id.nav_donations);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
-                startActivity(new Intent(this, DonorHomeActivity.class));
-                return true;
-            } else if (id == R.id.nav_requests) {
-                startActivity(new Intent(this, DonorRequestListActivity.class));
-                return true;
-            } else if (id == R.id.nav_profile) {
-                startActivity(new Intent(this, EditProfileActivity.class));
-                return true;
-            }
-            return false;
-        });
     }
 }

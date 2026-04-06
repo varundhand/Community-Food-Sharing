@@ -17,7 +17,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodshare.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ public class DonorRequestActivity extends AppCompatActivity {
     ImageView imgRecipient;
     TextView txtRecipientName, txtRecipientAddress, txtRequestDue;
     Button btnApprove, btnDecline, btnComplete, btnRemind;
-    BottomNavigationView bottomNav;
 
     private DatabaseHelper dbHelper;
     private Request request;
@@ -89,7 +87,6 @@ public class DonorRequestActivity extends AppCompatActivity {
         btnDecline = findViewById(R.id.btnDecline);
         btnComplete = findViewById(R.id.btnComplete);
         btnRemind = findViewById(R.id.btnRemind);
-        bottomNav = findViewById(R.id.bottomNav);
 
         FoodItem foodItem = request.getFoodItem();
 
@@ -109,7 +106,6 @@ public class DonorRequestActivity extends AppCompatActivity {
         }
 
         updateUIBasedOnStatus();
-        setupNavigation();
     }
 
     private void updateUIBasedOnStatus() {
@@ -152,26 +148,6 @@ public class DonorRequestActivity extends AppCompatActivity {
                 imgView.setImageBitmap(bitmap);
             }
         }
-    }
-
-    private void setupNavigation() {
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
-                startActivity(new Intent(this, DonorHomeActivity.class));
-                return true;
-            } else if (id == R.id.nav_donations) {
-                startActivity(new Intent(this, DonorFoodItemListActivity.class));
-                return true;
-            } else if (id == R.id.nav_requests) {
-                startActivity(new Intent(this, DonorRequestListActivity.class));
-                return true;
-            } else if (id == R.id.nav_profile) {
-                startActivity(new Intent(this, EditProfileActivity.class));
-                return true;
-            }
-            return false;
-        });
     }
 
     public void handleApprove(View view) {
