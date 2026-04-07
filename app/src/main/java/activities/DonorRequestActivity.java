@@ -155,6 +155,12 @@ public class DonorRequestActivity extends AppCompatActivity {
         }
     }
 
+    private void finishAndNavigateToHome() {
+        Intent intent = new Intent(this, DonorHomeActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     public void handleApprove(View view) {
         if (request == null) return;
 
@@ -169,7 +175,7 @@ public class DonorRequestActivity extends AppCompatActivity {
         // 3. Update UI
         txtRequestStatus.setText(RequestStatus.APPROVED.name());
         Toast.makeText(this, "The request is approved", Toast.LENGTH_SHORT).show();
-        updateUIBasedOnStatus();
+        finishAndNavigateToHome();
     }
 
     public void handleDecline(View view) {
@@ -181,7 +187,7 @@ public class DonorRequestActivity extends AppCompatActivity {
 
         txtRequestStatus.setText(RequestStatus.DECLINED.name());
         Toast.makeText(this, "The request is declined", Toast.LENGTH_SHORT).show();
-        updateUIBasedOnStatus();
+        finishAndNavigateToHome();
     }
 
     public void handleComplete(View view) {
@@ -194,7 +200,7 @@ public class DonorRequestActivity extends AppCompatActivity {
 
         txtRequestStatus.setText(RequestStatus.COMPLETE.name());
         Toast.makeText(this, "The request is complete", Toast.LENGTH_SHORT).show();
-        updateUIBasedOnStatus();
+        finishAndNavigateToHome();
     }
     public void handleRemind(View view) {
         String content;
@@ -206,5 +212,6 @@ public class DonorRequestActivity extends AppCompatActivity {
         dbHelper.createReminder(request.getRecipient().getId(), request.getId(), "Reminder", content, null);
         Toast.makeText(this, "Reminded the recipient", Toast.LENGTH_LONG).show();
         hideButton(btnRemind);
+        finishAndNavigateToHome();
     }}
 

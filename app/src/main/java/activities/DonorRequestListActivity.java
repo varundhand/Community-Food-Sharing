@@ -62,7 +62,7 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
         setupFilters();
 
-        allRequests = dbHelper.getRequests(null, null, null, null, null, donor.getId(), true);
+        allRequests = dbHelper.getRequests(null, null, null, null, null, donor.getId(), false);
         updateRecyclerView(allRequests);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
