@@ -28,7 +28,8 @@
                 android:src="@mipmap/ic_launcher"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/rebite" />
 
             <TextView
                 android:id="@+id/registerTxtTitle"
@@ -80,6 +81,7 @@
                         android:textStyle="bold" />
 
                     <RadioGroup
+                        android:id="@+id/radioGroupUserType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -93,7 +95,7 @@
                             android:background="#E1E3E2"
                             android:buttonTint="@color/primary"
                             android:padding="12dp"
-                            android:text="Donor"
+                            android:text="@string/common_donor"
                             android:textColor="@color/primary"
                             android:textStyle="bold" />
 
@@ -109,7 +111,7 @@
                             android:background="#E1E3E2"
                             android:buttonTint="@color/primary"
                             android:padding="12dp"
-                            android:text="Recipient"
+                            android:text="@string/common_recipient"
                             android:textColor="@color/primary"
                             android:textStyle="bold" />
                     </RadioGroup>
@@ -135,11 +137,13 @@
                             app:cardElevation="0dp">
 
                             <ImageView
+                                android:id="@+id/imgProfilePreview"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_gravity="center"
                                 android:src="@android:drawable/ic_menu_camera"
-                                app:tint="@color/on_surface_variant" />
+                                app:tint="@color/on_surface_variant"
+                                android:contentDescription="Profile preview" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <Button
@@ -149,7 +153,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:onClick="pickPhoto"
-                            android:text="Upload Optional Profile Image"
+                            android:text="@string/register_btn_upload_img"
                             android:textColor="@color/primary"
                             android:textStyle="bold" />
 
@@ -169,7 +173,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="FULL NAME"
+                        android:text="@string/common_name"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -190,7 +194,6 @@
                             android:id="@+id/inputName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="John Doe"
                             android:inputType="textPersonName"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -198,7 +201,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="PHONE NUMBER"
+                        android:text="@string/common_phone_number"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -219,7 +222,6 @@
                             android:id="@+id/inputPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="+1 (555) 000-0000"
                             android:inputType="phone"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -227,7 +229,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="EMAIL ADDRESS"
+                        android:text="@string/common_email"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -248,7 +250,6 @@
                             android:id="@+id/inputEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="hello@rebite.org"
                             android:inputType="textEmailAddress"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -256,7 +257,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="PASSWORD"
+                        android:text="@string/common_password"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -277,7 +278,6 @@
                             android:id="@+id/inputPassword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="••••••••••••"
                             android:inputType="textPassword"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -285,7 +285,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="STREET ADDRESS"
+                        android:text="@string/common_postal_address"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -306,7 +306,6 @@
                             android:id="@+id/inputPostalAddress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="123 Community Way"
                             android:inputType="textPostalAddress"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -314,7 +313,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="POSTAL CODE"
+                        android:text="@string/common_postal_code"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="10sp"
                         android:textStyle="bold" />
@@ -335,7 +334,6 @@
                             android:id="@+id/inputPostalCode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="90210"
                             android:inputType="text"
                             android:paddingVertical="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -346,7 +344,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:onClick="handleRegister"
-                        android:text="Register"
+                        android:text="@string/common_register"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -370,11 +368,13 @@
                             android:textColor="@color/on_surface_variant" />
 
                         <TextView
+                            android:id="@+id/btnGoToLogin"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sign In"
+                            android:text="@string/common_login"
                             android:textColor="@color/primary"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:onClick="handleGoToLogin" />
                     </LinearLayout>
 
                 </LinearLayout>
