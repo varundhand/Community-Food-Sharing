@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodshare.R;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import adapters.RecipientRequestListRecyclerViewAdapter;
 import database.AuthHelper;
@@ -91,11 +92,19 @@ public class RecipientRequestListActivity extends AppCompatActivity {
 
     private RecipientRequestListRecyclerViewAdapter selectAll() {
         requests = dbHelper.getRequests(null, null, user.getId(), null, null, null, false);
+        requests = (ArrayList<Request>) requests.stream()
+                // filter out PENDING but food is reserved, which means it is reserved for somebody else
+                .filter(r -> !(r.getStatus() == RequestStatus.PENDING && r.getFoodItem().isReserved()))
+                .collect(Collectors.toList());
         return new RecipientRequestListRecyclerViewAdapter(requests);
     }
 
     private RecipientRequestListRecyclerViewAdapter selectByStatus(RequestStatus status) {
         requests = dbHelper.getRequests(null, null, user.getId(), null, status, null, false);
+        requests = (ArrayList<Request>) requests.stream()
+                // filter out PENDING but food is reserved, which means it is reserved for somebody else
+                .filter(r -> !(r.getStatus() == RequestStatus.PENDING && r.getFoodItem().isReserved()))
+                .collect(Collectors.toList());
         return new RecipientRequestListRecyclerViewAdapter(requests);
     }
 
