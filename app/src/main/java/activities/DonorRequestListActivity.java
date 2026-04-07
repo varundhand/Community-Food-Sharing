@@ -34,7 +34,7 @@ public class DonorRequestListActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     
-    Button btnFilterAll, btnFilterUrgent, btnFilterNearby, btnFilterGroceries;
+    Button btnFilterAll, btnFilterUrgent, btnFilterNearby, btnFilterDairy;
 
     User donor;
 
@@ -58,7 +58,7 @@ public class DonorRequestListActivity extends AppCompatActivity {
         btnFilterAll = findViewById(R.id.filterAll);
         btnFilterUrgent = findViewById(R.id.filterUrgent);
         btnFilterNearby = findViewById(R.id.filterNearby);
-        btnFilterGroceries = findViewById(R.id.filterGroceries);
+        btnFilterDairy = findViewById(R.id.filterDairy);
 
         setupFilters();
 
@@ -86,11 +86,11 @@ public class DonorRequestListActivity extends AppCompatActivity {
             updateRecyclerView(nearby);
         });
 
-        btnFilterGroceries.setOnClickListener(v -> {
-            ArrayList<Request> groceries = (ArrayList<Request>) allRequests.stream()
-                    .filter(r -> "Groceries".equalsIgnoreCase(r.getFoodItem().getCategory()))
+        btnFilterDairy.setOnClickListener(v -> {
+            ArrayList<Request> dairy = (ArrayList<Request>) allRequests.stream()
+                    .filter(r -> models.FoodCategory.DAIRY.name().equalsIgnoreCase(r.getFoodItem().getCategory()))
                     .collect(Collectors.toList());
-            updateRecyclerView(groceries);
+            updateRecyclerView(dairy);
         });
     }
 
