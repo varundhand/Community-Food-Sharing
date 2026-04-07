@@ -91,11 +91,11 @@ public class DonorRequestActivity extends AppCompatActivity {
         FoodItem foodItem = request.getFoodItem();
 
         txtFoodItemName.setText(foodItem.getName());
-        setPhoto(foodItem.getImageKey(), imgFoodItem);
+        setPhoto(foodItem.getImageKey(), imgFoodItem, true);
         txtRequestStatus.setText(request.getStatus().name());
 
         User recipient = request.getRecipient();
-        setPhoto(recipient.getImageKey(), imgRecipient);
+        setPhoto(recipient.getImageKey(), imgRecipient, false);
         txtRecipientName.setText(recipient.getName());
         txtRecipientAddress.setText(recipient.getPostalAddress());
 
@@ -140,13 +140,18 @@ public class DonorRequestActivity extends AppCompatActivity {
         btn.setVisibility(View.VISIBLE);
     }
 
-    private void setPhoto(String filename, ImageView imgView) {
+    private void setPhoto(String filename, ImageView imgView, boolean isFoodItem) {
         if (filename != null && !filename.isEmpty()) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
             if (bitmap != null) {
                 imgView.setImageBitmap(bitmap);
+                return;
             }
+        }
+        
+        if (isFoodItem) {
+            imgView.setImageResource(R.drawable.item_static);
         }
     }
 

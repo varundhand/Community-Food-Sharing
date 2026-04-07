@@ -97,9 +97,7 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
         // Set values to Food Item
         String foodItemImageFile = item.getImageKey();
 
-        if (foodItemImageFile != null && !foodItemImageFile.isEmpty()) {
-            setPhoto(foodItemImageFile, imgFoodItem);
-        }
+        setPhoto(foodItemImageFile, imgFoodItem, true);
 
         txtFoodName.setText(item.getName());
         txtFoodCategory.setText(item.getFoodCategory().toString());
@@ -130,22 +128,29 @@ public class RecipientFoodItemActivity extends AppCompatActivity {
 
         // donor set values
         String donorImageFile = donor.getImageKey();
-        if (donorImageFile != null && !donorImageFile.isEmpty()) {
-            setPhoto(donorImageFile, imgDonor);
-        }
+        setPhoto(donorImageFile, imgDonor, false);
+        
         txtDonorName.setText(donor.getName());
         txtDonorPhone.setText(donor.getPhone());
         txtDonorPostalAddress.setText(donor.getPostalAddress());
         txtDonorPostalCode.setText(donor.getPostalCode());
     }
 
-    private void setPhoto(String filename, ImageView imgView) {
-        if (filename != null) {
+    private void setPhoto(String filename, ImageView imgView, boolean isFoodItem) {
+        if (filename != null && !filename.isEmpty()) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
-            imgView.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                imgView.setImageBitmap(bitmap);
+                return;
+            }
+        }
+        
+        if (isFoodItem) {
+            imgView.setImageResource(R.drawable.item_static);
         } else {
-            Log.d("PhotoPicker", "No media selected");
+            // Donor profile image fallback (could be a different default if desired)
+            Log.d("PhotoPicker", "No donor photo, using layout default");
         }
     }
 

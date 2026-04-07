@@ -83,12 +83,12 @@ public class RecipientRequestActivity extends AppCompatActivity {
         FoodItem foodItem = request.getFoodItem();
 
         txtFoodItemName.setText(foodItem.getName());
-        setPhoto(foodItem.getImageKey(), imgFoodItem);
+        setPhoto(foodItem.getImageKey(), imgFoodItem, true);
         txtRequestStatus.setText(request.getStatus().name());
 
         donor = dbHelper.getUser(foodItem.getDonorId());
 
-        setPhoto(donor.getImageKey(), imgDonor);
+        setPhoto(donor.getImageKey(), imgDonor, false);
         txtDonorName.setText("Name: " + donor.getName());
         txtDonorAddress.setText("Address: " + donor.getPostalAddress());
 
@@ -100,13 +100,20 @@ public class RecipientRequestActivity extends AppCompatActivity {
         }
     }
 
-    private void setPhoto(String filename, ImageView imgView) {
-        if (filename != null) {
+    private void setPhoto(String filename, ImageView imgView, boolean isFoodItem) {
+        if (filename != null && !filename.isEmpty()) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
-            imgView.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                imgView.setImageBitmap(bitmap);
+                return;
+            }
+        }
+        
+        if (isFoodItem) {
+            imgView.setImageResource(R.drawable.item_static);
         } else {
-            Log.d("DonorRequestActivity.setPhoto", "No media selected");
+            Log.d("RecipientRequestActivity", "No donor photo selected");
         }
     }
 }

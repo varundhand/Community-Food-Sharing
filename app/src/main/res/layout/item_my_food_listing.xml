@@ -61,18 +61,27 @@
                 tools:text="Delivery" />
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/imgFood"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtCategoryBadge" />
+
         <TextView
             android:id="@+id/txtFoodName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="16dp"
             android:textColor="@color/primary"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtCategoryBadge"
+            app:layout_constraintStart_toEndOf="@id/imgFood"
+            app:layout_constraintTop_toTopOf="@id/imgFood"
             tools:text="Organic Gala Apples" />
 
         <View
@@ -81,7 +90,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:background="#1AE3E2E0"
-            app:layout_constraintTop_toBottomOf="@id/txtFoodName" />
+            app:layout_constraintTop_toBottomOf="@id/imgFood" />
 
         <TextView
             android:id="@+id/lblQuantity"

@@ -40,9 +40,16 @@ public class RecipientRequestListRecyclerViewAdapter extends RecyclerView.Adapte
         Request request = requests.get(position);
         FoodItem foodItem = request.getFoodItem();
         String foodItemImageKey = foodItem.getImageKey();
+        
         if (foodItemImageKey != null && !foodItemImageKey.isEmpty()) {
             Bitmap bm = new ImageServer(holder.itemView.getContext()).loadImage(foodItemImageKey);
-            holder.imgFoodItem.setImageBitmap(bm);
+            if (bm != null) {
+                holder.imgFoodItem.setImageBitmap(bm);
+            } else {
+                holder.imgFoodItem.setImageResource(R.drawable.item_static);
+            }
+        } else {
+            holder.imgFoodItem.setImageResource(R.drawable.item_static);
         }
 
         holder.txtRequestStatus.setText(request.getStatus().name());

@@ -1,6 +1,7 @@
 package adapters;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.foodshare.R;
 import java.util.ArrayList;
 
 import models.FoodItem;
+import utils.ImageServer;
 
 public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodItemListRecyclerViewAdapter.ViewHolder> {
     Class<?> detailClass;
@@ -42,6 +44,18 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
 
         // 2. BIND THE DATA
         holder.txtFoodName.setText(item.getName());
+
+        String imageKey = item.getImageKey();
+        if (imageKey != null && !imageKey.isEmpty()) {
+            Bitmap bm = new ImageServer(holder.itemView.getContext()).loadImage(imageKey);
+            if (bm != null) {
+                holder.imgFood.setImageBitmap(bm);
+            } else {
+                holder.imgFood.setImageResource(R.drawable.item_static);
+            }
+        } else {
+            holder.imgFood.setImageResource(R.drawable.item_static);
+        }
 
         // Note: The new UI has Quantity and Expiry. 
         // If your FoodItem model has getters for these, uncomment and use them:
@@ -85,7 +99,7 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
     public class ViewHolder extends RecyclerView.ViewHolder {
         // 4. DECLARE THE NEW VARIABLES
         TextView txtCategoryBadge, txtDeliveryType, txtFoodName, txtQuantity, txtExpiry;
-        ImageView imgDeliveryIcon;
+        ImageView imgDeliveryIcon, imgFood;
         LinearLayout badgeDeliveryType;
 
         public ViewHolder(@NonNull View itemView) {
@@ -99,6 +113,7 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
             txtExpiry = itemView.findViewById(R.id.txtExpiry);
             imgDeliveryIcon = itemView.findViewById(R.id.imgDeliveryIcon);
             badgeDeliveryType = itemView.findViewById(R.id.badgeDeliveryType);
+            imgFood = itemView.findViewById(R.id.imgFood);
         }
     }
 }

@@ -16,7 +16,6 @@ import com.example.foodshare.R;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import activities.EditFoodItemActivity;
 import activities.RecipientFoodItemActivity;
 import models.FoodItem;
 import utils.ImageServer;
@@ -41,16 +40,20 @@ public class RecipientFoodItemListRecyclerViewAdapter extends RecyclerView.Adapt
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FoodItem item = items.get(position);
         String imageKey = item.getImageKey();
+        
         if (imageKey != null && !imageKey.isEmpty()) {
             Bitmap bm = new ImageServer(holder.itemView.getContext()).loadImage(item.getImageKey());
-            holder.foodImg.setImageBitmap(bm);
+            if (bm != null) {
+                holder.foodImg.setImageBitmap(bm);
+            } else {
+                holder.foodImg.setImageResource(R.drawable.item_static);
+            }
+        } else {
+            holder.foodImg.setImageResource(R.drawable.item_static);
         }
 
         holder.txtFoodName.setText(item.getName());
 
-        // format ZonedDateTime
-        // reference: https://www.baeldung.com/java-format-zoned-datetime-string#date_to_string-1
-        // reference: https://www.baeldung.com/java-datetimeformatter#formatStyle
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         holder.txtAddedAt.setText("Added at: " + item.getAddedAt());
 

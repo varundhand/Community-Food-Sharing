@@ -44,7 +44,7 @@ public class DonorRequestListRecyclerViewAdapter extends RecyclerView.Adapter<Do
 
         // Default Placeholders
         holder.imgRecipient.setImageResource(R.drawable.ic_account_circle);
-        holder.imgFoodItem.setImageResource(R.drawable.ic_launcher_background);
+        holder.imgFoodItem.setImageResource(R.drawable.item_static);
 
         String recipientImgKey = recipient.getImageKey();
         ImageServer imgServer = new ImageServer(holder.itemView.getContext());
@@ -60,7 +60,11 @@ public class DonorRequestListRecyclerViewAdapter extends RecyclerView.Adapter<Do
             Bitmap bm = imgServer.loadImage(foodImgKey);
             if (bm != null) {
                 holder.imgFoodItem.setImageBitmap(bm);
+            } else {
+                holder.imgFoodItem.setImageResource(R.drawable.item_static);
             }
+        } else {
+            holder.imgFoodItem.setImageResource(R.drawable.item_static);
         }
 
         holder.txtFoodName.setText(item.getFoodItem().getName());

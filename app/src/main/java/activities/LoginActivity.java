@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +25,7 @@ import models.UserType;
 
 public class LoginActivity extends AppCompatActivity {
     EditText inputEmail, inputPassword;
-
+    CheckBox chkRememberMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +40,16 @@ public class LoginActivity extends AppCompatActivity {
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
+        chkRememberMe = findViewById(R.id.chkRememberMe);
 
         //SpannableString to separate color between text on register link
         TextView registerText = findViewById(R.id.welcomeBtnRegister);
         String fullText = "Don\'t have an account? Sign Up Now";
         SpannableString span = new SpannableString(fullText);
         int start = fullText.indexOf("Sign Up Now");
-        span.setSpan(new ForegroundColorSpan(Color.parseColor("#0000EE")), start, fullText.length(),0);
+        if (start != -1) {
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#0000EE")), start, fullText.length(), 0);
+        }
         registerText.setText(span);
     }
 
@@ -66,14 +70,19 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "logged in as a donor", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(LoginActivity.this, DonorHomeActivity.class);
             startActivity(intent);
+            finish();
         }
         else if (user.getUserType() == UserType.RECIPIENT) {
             // Navigate to RECIPIENT HOME
             Toast.makeText(this, "logged in as a recipient", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(LoginActivity.this, RecipientHomeActivity.class);
             startActivity(intent);
+            finish();
         }
-        else {}
+    }
+
+    public void handleForgotPassword(View view) {
+        Toast.makeText(this, "Reset link sent to " + inputEmail.getText().toString(), Toast.LENGTH_LONG).show();
     }
 
     public void handleClickRegister(View view) {

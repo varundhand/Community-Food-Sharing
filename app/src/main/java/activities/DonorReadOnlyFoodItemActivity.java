@@ -67,7 +67,13 @@ public class DonorReadOnlyFoodItemActivity extends AppCompatActivity {
         if (imageKey != null && !imageKey.isEmpty()) {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(imageKey);
-            imgFoodItem.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                imgFoodItem.setImageBitmap(bitmap);
+            } else {
+                imgFoodItem.setImageResource(R.drawable.item_static);
+            }
+        } else {
+            imgFoodItem.setImageResource(R.drawable.item_static);
         }
 
         txtFoodName.setText(item.getName());

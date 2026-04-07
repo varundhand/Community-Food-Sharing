@@ -146,6 +146,19 @@
                             android:textColor="@color/on_surface_variant"
                             android:textSize="10sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtForgotPassword"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="FORGOT?"
+                            android:textColor="@color/primary"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:onClick="handleForgotPassword" />
                     </RelativeLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -171,6 +184,15 @@
                             android:paddingVertical="16dp"
                             android:textColor="@color/on_surface" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/chkRememberMe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:buttonTint="@color/primary"
+                        android:text="Keep me signed in"
+                        android:textColor="@color/on_surface_variant" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRegister"
