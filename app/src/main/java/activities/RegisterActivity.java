@@ -1,12 +1,14 @@
 package activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +33,7 @@ import utils.ImageServer;
 
 public class RegisterActivity extends AppCompatActivity {
     RadioButton rdDonor, rdRecipient;
+    ImageView imgProfilePreview;
     EditText inputName, inputEmail, inputPassword, inputPhone, inputPostalCode, inputPostalAddress;
     TextView txtSelectedPhotoUri;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
@@ -50,23 +53,28 @@ public class RegisterActivity extends AppCompatActivity {
 
         rdDonor = findViewById(R.id.rdDonor);
         rdRecipient = findViewById(R.id.rdRecipient);
+        imgProfilePreview = findViewById(R.id.imgProfilePreview);
         inputName = findViewById(R.id.inputName);
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         inputPhone = findViewById(R.id.inputPhone);
         inputPostalCode = findViewById(R.id.inputPostalCode);
         inputPostalAddress = findViewById(R.id.inputPostalAddress);
-        txtSelectedPhotoUri = findViewById(R.id.txtSelectedPhotoUri);
 
-        pickMedia =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    if (uri != null) {
-                        photoUri = uri;
-                        txtSelectedPhotoUri.setText("Selected URI: " + uri);
-                    } else {
-                        Log.d("PhotoPicker", "No media selected");
-                    }
-                });
+        pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            if (uri != null) {
+                photoUri = uri;
+                ImageServer imageServer = new ImageServer(RegisterActivity.this);
+                Bitmap bm = imageServer.loadImage(uri);
+                if (bm != null) {
+                    imgProfilePreview.setImageTintList(null);
+                    imgProfilePreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    imgProfilePreview.setImageBitmap(bm);
+                }
+            } else {
+                Log.d("PhotoPicker", "No media selected");
+            }
+        });
     }
 
     public void pickPhoto(View view) {
