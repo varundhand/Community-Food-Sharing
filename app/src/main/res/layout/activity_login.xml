@@ -146,15 +146,6 @@
                             android:textColor="@color/on_surface_variant"
                             android:textSize="10sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="FORGOT?"
-                            android:textColor="@color/primary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
                     </RelativeLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -180,14 +171,6 @@
                             android:paddingVertical="16dp"
                             android:textColor="@color/on_surface" />
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:buttonTint="@color/primary"
-                        android:text="Keep me signed in"
-                        android:textColor="@color/on_surface_variant" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRegister"
