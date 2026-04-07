@@ -298,6 +298,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
             if (dbHelper.saveFoodItem(updatedItem)) {
                 Toast.makeText(this, "Food Item Updated", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
+                startActivity(intent);
                 finish();
             } else {
                 throw new IOException("DB save failed");
@@ -315,6 +317,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
                 try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
                     if (dbHelper.deleteFoodItem(item.getId())) {
                         Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
+                        startActivity(intent);
                         finish();
                     }
                 }
