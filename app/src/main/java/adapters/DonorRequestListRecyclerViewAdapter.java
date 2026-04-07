@@ -42,17 +42,25 @@ public class DonorRequestListRecyclerViewAdapter extends RecyclerView.Adapter<Do
         User recipient = item.getRecipient();
         FoodItem foodItem = item.getFoodItem();
 
+        // Default Placeholders
+        holder.imgRecipient.setImageResource(R.drawable.ic_account_circle);
+        holder.imgFoodItem.setImageResource(R.drawable.ic_launcher_background);
+
         String recipientImgKey = recipient.getImageKey();
         ImageServer imgServer = new ImageServer(holder.itemView.getContext());
         if (recipientImgKey != null && !recipientImgKey.isEmpty()) {
             Bitmap bm = imgServer.loadImage(recipientImgKey);
-            holder.imgRecipient.setImageBitmap(bm);
+            if (bm != null) {
+                holder.imgRecipient.setImageBitmap(bm);
+            }
         }
 
         String foodImgKey = foodItem.getImageKey();
         if (foodImgKey != null && !foodImgKey.isEmpty()) {
             Bitmap bm = imgServer.loadImage(foodImgKey);
-            holder.imgFoodItem.setImageBitmap(bm);
+            if (bm != null) {
+                holder.imgFoodItem.setImageBitmap(bm);
+            }
         }
 
         holder.txtFoodName.setText(item.getFoodItem().getName());
@@ -65,7 +73,6 @@ public class DonorRequestListRecyclerViewAdapter extends RecyclerView.Adapter<Do
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO
                 Intent intent = new Intent(holder.itemView.getContext(), DonorRequestActivity.class);
                 intent.putExtra(DonorRequestActivity.EXTRA_REQ_ID, item.getId());
                 holder.itemView.getContext().startActivity(intent);

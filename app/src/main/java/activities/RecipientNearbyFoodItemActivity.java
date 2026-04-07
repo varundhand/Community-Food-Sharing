@@ -1,6 +1,7 @@
 package activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,7 +16,6 @@ import com.example.foodshare.R;
 
 import java.util.ArrayList;
 
-import adapters.FoodItemListRecyclerViewAdapter;
 import adapters.RecipientFoodItemListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
@@ -26,6 +26,7 @@ public class RecipientNearbyFoodItemActivity extends AppCompatActivity {
     TextView txtPostalCode;
     ArrayList<FoodItem> foodItems;
     RecyclerView recyclerView;
+    View cardResults, layoutEmptyState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +41,29 @@ public class RecipientNearbyFoodItemActivity extends AppCompatActivity {
 
         txtPostalCode = findViewById(R.id.txtPostalCode);
         recyclerView = findViewById(R.id.recyclerView);
+        cardResults = findViewById(R.id.cardResults);
+        layoutEmptyState = findViewById(R.id.layoutEmptyState);
 
         User user = new AuthHelper(this).getCurrentUser();
 
-        txtPostalCode.setText(user.getPostalCode());
+        if (user != null) {
+            txtPostalCode.setText(user.getPostalCode());
 
-        try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
-            foodItems = dbHelper.listNearbyFoodItems(user.getPostalCode());
-            RecipientFoodItemListRecyclerViewAdapter adapter = new RecipientFoodItemListRecyclerViewAdapter(foodItems);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        };
+            try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
+                foodItems = dbHelper.listNearbyFoodItems(user.getPostalCode());
+                
+                if (foodItems == null || foodItems.isEmpty()) {
+                    cardResults.setVisibility(View.GONE);
+                    layoutEmptyState.setVisibility(View.VISIBLE);
+                } else {
+                    cardResults.setVisibility(View.VISIBLE);
+                    layoutEmptyState.setVisibility(View.GONE);
+                    
+                    RecipientFoodItemListRecyclerViewAdapter adapter = new RecipientFoodItemListRecyclerViewAdapter(foodItems);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                }
+            }
+        }
     }
 }

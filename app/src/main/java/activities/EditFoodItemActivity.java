@@ -8,12 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -38,7 +37,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import database.AuthHelper;
 import database.DatabaseHelper;
 import fragments.DatePickerFragment;
 import fragments.TimePickerFragment;
@@ -49,7 +47,7 @@ import utils.ImageServer;
 public class EditFoodItemActivity extends AppCompatActivity {
     EditText inputName, inputQuantity, inputExpiry, inputAvailableFrom, inputAvailableTo, inputPrice;
     RadioButton rdFree, rdDiscounted, rdPickup, rdDelivery;
-    Spinner spinnerCategory;
+    AutoCompleteTextView spinnerCategory;
     ImageView imgUploadPreview;
     Button btnSave, btnDelete;
 
@@ -85,14 +83,13 @@ public class EditFoodItemActivity extends AppCompatActivity {
         }
 
         if (item == null) {
-            // Go back to donor home if the foodId is invalid
             Toast.makeText(this, "Invalid Food", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
             startActivity(intent);
+            finish();
             return;
         }
 
-        // Happy Path
         inputName = findViewById(R.id.inputFoodName);
         inputQuantity = findViewById(R.id.inputFoodQuantity);
         inputExpiry = findViewById(R.id.inputFoodExpiry);
@@ -169,9 +166,9 @@ public class EditFoodItemActivity extends AppCompatActivity {
         });
 
         if (item.isReserved()) {
-            btnSave.setText("Update not Allowed (Already Approved)");
+            btnSave.setText("Update not Allowed (Reserved)");
             btnSave.setEnabled(false);
-            btnDelete.setText("Delete not Allowed (Already Approved)");
+            btnDelete.setText("Delete not Allowed (Reserved)");
             btnDelete.setEnabled(false);
         }
     }
@@ -182,8 +179,6 @@ public class EditFoodItemActivity extends AppCompatActivity {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(uri);
             setPreviewPhoto(bitmap);
-        } else {
-            Log.d("PhotoPicker", "No media selected");
         }
     }
 
@@ -192,24 +187,18 @@ public class EditFoodItemActivity extends AppCompatActivity {
             ImageServer imgServer = new ImageServer(this);
             Bitmap bitmap = imgServer.loadImage(filename);
             setPreviewPhoto(bitmap);
-        } else {
-            Log.d("PhotoPicker", "No media selected");
         }
     }
 
     private void setPreviewPhoto(Bitmap bitmap) {
         if (bitmap == null) {
-            Log.d("PhotoPicker", "Invalid media selected");
             photoUri = null;
-
-            // clear image view
-            // reference: https://stackoverflow.com/a/8243184
             imgUploadPreview.setImageResource(0);
+            findViewById(R.id.layoutUploadPlaceholder).setVisibility(View.VISIBLE);
             return;
         }
-
-        // valid image
         imgUploadPreview.setImageBitmap(bitmap);
+        findViewById(R.id.layoutUploadPlaceholder).setVisibility(View.GONE);
     }
 
     private void setValues() {
@@ -217,9 +206,7 @@ public class EditFoodItemActivity extends AppCompatActivity {
             return;
 
         inputName.setText(item.getName());
-        // Setting value of spinner
-        // reference: https://stackoverflow.com/a/11072595
-        spinnerCategory.setSelection(spinnerAdapter.getPosition(item.getFoodCategory()));
+        spinnerCategory.setText(item.getFoodCategory().toString(), false);
         inputQuantity.setText(item.getQuantity());
         inputExpiry.setText(item.getExpiry());
         if (item.getAvailableFrom() != null)
@@ -231,13 +218,11 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         if (item.isFree()) {
             rdFree.setChecked(true);
-            rdDiscounted.setChecked(false);
         } else {
-            rdFree.setChecked(false);
             rdDiscounted.setChecked(true);
         }
 
-        inputPrice.setText(String.format("%.2f", item.getPriceDollar()));
+        inputPrice.setText(String.format("%.2f", item.getPriceDollar().doubleValue()));
 
         // pickup and delivery are mutually exclusive
         if (item.isPickupAvailable())
@@ -259,12 +244,19 @@ public class EditFoodItemActivity extends AppCompatActivity {
             return;
         }
 
-        FoodCategory category = (FoodCategory) spinnerCategory.getSelectedItem();
+        String selectedCategoryStr = spinnerCategory.getText().toString();
+        FoodCategory category = FoodCategory.NOT_SELECTED;
+        for(FoodCategory cat : FoodCategory.values()) {
+            if(cat.toString().equals(selectedCategoryStr)) {
+                category = cat;
+                break;
+            }
+        }
+
         if (category == FoodCategory.NOT_SELECTED) {
             Toast.makeText(this, "Please Select a Category", Toast.LENGTH_SHORT).show();
             return;
         }
-        String categoryName = category.name();
 
         String quantity = inputQuantity.getText().toString();
         if (quantity.isEmpty()) {
@@ -272,28 +264,17 @@ public class EditFoodItemActivity extends AppCompatActivity {
             return;
         }
 
-        // allow empty for expiry, availability
         String expiry = inputExpiry.getText().toString();
 
         ZonedDateTime availableFrom = parseAvailability(inputAvailableFrom);
         ZonedDateTime availableTo = parseAvailability(inputAvailableTo);
 
         boolean isFree = rdFree.isChecked();
-        boolean isDiscounted = rdDiscounted.isChecked();
-        if (isFree == isDiscounted) {
-            Toast.makeText(this, "Please check free/discounted", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         int cents = 0;
-        if (isDiscounted) {
+        if (!isFree) {
             try {
                 BigDecimal decimal = new BigDecimal(inputPrice.getText().toString());
                 cents = decimal.multiply(new BigDecimal(100)).intValue();
-                if (cents == 0) {
-                    Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
-                    return;
-                }
             } catch (Exception e) {
                 Toast.makeText(this, "Please enter valid price", Toast.LENGTH_SHORT).show();
                 return;
@@ -303,11 +284,6 @@ public class EditFoodItemActivity extends AppCompatActivity {
         boolean isPickup = rdPickup.isChecked();
         boolean isDelivery = rdDelivery.isChecked();
 
-        if (!isPickup && !isDelivery) {
-            Toast.makeText(this, "Please select Pick-Up or Delivery", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         String imageKey = item.getImageKey();
         if (photoUri != null) {
             ImageServer imageServer = new ImageServer(this);
@@ -315,16 +291,14 @@ public class EditFoodItemActivity extends AppCompatActivity {
         }
 
         FoodItem updatedItem = new FoodItem(item.getId(), item.getDonorId(), foodName,
-                categoryName, quantity, expiry, imageKey, availableFrom, availableTo,
+                category.name(), quantity, expiry, imageKey, availableFrom, availableTo,
                 item.getAddedAt(), item.getReservedAt(), item.getCompletedAt(), isFree, isPickup,
                 isDelivery, cents);
 
         try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
-            boolean success = dbHelper.saveFoodItem(updatedItem);
-            if (success) {
+            if (dbHelper.saveFoodItem(updatedItem)) {
                 Toast.makeText(this, "Food Item Updated", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
-                startActivity(intent);
+                finish();
             } else {
                 throw new IOException("DB save failed");
             }
@@ -335,26 +309,18 @@ public class EditFoodItemActivity extends AppCompatActivity {
     }
 
     public void handleDelete(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setNegativeButton("Cancel", null);
-        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                try (DatabaseHelper dbHelper = new DatabaseHelper(EditFoodItemActivity.this)) {
-                    boolean result = dbHelper.deleteFoodItem(item.getId());
-                    if (result) {
-                        Toast.makeText(EditFoodItemActivity.this, "Item deleted", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(EditFoodItemActivity.this, DonorHomeActivity.class);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(EditFoodItemActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+            .setMessage("Are you sure you want to delete this listing?")
+            .setPositiveButton("Delete", (dialog, which) -> {
+                try (DatabaseHelper dbHelper = new DatabaseHelper(this)) {
+                    if (dbHelper.deleteFoodItem(item.getId())) {
+                        Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 }
-            }
-        });
-        builder.setMessage("Delete?");
-        builder.show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
     }
 
     private ZonedDateTime parseAvailability(EditText input) {

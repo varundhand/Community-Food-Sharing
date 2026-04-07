@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surface"
+    android:background="@drawable/bg_light_green_gradient"
     tools:context="com.example.foodshare.activities.DonorHomeActivity">
 
     <androidx.core.widget.NestedScrollView
@@ -286,12 +286,6 @@
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="8dp"-->
-<!--                        android:text="Review your impact and past shares."-->
-<!--                        android:textColor="@color/on_surface_variant" />-->
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
