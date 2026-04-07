@@ -282,7 +282,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/common_logout"
-                        android:textColor="@color/primary"
+                        android:textColor="#BA1A1A"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
