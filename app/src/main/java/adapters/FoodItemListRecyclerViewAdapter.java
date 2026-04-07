@@ -57,28 +57,16 @@ public class FoodItemListRecyclerViewAdapter extends RecyclerView.Adapter<FoodIt
             holder.imgFood.setImageResource(R.drawable.item_static);
         }
 
-        // Note: The new UI has Quantity and Expiry. 
+        // Note: The new UI has Quantity and Expiry.
         // If your FoodItem model has getters for these, uncomment and use them:
         // holder.txtQuantity.setText(item.getQuantity());
         // holder.txtExpiry.setText(item.getExpiryDate());
+        holder.txtQuantity.setText(item.getQuantity());
+        holder.txtExpiry.setText(item.getExpiry() == null || item.getExpiry().isEmpty() ? "N/A" : item.getExpiry());
 
-        // Temporary fallbacks if your model doesn't have those exact fields yet:
-        holder.txtQuantity.setText("N/A");
-        holder.txtExpiry.setText(item.getFormattedAddedAt()); // Using formatted string instead of ZonedDateTime object
-
-        // Note: The new UI has a Category badge. 
-        // If you don't have a category getter yet, we can use the active status here!
         boolean isActive = item.isActive();
         holder.txtCategoryBadge.setText(isActive ? "ACTIVE" : "COMPLETED");
 
-        // Optional: Logic to switch between Delivery and Pickup icons
-        // if (item.isDelivery()) {
-        //     holder.txtDeliveryType.setText("Delivery");
-        //     holder.imgDeliveryIcon.setImageResource(android.R.drawable.ic_menu_send);
-        // } else {
-        //     holder.txtDeliveryType.setText("Pickup");
-        //     holder.imgDeliveryIcon.setImageResource(android.R.drawable.ic_menu_mylocation);
-        // }
 
         // 3. HANDLE CLICKS
         holder.itemView.setOnClickListener(new View.OnClickListener() {
