@@ -24,6 +24,7 @@ import adapters.DonorRequestListRecyclerViewAdapter;
 import database.AuthHelper;
 import database.DatabaseHelper;
 import models.Request;
+import models.RequestStatus;
 import models.User;
 
 public class DonorRequestListActivity extends AppCompatActivity {
@@ -63,6 +64,10 @@ public class DonorRequestListActivity extends AppCompatActivity {
         setupFilters();
 
         allRequests = dbHelper.getRequests(null, null, null, null, null, donor.getId(), false);
+        allRequests = (ArrayList<Request>) allRequests.stream()
+                // filter out COMPLETE and (PENDING but food is reserved, which means it is reserved for somebody else)
+                .filter(r -> r.getStatus() != RequestStatus.COMPLETE && !(r.getStatus() == RequestStatus.PENDING && r.getFoodItem().isReserved()))
+                .collect(Collectors.toList());
         updateRecyclerView(allRequests);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
