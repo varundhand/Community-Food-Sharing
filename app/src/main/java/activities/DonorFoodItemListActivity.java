@@ -41,7 +41,7 @@ public class DonorFoodItemListActivity extends AppCompatActivity {
 
         User user = new AuthHelper(this).getCurrentUser();
 
-        ArrayList<FoodItem> foodItems = dbHelper.listFoodItem(user.getId(), true);
+        ArrayList<FoodItem> foodItems = dbHelper.listFoodItem(user.getId(), true, false, true);
         FoodItemListRecyclerViewAdapter adapter = new FoodItemListRecyclerViewAdapter(foodItems, EditFoodItemActivity.class);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

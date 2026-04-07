@@ -127,30 +127,35 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="@string/common_food_name"
-                app:boxBackgroundColor="@android:color/transparent"
-                app:layout_constraintTop_toBottomOf="@id/cardImagePicker">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputFoodName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="0dp"
-                    android:textColor="@color/on_surface"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutCategory"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginVertical="5dp"
+                android:ems="10"
+                android:hint="@string/common_available_from"
+                android:minHeight="48dp"
+                android:inputType="none"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:longClickable="false"
+                android:textIsSelectable="false"
+                android:clickable="true"
+                />
+            <EditText
+                android:id="@+id/inputAvailableTo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="@string/common_category"
-                app:boxBackgroundColor="@android:color/transparent"
-                app:layout_constraintTop_toBottomOf="@id/layoutFoodName">
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginVertical="5dp"
+                android:ems="10"
+                android:hint="@string/common_available_to"
+                android:minHeight="48dp"
+                android:inputType="none"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:longClickable="false"
+                android:textIsSelectable="false"
+                android:clickable="true" />
 
                 <AutoCompleteTextView
                     android:id="@+id/spinnerFoodCategory"

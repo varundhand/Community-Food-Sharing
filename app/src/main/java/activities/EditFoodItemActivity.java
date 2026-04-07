@@ -19,21 +19,27 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.example.foodshare.R;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import database.DatabaseHelper;
+import fragments.DatePickerFragment;
+import fragments.TimePickerFragment;
 import models.FoodCategory;
 import models.FoodItem;
 import utils.ImageServer;
@@ -51,6 +57,12 @@ public class EditFoodItemActivity extends AppCompatActivity {
     ArrayAdapter<FoodCategory> spinnerAdapter;
 
     FoodItem item;
+
+    private int pendingYear;
+    private int pendingMonth;
+    private int pendingDay;
+    private EditText pendingAvailabilityInput;
+    private final DateTimeFormatter availabilityDisplayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +109,61 @@ public class EditFoodItemActivity extends AppCompatActivity {
         spinnerCategory = findViewById(R.id.spinnerFoodCategory);
         imgUploadPreview = findViewById(R.id.imgUploadPreview);
 
-        // Updated to use AutoCompleteTextView for Exposed Dropdown Menu
-        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, FoodCategory.values());
+        // spinner from enum
+        spinnerAdapter = new ArrayAdapter<FoodCategory>(this, android.R.layout.simple_spinner_item,
+                FoodCategory.values());
         spinnerCategory.setAdapter(spinnerAdapter);
 
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::setPreviewPhoto);
         setValues();
+
+        getSupportFragmentManager().setFragmentResultListener(
+                DatePickerFragment.REQUEST_KEY,
+                this,
+                new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        pendingYear = result.getInt(DatePickerFragment.KEY_YEAR);
+                        pendingMonth = result.getInt(DatePickerFragment.KEY_MONTH);
+                        pendingDay = result.getInt(DatePickerFragment.KEY_DAY);
+
+                        new TimePickerFragment().show(getSupportFragmentManager(), "timePicker");
+                    }
+                });
+
+        getSupportFragmentManager().setFragmentResultListener(
+                TimePickerFragment.REQUEST_KEY,
+                this,
+                new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        int hourOfDay = result.getInt(TimePickerFragment.KEY_HOUR_OF_DAY);
+                        int minute = result.getInt(TimePickerFragment.KEY_MINUTE);
+
+                        if (pendingAvailabilityInput == null) {
+                            return;
+                        }
+
+                        LocalDateTime selectedDateTime = LocalDateTime.of(
+                                pendingYear,
+                                pendingMonth + 1,
+                                pendingDay,
+                                hourOfDay,
+                                minute);
+
+                        pendingAvailabilityInput.setText(availabilityDisplayFormatter.format(selectedDateTime));
+                    }
+                });
+
+        inputAvailableFrom.setOnClickListener(v -> {
+            pendingAvailabilityInput = inputAvailableFrom;
+            new DatePickerFragment().show(getSupportFragmentManager(), "datePicker");
+        });
+
+        inputAvailableTo.setOnClickListener(v -> {
+            pendingAvailabilityInput = inputAvailableTo;
+            new DatePickerFragment().show(getSupportFragmentManager(), "datePicker");
+        });
 
         if (item.isReserved()) {
             btnSave.setText("Update not Allowed (Reserved)");
@@ -141,15 +202,17 @@ public class EditFoodItemActivity extends AppCompatActivity {
     }
 
     private void setValues() {
-        if (item == null) return;
+        if (item == null)
+            return;
 
         inputName.setText(item.getName());
         spinnerCategory.setText(item.getFoodCategory().toString(), false);
         inputQuantity.setText(item.getQuantity());
         inputExpiry.setText(item.getExpiry());
-        
-        if (item.getAvailableFrom() != null) inputAvailableFrom.setText(item.getAvailableFrom().toString());
-        if (item.getAvailableTo() != null) inputAvailableTo.setText(item.getAvailableTo().toString());
+        if (item.getAvailableFrom() != null)
+            inputAvailableFrom.setText(availabilityDisplayFormatter.format(item.getAvailableFrom()));
+        if (item.getAvailableTo() != null)
+            inputAvailableTo.setText(availabilityDisplayFormatter.format(item.getAvailableTo()));
 
         setPreviewPhoto(item.getImageKey());
 
@@ -161,8 +224,11 @@ public class EditFoodItemActivity extends AppCompatActivity {
 
         inputPrice.setText(String.format("%.2f", item.getPriceDollar().doubleValue()));
 
-        if (item.isPickupAvailable()) rdPickup.setChecked(true);
-        else rdDelivery.setChecked(true);
+        // pickup and delivery are mutually exclusive
+        if (item.isPickupAvailable())
+            rdPickup.setChecked(true);
+        else
+            rdDelivery.setChecked(true);
     }
 
     public void pickPhoto(View view) {
@@ -199,8 +265,9 @@ public class EditFoodItemActivity extends AppCompatActivity {
         }
 
         String expiry = inputExpiry.getText().toString();
-        ZonedDateTime availableFrom = parseDateTime(inputAvailableFrom.getText().toString());
-        ZonedDateTime availableTo = parseDateTime(inputAvailableTo.getText().toString());
+
+        ZonedDateTime availableFrom = parseAvailability(inputAvailableFrom);
+        ZonedDateTime availableTo = parseAvailability(inputAvailableTo);
 
         boolean isFree = rdFree.isChecked();
         int cents = 0;
@@ -236,15 +303,8 @@ public class EditFoodItemActivity extends AppCompatActivity {
                 throw new IOException("DB save failed");
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Update failed", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private ZonedDateTime parseDateTime(String input) {
-        try {
-            return ZonedDateTime.parse(input);
-        } catch (Exception e) {
-            return null;
+            Log.d("NewFoodItemActivity.handleSave", e.toString());
+            Toast.makeText(this, "DB Save failed", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -261,5 +321,19 @@ public class EditFoodItemActivity extends AppCompatActivity {
             })
             .setNegativeButton("Cancel", null)
             .show();
+    }
+
+    private ZonedDateTime parseAvailability(EditText input) {
+        String value = input.getText() == null ? "" : input.getText().toString().trim();
+        if (value.isEmpty()) {
+            return null;
+        }
+
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(value, availabilityDisplayFormatter);
+            return localDateTime.atZone(ZoneId.systemDefault());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

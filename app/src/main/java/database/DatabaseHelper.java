@@ -203,8 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.getColumnIndex(COL_USER_POSTAL_CODE),
                 cursor.getColumnIndex(COL_USER_ADDRESS),
                 cursor.getColumnIndex(COL_USER_IMG_KEY),
-                cursor.getColumnIndex(COL_USER_TYPE)
-                );
+                cursor.getColumnIndex(COL_USER_TYPE));
     }
 
     // getUser by email and pass
@@ -243,8 +242,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateUser(int userId, String name,
-                              String phone, String postalCode,
-                              String postalAddress, String imageKey) {
+            String phone, String postalCode,
+            String postalAddress, String imageKey) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -293,7 +292,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (availableFrom != null) {
             values.put(COL_FOOD_ITEM_AVAILABLE_FROM, availableFrom.getEpochSecond());
         }
-        if (availableFrom != null) {
+        if (availableTo != null) {
             values.put(COL_FOOD_ITEM_AVAILABLE_TO, availableTo.getEpochSecond());
         }
         values.put(COL_FOOD_ITEM_IS_FREE, isFree);
@@ -311,8 +310,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean saveFoodItem(FoodItem item) {
-        if (item == null) return false;
-        if (item.getId() <= 0) return false;
+        if (item == null)
+            return false;
+        if (item.getId() <= 0)
+            return false;
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -331,6 +332,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (item.getAvailableTo() != null) {
             values.put(COL_FOOD_ITEM_AVAILABLE_TO, item.getAvailableTo().toInstant().getEpochSecond());
+        } else {
+            // nullify if the value is not provided
+            values.putNull(COL_FOOD_ITEM_AVAILABLE_TO);
         }
         values.put(COL_FOOD_ITEM_IS_FREE, item.isFree() ? 1 : 0);
         values.put(COL_FOOD_ITEM_PRICE_CENTS, item.getPriceCents());
@@ -342,7 +346,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long epochSecs = now.getEpochSecond(); // 4bits (sqlite integer can handle it)
         values.put(COL_FOOD_ITEM_ADDED_AT, epochSecs);
 
-        long result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?", new String[]{ String.valueOf(item.getId()) });
+        long result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?",
+                new String[] { String.valueOf(item.getId()) });
         return result != -1;
     }
 
@@ -355,7 +360,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean reserveFoodItem(int foodItemId, Instant instant) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        if (instant == null) instant = Instant.now();
+        if (instant == null)
+            instant = Instant.now();
         values.put(COL_FOOD_ITEM_RESERVED_AT, instant.getEpochSecond());
         int result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
         return result == 1;
@@ -364,7 +370,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean completeFoodItem(int foodItemId, Instant instant) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        if (instant == null) instant = Instant.now();
+        if (instant == null)
+            instant = Instant.now();
         values.put(COL_FOOD_ITEM_COMPLETED_AT, instant.getEpochSecond());
         int result = db.update(TABLE_FOOD_ITEMS, values, COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
         return result == 1;
@@ -373,7 +380,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public FoodItem getFoodItem(int foodItemId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_ID + "= ?", new String[] { String.valueOf(foodItemId) });
+                "SELECT * FROM " + TABLE_FOOD_ITEMS + " WHERE " + COL_ID + "= ?",
+                new String[] { String.valueOf(foodItemId) });
 
         if (cursor.getCount() != 1) {
             return null;
@@ -397,15 +405,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idReservedAt = cursor.getColumnIndex(COL_FOOD_ITEM_RESERVED_AT);
         int idCompletedAt = cursor.getColumnIndex(COL_FOOD_ITEM_COMPLETED_AT);
 
-
         return foodItemFromCursor(
                 cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
                 idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
-                idAddedAt, idReservedAt, idCompletedAt
-        );
+                idAddedAt, idReservedAt, idCompletedAt);
     }
 
-    public ArrayList<FoodItem> listFoodItem(int donorId, boolean onlyActive) {
+    public ArrayList<FoodItem> listFoodItem(int donorId, boolean onlyIncomplete, boolean onlyAfterFrom, boolean onlyBeforeUntil) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         ArrayList<String> wheres = new ArrayList<>();
@@ -414,14 +420,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         wheres.add(COL_FOOD_ITEM_DONOR_ID + "=?");
         args.add(String.format("%d", donorId));
 
-        if (onlyActive) {
-            long now = Instant.now().getEpochSecond();
-            wheres.add( COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+        long now = Instant.now().getEpochSecond();
 
+        if (onlyIncomplete) {
+            wheres.add(COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+        }
+
+        if (onlyAfterFrom) {
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
+        }
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+        if (onlyBeforeUntil) {
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
@@ -458,8 +469,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             FoodItem item = foodItemFromCursor(
                     cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
                     idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
-                    idAddedAt, idReservedAt, idCompletedAt
-            );
+                    idAddedAt, idReservedAt, idCompletedAt);
             results.add(item);
         }
 
@@ -471,15 +481,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String now = String.valueOf(Instant.now().getEpochSecond());
 
-        // Search Food that are posted by donors who has the same first 3 digits of postalCode
+        // Search Food that are posted by donors who has the same first 3 digits of
+        // postalCode
         Cursor cursor = db.rawQuery("SELECT " + TABLE_FOOD_ITEMS + ".* FROM " + TABLE_FOOD_ITEMS +
-                        " JOIN " + TABLE_USERS +
-                        " ON " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = " + TABLE_USERS + "." + COL_ID +
-                        " WHERE " + TABLE_USERS + "." +COL_USER_TYPE + "=? AND " + TABLE_USERS + "." +COL_USER_POSTAL_CODE + " LIKE ? " +
-                        " AND " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_RESERVED_AT + " IS NULL " +
-                        " AND " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " IS NULL " +
-                        " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?) " +
-                        " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " > ?) ",
+                " JOIN " + TABLE_USERS +
+                " ON " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = " + TABLE_USERS + "." + COL_ID +
+                " WHERE " + TABLE_USERS + "." + COL_USER_TYPE + "=? AND " + TABLE_USERS + "." + COL_USER_POSTAL_CODE
+                + " LIKE ? " +
+                " AND " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_RESERVED_AT + " IS NULL " +
+                " AND " + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " IS NULL " +
+                " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + TABLE_FOOD_ITEMS
+                + "." + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?) " +
+                " AND (" + TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + TABLE_FOOD_ITEMS + "."
+                + COL_FOOD_ITEM_AVAILABLE_TO + " > ?) ",
                 new String[] { UserType.DONOR.name(), postalCode.substring(0, 3) + "%", now, now });
 
         ArrayList<FoodItem> results = new ArrayList<>();
@@ -509,8 +523,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             FoodItem item = foodItemFromCursor(
                     cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
                     idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
-                    idAddedAt, idReservedAt, idCompletedAt
-            );
+                    idAddedAt, idReservedAt, idCompletedAt);
             results.add(item);
         }
 
@@ -520,7 +533,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<FoodItem> searchFoodItemsByName(String name, boolean onlyActive, boolean withoutReserved) {
         SQLiteDatabase db = this.getReadableDatabase();
-
 
         ArrayList<String> wheres = new ArrayList<>();
         ArrayList<String> args = new ArrayList<>();
@@ -532,17 +544,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (onlyActive) {
             long now = Instant.now().getEpochSecond();
-            wheres.add( COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
+            wheres.add(COL_FOOD_ITEM_COMPLETED_AT + " IS NULL");
 
             wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_FROM + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_FROM + " < ?)");
             args.add(String.valueOf(now));
 
-            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " < ?)");
+            wheres.add("(" + COL_FOOD_ITEM_AVAILABLE_TO + " IS NULL OR " + COL_FOOD_ITEM_AVAILABLE_TO + " > ?)");
             args.add(String.valueOf(now));
         }
 
         if (withoutReserved) {
-            wheres.add( COL_FOOD_ITEM_RESERVED_AT + " IS NULL");
+            wheres.add(COL_FOOD_ITEM_RESERVED_AT + " IS NULL");
         }
 
         String[] argsArr = args.toArray(new String[0]);
@@ -552,9 +564,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS, new String[] {});
         } else {
             cursor = db.rawQuery("SELECT * FROM " + TABLE_FOOD_ITEMS +
-                            " WHERE " + String.join(" AND ", wheres), argsArr);
+                    " WHERE " + String.join(" AND ", wheres), argsArr);
         }
-
 
         ArrayList<FoodItem> results = new ArrayList<>();
 
@@ -583,8 +594,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             FoodItem item = foodItemFromCursor(
                     cursor, idIndex, idDonorId, idName, idCategory, idQuantity, idExpiry, idAvailableFrom,
                     idAvailableTo, idIsFree, idPriceCents, idPickUpAvailable, idDeliveryAvailable, idImageKey,
-                    idAddedAt, idReservedAt, idCompletedAt
-            );
+                    idAddedAt, idReservedAt, idCompletedAt);
             results.add(item);
         }
 
@@ -624,7 +634,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result == 1;
     }
 
-    public ArrayList<Request> getRequests(Integer requestId, Integer foodItemId, Integer recipientId, Instant dueAfter, RequestStatus status, Integer donorId) {
+    public ArrayList<Request> getRequests(Integer requestId, Integer foodItemId, Integer recipientId, Instant dueAfter,
+            RequestStatus status, Integer donorId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
@@ -675,8 +686,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_AVAILABLE_TO + " AS " + aliasFoodItemAvailableTo + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_FREE + " AS " + aliasFoodItemIsFree + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_PRICE_CENTS + " AS " + aliasFoodItemPriceCents + ", " +
-                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " AS " + aliasFoodItemPickUpAvailable + ", " +
-                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " AS " + aliasFoodItemDeliveryAvailable + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_PICKUP_AVAILABLE + " AS " + aliasFoodItemPickUpAvailable
+                + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IS_DELIVERY_AVAILABLE + " AS " + aliasFoodItemDeliveryAvailable
+                + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IMG_KEY + " AS " + aliasFoodItemImageKey + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_ADDED_AT + " AS " + aliasFoodItemAddedAt + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " AS " + aliasFoodItemCompletedAt + ", " +
@@ -725,13 +738,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             args.add(String.valueOf(donorId));
         }
 
-        String whereStr = String.join(" AND " , where);
+        String whereStr = String.join(" AND ", where);
         String[] argsArr = new String[args.size()];
         args.toArray(argsArr);
 
         Cursor cursor = db.rawQuery(
                 select +
-                " WHERE " + whereStr, argsArr);
+                        " WHERE " + whereStr,
+                argsArr);
 
         int idReqId = cursor.getColumnIndex(aliasReqId);
         int idDue = cursor.getColumnIndex(aliasReqDue);
@@ -791,14 +805,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     idRecipientPostalCode,
                     idRecipientAddress,
                     idRecipientImgKey,
-                    idRecipientType
-                    );
+                    idRecipientType);
 
             FoodItem foodItem = foodItemFromCursor(cursor, idFoodItemId, idFoodItemDonorId, idFoodItemName,
                     idFoodItemCategoryName, idFoodItemQuantity, idFoodItemExpiry, idFoodItemAvailableFrom,
                     idFoodItemAvailableTo, idFoodItemIsFree, idFoodItemPriceCents, idFoodItemPickUpAvailable,
-                    idFoodItemDeliveryAvailable, idFoodItemImageKey, idFoodItemAddedAt, idFoodItemReservedAt, idFoodItemCompletedAt);
-
+                    idFoodItemDeliveryAvailable, idFoodItemImageKey, idFoodItemAddedAt, idFoodItemReservedAt,
+                    idFoodItemCompletedAt);
 
             ret.add(new Request(id, foodItem, recipient, due, retStatus, requestedAt));
         }
@@ -814,7 +827,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_REMINDERS_REQUEST_ID, requestId);
         values.put(COL_REMINDERS_TITLE, title);
         values.put(COL_REMINDERS_CONTENT, content);
-        if (addedAt == null) addedAt = Instant.now();
+        if (addedAt == null)
+            addedAt = Instant.now();
         values.put(COL_REMINDERS_ADDED_AT, addedAt.getEpochSecond());
 
         // returns primary key (-1 if failed)
@@ -824,10 +838,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean setReadToReminder(int reminderId, Instant readAt) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        if (readAt == null) readAt = Instant.now();
+        if (readAt == null)
+            readAt = Instant.now();
         values.put(COL_REMINDERS_READ_AT, readAt.getEpochSecond());
 
-        int affectedRows = db.update(TABLE_REMINDERS, values, COL_ID + " = ?", new String[] { String.valueOf(reminderId) });
+        int affectedRows = db.update(TABLE_REMINDERS, values, COL_ID + " = ?",
+                new String[] { String.valueOf(reminderId) });
         return affectedRows == 1;
     }
 
@@ -848,7 +864,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             where.add(COL_REMINDERS_READ_AT + " IS NULL");
         }
 
-        String whereStr = String.join(" AND " , where);
+        String whereStr = String.join(" AND ", where);
         String[] argsArr = new String[args.size()];
         args.toArray(argsArr);
         String sqlTpl = "SELECT * FROM " + TABLE_REMINDERS + " WHERE " + whereStr +
@@ -862,7 +878,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int idReadAt = cursor.getColumnIndex(COL_REMINDERS_READ_AT);
         int idTitle = cursor.getColumnIndex(COL_REMINDERS_TITLE);
         int idContent = cursor.getColumnIndex(COL_REMINDERS_CONTENT);
-        int idAddedAt= cursor.getColumnIndex(COL_REMINDERS_ADDED_AT);
+        int idAddedAt = cursor.getColumnIndex(COL_REMINDERS_ADDED_AT);
 
         ArrayList<Reminder> result = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -877,7 +893,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String title = cursor.getString(idTitle);
             String content = cursor.getString(idContent);
             long addedAtEpochSecs = cursor.getLong(idAddedAt);
-            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs), ZoneId.systemDefault());
+            ZonedDateTime addedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(addedAtEpochSecs),
+                    ZoneId.systemDefault());
 
             result.add(new Reminder(id, retUserId, retRequestId, readAt, title, content, addedAt));
         }
@@ -889,7 +906,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // utils
     private User userFromCursor(Cursor cursor, int colId, int colName, int colEmail, int colPhone,
-                                int colPostalCode, int colAddress, int colImgKey, int colUserType) {
+            int colPostalCode, int colAddress, int colImgKey, int colUserType) {
         int id = cursor.getInt(colId);
         String name = cursor.getString(colName);
         String email = cursor.getString(colEmail);
@@ -907,8 +924,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Cursor cursor, int idIndex, int idDonorId, int idName, int idCategory, int idQuantity,
             int idExpiry, int idAvailableFrom, int idAvailableTo, int idIsFree, int idPriceCents,
             int idPickUpAvailable, int idDeliveryAvailable, int idImageKey, int idAddedAt,
-            int idRservedAt, int idCompletedAt
-    ) {
+            int idRservedAt, int idCompletedAt) {
         int id = cursor.getInt(idIndex);
         int donorId = cursor.getInt(idDonorId);
         String name = cursor.getString(idName);
@@ -923,13 +939,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long addedAtEpochSecs = cursor.getLong(idAddedAt);
 
         ZonedDateTime availableFrom;
-        if (cursor.isNull(idAvailableFrom)) availableFrom = null;
+        if (cursor.isNull(idAvailableFrom))
+            availableFrom = null;
         else
             availableFrom = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableFrom)),
                     ZoneId.systemDefault());
 
         ZonedDateTime availableTo;
-        if (cursor.isNull(idAvailableTo)) availableTo = null;
+        if (cursor.isNull(idAvailableTo))
+            availableTo = null;
         else
             availableTo = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idAvailableTo)),
                     ZoneId.systemDefault());
@@ -939,20 +957,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ZoneId.systemDefault());
 
         ZonedDateTime reservedAt;
-        if (cursor.isNull(idRservedAt)) reservedAt = null;
+        if (cursor.isNull(idRservedAt))
+            reservedAt = null;
         else
             reservedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idRservedAt)),
                     ZoneId.systemDefault());
 
         ZonedDateTime completedAt;
-        if (cursor.isNull(idCompletedAt)) completedAt = null;
+        if (cursor.isNull(idCompletedAt))
+            completedAt = null;
         else
             completedAt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(cursor.getLong(idCompletedAt)),
                     ZoneId.systemDefault());
 
         return new FoodItem(id, donorId, name, category, quantity,
                 expiry, imageKey, availableFrom,
-                availableTo, addedAt, reservedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable, priceCents);
+                availableTo, addedAt, reservedAt, completedAt, isFree, isPickupAvailable, isDeliveryAvailable,
+                priceCents);
     }
 
 }
