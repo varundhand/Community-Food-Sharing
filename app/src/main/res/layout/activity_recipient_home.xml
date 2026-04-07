@@ -322,14 +322,6 @@
                         android:textColor="#BA1A1A"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Sign out."
-                        android:textColor="#BA1A1A"
-                        android:textSize="12sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
