@@ -88,7 +88,9 @@
     <string name="recipient_home_btn_view_request_history">Request History</string>
 
     <!-- Nearby Food Items -->
-    <string name="nearby_food_txt_nearby">Nearby Donations based on your Postal Code</string>
+    <string name="nearby_food_txt_nearby">Nearby Donations</string>
+    <string name="nearby_food_no_items">No nearby donations found at the moment.</string>
+    <string name="nearby_food_subtitle">Discover available donations in your immediate area</string>
 
     <!-- Recipient Food Detail -->
     <string name="recipient_food_detail_title">Donation Detail</string>
