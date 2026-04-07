@@ -184,7 +184,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputName"
                             android:layout_width="match_parent"
@@ -212,7 +213,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputPhone"
                             android:layout_width="match_parent"
@@ -240,7 +242,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputEmail"
                             android:layout_width="match_parent"
@@ -268,7 +271,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputPassword"
                             android:layout_width="match_parent"
@@ -296,7 +300,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputPostalAddress"
                             android:layout_width="match_parent"
@@ -324,7 +329,8 @@
                         app:boxCornerRadiusBottomStart="16dp"
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputPostalCode"
                             android:layout_width="match_parent"

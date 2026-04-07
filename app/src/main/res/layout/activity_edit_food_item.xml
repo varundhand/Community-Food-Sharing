@@ -1,268 +1,384 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="activities.EditFoodItemActivity">
-    <ScrollView
+    android:background="@color/surface"
+    tools:context=".activities.EditFoodItemActivity">
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-        <LinearLayout
+        android:paddingBottom="100dp"
+        android:clipToPadding="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginEnd="1dp"
-            android:layout_marginBottom="1dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:padding="24dp">
 
-            <!--Rebite Title-->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="24dp">
-
-                <ImageView
-                    android:id="@+id/imgLogo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@mipmap/ic_launcher"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="Rebite Logo"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="@string/rebite"
-                    android:textColor="@color/primary"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/imgLogo"
-                    app:layout_constraintStart_toEndOf="@id/imgLogo"
-                    app:layout_constraintTop_toTopOf="@id/imgLogo" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_launcher"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/rebite" />
 
             <TextView
-                android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="15dp"
-                android:textSize="34sp"
-                android:text="@string/edit_food_txt_title" />
+                android:layout_marginStart="12dp"
+                android:text="Rebite"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/imgLogo"
+                app:layout_constraintStart_toEndOf="@id/imgLogo"
+                app:layout_constraintTop_toTopOf="@id/imgLogo" />
 
-            <EditText
-                android:id="@+id/inputFoodName"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txtHeadline"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_food_name"
-                android:inputType="text"
-                android:minHeight="48dp" />
+                android:layout_marginTop="32dp"
+                android:text="@string/edit_food_txt_title"
+                android:textColor="@color/primary"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgLogo" />
 
-            <Spinner
-                android:id="@+id/spinnerFoodCategory"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txtSubhead"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:minHeight="48dp"
-                android:prompt="@string/common_category"
-                />
+                android:layout_marginTop="8dp"
+                android:text="Modify your donation details or remove the listing from the archive."
+                android:textColor="@color/on_surface_variant"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtHeadline" />
 
-            <EditText
-                android:id="@+id/inputFoodQuantity"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/lblPhoto"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_quantity"
-                android:inputType="text"
-                android:minHeight="48dp" />
-            <EditText
-                android:id="@+id/inputFoodExpiry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_expiry_date"
-                android:inputType="date"
-                android:minHeight="48dp" />
-            <EditText
-                android:id="@+id/inputAvailableFrom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_available_from"
-                android:inputType="datetime"
-                android:minHeight="48dp" />
-            <EditText
-                android:id="@+id/inputAvailableTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="5dp"
-                android:ems="10"
-                android:hint="@string/common_available_to"
-                android:inputType="datetime"
-                android:minHeight="48dp" />
+                android:layout_marginTop="32dp"
+                android:text="FOOD PHOTOGRAPHY"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtSubhead" />
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardImagePicker"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="pickPhoto"
+                app:cardBackgroundColor="#F4F3F1"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E3E2E0"
+                app:strokeWidth="2dp"
+                app:layout_constraintTop_toBottomOf="@id/lblPhoto">
+
                 <ImageView
                     android:id="@+id/imgUploadPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Food preview" />
+
+                <LinearLayout
+                    android:id="@+id/layoutUploadPlaceholder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:maxHeight="50dp"
-                    android:maxWidth="50dp"/>
-                <Button
-                    android:id="@+id/btnUploadFoodImage"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="@color/secondary_container" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/edit_food_btn_upload_img"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutFoodName"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:hint="@string/common_food_name"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/cardImagePicker">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputFoodName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginHorizontal="80dp"
-                    android:layout_marginVertical="15dp"
-                    android:textStyle="bold"
-                    android:backgroundTint="#3a5432"
-                    android:textColor="#FFB6C1"
-                    android:text="@string/edit_food_btn_upload_img"
-                    android:onClick="pickPhoto"
-                    app:cornerRadius="15dp"/>
+                    android:paddingStart="0dp"
+                    android:textColor="@color/on_surface"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            </LinearLayout>
-            <TextView
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutCategory"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_food_txt_price"
-                android:gravity="center"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="16dp"
+                android:hint="@string/common_category"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/layoutFoodName">
 
-            <RadioGroup
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerFoodCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="0dp"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutQuantity"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginHorizontal="50dp"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_marginTop="16dp"
+                android:hint="@string/common_quantity"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/layoutCategory">
 
-                <RadioButton
-                    android:id="@+id/rdFree"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputFoodQuantity"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_free"
-                    android:layout_weight="1"
-                    android:gravity="center"/>
+                    android:paddingStart="0dp"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <RadioButton
-                    android:id="@+id/rdDiscounted"
-                    android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutExpiry"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/common_expiry_date"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/layoutQuantity">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputFoodExpiry"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_discounted_price"
-                    android:layout_weight="1"
-                    android:gravity="center"/>
-            </RadioGroup>
+                    android:paddingStart="0dp"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <LinearLayout
+                android:id="@+id/layoutTimeGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/layoutExpiry">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/common_available_from"
+                    app:boxBackgroundColor="@android:color/transparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputAvailableFrom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:inputType="datetime" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:hint="@string/common_available_to"
+                    app:boxBackgroundColor="@android:color/transparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputAvailableTo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:inputType="datetime" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPricing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="@color/glass_card_bg"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutTimeGrid">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PRICING &amp; SHARING"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupPricing"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rdFree"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/common_free"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/rdDiscounted"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/common_discounted_price"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"/>
+                    </RadioGroup>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="@string/common_price"
+                        app:prefixText="@string/common_dollar_prefix"
+                        app:prefixTextColor="@color/on_surface_variant"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="0dp"
+                            android:textSize="20sp"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/lblCollection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="5dp"
-                android:gravity="center">
-                <TextView
-                    android:id="@+id/currency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/common_dollar_prefix"
-                    android:textSize="18sp"/>
-                <EditText
-                    android:id="@+id/inputPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/common_price"
-                    android:inputType="numberDecimal"
-                    android:minHeight="48dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/edit_food_txt_type"
-                android:gravity="center"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="32dp"
+                android:text="COLLECTION METHOD"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardPricing" />
 
             <RadioGroup
+                android:id="@+id/radioGroupCollection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginHorizontal="50dp"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/lblCollection">
 
                 <RadioButton
                     android:id="@+id/rdPickup"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_pick_up"
-                    android:layout_weight="1"
-                    android:gravity="center"/>
+                    android:layout_marginBottom="12dp"
+                    android:background="#F4F3F1"
+                    android:padding="16dp"
+                    android:text="Pick Up (Neighbor comes to you)"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/rdDelivery"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_delivery"
-                    android:layout_weight="1"
-                    android:gravity="center"/>
+                    android:background="#F4F3F1"
+                    android:padding="16dp"
+                    android:text="Delivery (You drop it off)"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
             </RadioGroup>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveFood"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="32dp"
                 android:text="@string/common_update"
-                android:layout_marginHorizontal="80dp"
-                android:layout_marginVertical="15dp"
+                android:textColor="@color/primary_fixed"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:backgroundTint="#3a5432"
-                android:textColor="#FFB6C1"
-                android:onClick="handleSave"/>
+                android:onClick="handleSave"
+                app:backgroundTint="@color/primary_dark"
+                app:cornerRadius="16dp"
+                app:layout_constraintTop_toBottomOf="@id/radioGroupCollection" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteFood"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/design_default_color_error"
-                android:onClick="handleDelete"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginVertical="15dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/common_delete"
+                android:textColor="#BA1A1A"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#FFB6C1"
-                android:text="@string/common_delete" />
+                android:onClick="handleDelete"
+                app:layout_constraintTop_toBottomOf="@id/btnSaveFood" />
 
-        </LinearLayout>
-    </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
