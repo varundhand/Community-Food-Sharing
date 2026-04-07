@@ -692,6 +692,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_IMG_KEY + " AS " + aliasFoodItemImageKey + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_ADDED_AT + " AS " + aliasFoodItemAddedAt + ", " +
+                TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_RESERVED_AT + " AS " + aliasFoodItemReservedAt + ", " +
                 TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_COMPLETED_AT + " AS " + aliasFoodItemCompletedAt + ", " +
                 TABLE_USERS + "." + COL_ID + " AS " + aliasRecipientId + ", " +
                 TABLE_USERS + "." + COL_USER_NAME + " AS " + aliasRecipientName + ", " +
