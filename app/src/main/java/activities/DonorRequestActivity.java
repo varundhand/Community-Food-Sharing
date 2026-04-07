@@ -41,6 +41,7 @@ public class DonorRequestActivity extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
     private Request request;
+    private FoodItem foodItem;
     private ArrayList<Reminder> reminders;
 
     @Override
@@ -88,7 +89,7 @@ public class DonorRequestActivity extends AppCompatActivity {
         btnComplete = findViewById(R.id.btnComplete);
         btnRemind = findViewById(R.id.btnRemind);
 
-        FoodItem foodItem = request.getFoodItem();
+        foodItem = request.getFoodItem();
 
         txtFoodItemName.setText(foodItem.getName());
         setPhoto(foodItem.getImageKey(), imgFoodItem, true);
@@ -127,6 +128,10 @@ public class DonorRequestActivity extends AppCompatActivity {
         } else {
             hideButton(btnComplete);
             hideButton(btnRemind);
+        }
+
+        if (foodItem.isReserved()) {
+            hideButton(btnApprove);
         }
     }
 
