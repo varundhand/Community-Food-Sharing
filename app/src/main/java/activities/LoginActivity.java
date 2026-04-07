@@ -25,7 +25,6 @@ import models.UserType;
 
 public class LoginActivity extends AppCompatActivity {
     EditText inputEmail, inputPassword;
-    CheckBox chkRememberMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
-        chkRememberMe = findViewById(R.id.chkRememberMe);
 
         //SpannableString to separate color between text on register link
         TextView registerText = findViewById(R.id.welcomeBtnRegister);
