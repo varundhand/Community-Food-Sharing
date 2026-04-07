@@ -635,7 +635,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<Request> getRequests(Integer requestId, Integer foodItemId, Integer recipientId, Instant dueAfter,
-            RequestStatus status, Integer donorId) {
+            RequestStatus status, Integer donorId, boolean onlyNotReserved) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String aliasReqId = TABLE_REQUESTS + "_" + COL_ID;
@@ -736,6 +736,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (donorId != null) {
             where.add(TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_DONOR_ID + " = ?");
             args.add(String.valueOf(donorId));
+        }
+        if (onlyNotReserved) {
+            where.add(TABLE_FOOD_ITEMS + "." + COL_FOOD_ITEM_RESERVED_AT + " IS NULL");
         }
 
         String whereStr = String.join(" AND ", where);

@@ -90,12 +90,12 @@ public class RecipientRequestListActivity extends AppCompatActivity {
     }
 
     private RecipientRequestListRecyclerViewAdapter selectAll() {
-        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null);
+        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null, true);
         return new RecipientRequestListRecyclerViewAdapter(requests);
     }
 
     private RecipientRequestListRecyclerViewAdapter selectByStatus(RequestStatus status) {
-        requests = dbHelper.getRequests(null, null, user.getId(), null, status, null);
+        requests = dbHelper.getRequests(null, null, user.getId(), null, status, null, true);
         return new RecipientRequestListRecyclerViewAdapter(requests);
     }
 

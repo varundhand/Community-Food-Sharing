@@ -66,7 +66,7 @@ public class DonorRequestActivity extends AppCompatActivity {
 
         int requestId = extras.getInt(EXTRA_REQ_ID);
         try {
-            request = dbHelper.getRequests(requestId, null, null, null, null, null).get(0);
+            request = dbHelper.getRequests(requestId, null, null, null, null, null, false).get(0);
         } catch (Exception e) {
             Toast.makeText(this, "Error Retrieving the record", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(DonorRequestActivity.this, DonorHomeActivity.class));

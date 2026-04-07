@@ -54,7 +54,7 @@ public class DonorHomeActivity extends AppCompatActivity {
 
         donorName.setText(user.getName());
 
-        pendingRequests = dbHelper.getRequests(null, null, null, null, RequestStatus.PENDING, user.getId());
+        pendingRequests = dbHelper.getRequests(null, null, null, null, RequestStatus.PENDING, user.getId(), true);
 
         if (!pendingRequests.isEmpty()) {
             String message;

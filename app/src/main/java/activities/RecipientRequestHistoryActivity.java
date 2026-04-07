@@ -43,7 +43,7 @@ public class RecipientRequestHistoryActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
 
         User user = authHelper.getCurrentUser();
-        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null);
+        requests = dbHelper.getRequests(null, null, user.getId(), null, null, null, false);
         RecipientRequestListRecyclerViewAdapter adapter = new RecipientRequestListRecyclerViewAdapter(requests);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
