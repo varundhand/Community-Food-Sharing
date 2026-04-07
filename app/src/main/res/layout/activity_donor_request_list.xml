@@ -127,11 +127,11 @@
                             app:chipStrokeColor="@color/on_surface_variant" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/filterGroceries"
+                            android:id="@+id/filterDairy"
                             style="@style/Widget.Material3.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Groceries"
+                            android:text="Dairy"
                             app:chipStrokeWidth="1dp"
                             app:chipStrokeColor="@color/on_surface_variant" />
 
