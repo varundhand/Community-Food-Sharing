@@ -304,7 +304,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:hint="Asking Price (Optional)"
+                        android:hint="Asking Price"
                         app:prefixText="$"
                         app:prefixTextColor="@color/on_surface_variant"
                         app:boxBackgroundColor="@android:color/transparent">
